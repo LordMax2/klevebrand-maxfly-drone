@@ -37,7 +37,7 @@ void KlevebrandMaxFlyDrone::run()
         resetPid();
         stopMotors();
 
-        Serial.println("LOST CONNECTION");
+        //Serial.println("LOST CONNECTION");
     }
     else if (!isMotorsEnabled())
     {
@@ -45,7 +45,7 @@ void KlevebrandMaxFlyDrone::run()
         resetPid();
         stopMotors();
 
-        Serial.println("MOTORS DISABLED");
+        //Serial.println("MOTORS DISABLED");
     }
     else
     {
