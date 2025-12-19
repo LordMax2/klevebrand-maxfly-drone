@@ -1,16 +1,14 @@
 #include "klevebrand_maxfly_drone.h"
-#include "klevebrand-skywire-tcp-client.h"
 #include "pwm_receiver.h"
 #include "./components/drone_pwm_receiver/drone_pwm_receiver.h"
-#include "klevebrand-skywire-http-stepper-client.h"
+#include "./components/klevebrand_flight_control_tower_client/klevebrand_flight_control_tower_client.h"
 
 uint8_t motor_pin_numbers[16] = { 3, 2, 7, 6};
 
 KlevebrandMaxFlyDrone drone = KlevebrandMaxFlyDrone(motor_pin_numbers);
 DronePwmReceiver receiver = DronePwmReceiver(1, 4, 3, 2, 7);
-SkywireTcpClient tcpClient(Serial3, "213.66.134.107", 13000);
+KlevebrandFlightControlTowerClient httpStepperClient(Serial3);
 
-SkywireHttpStepperClient httpStepperClient(Serial3, "flightcontroltower.klevebrand.se", 80);
 
 String rx_buffer = "";
 
@@ -22,7 +20,8 @@ void setup()
   // Startup the reciever
   receiver.setup();
 
-  httpStepperClient.start();
+  // Setup 4g LTE modem
+  httpStepperClient.setup();
 }
 
 void loop()
@@ -36,13 +35,24 @@ void loop()
   // Run the drone feedback-loop
   drone.run();
 
-  SkywireResponseResult_t result = httpStepperClient.get("api/v1/weather/coordinates?latitude=59.8586&longitude=17.6389");
+  // Get flight controller instructions
+  DroneRequestDto drone_request = httpStepperClient.getDroneRequest("1339");
 
-  if(result.is_success)
+  if(drone_request.is_valid)
   {
-      Serial.println("HTTP GET SUCCESS:");
-      Serial.println(result.response_content);
-  }
+    Serial.println("Received valid drone request from flight control tower");
 
-  Serial.println("Loop complete");
+    Serial.print("Throttle: ");
+    Serial.print(drone_request.throttle);
+    Serial.print(", Yaw: ");
+    Serial.print(drone_request.yaw);
+    Serial.print(", Pitch: ");
+    Serial.print(drone_request.pitch);
+    Serial.print(", Roll: ");
+    Serial.print(drone_request.roll);
+    Serial.print(", Enable Power: ");
+    Serial.print(drone_request.enable_power);
+    Serial.print(", Enable Motors: ");
+    Serial.println(drone_request.enable_motors);
+  }
 }
