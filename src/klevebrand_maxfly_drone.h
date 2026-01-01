@@ -8,7 +8,7 @@
 class KlevebrandMaxFlyDrone : public BaseGyroDrone<QuadcopterPid>
 {
 public:
-  KlevebrandMaxFlyDrone(uint8_t (&motor_pin_numbers)[16]) : BaseGyroDrone<QuadcopterPid>(motor_pin_numbers) {}
+  KlevebrandMaxFlyDrone(uint8_t *motor_pin_numbers) : BaseGyroDrone<QuadcopterPid>(motor_pin_numbers) {}
   void setup() override;
   void run() override;
   void runMotors(float gyro_roll, float gyro_pitch, float gyro_yaw) override;
