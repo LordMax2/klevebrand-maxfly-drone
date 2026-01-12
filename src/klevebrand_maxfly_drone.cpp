@@ -37,7 +37,7 @@ void KlevebrandMaxFlyDrone::run()
         resetPid();
         stopMotors();
 
-        Serial.println("LOST CONNECTION");
+        //Serial.println("LOST CONNECTION");
     }
     else if (!isMotorsEnabled())
     {
@@ -45,7 +45,7 @@ void KlevebrandMaxFlyDrone::run()
         resetPid();
         stopMotors();
 
-        Serial.println("MOTORS DISABLED");
+        //Serial.println("MOTORS DISABLED");
     }
     else
     {
@@ -79,10 +79,10 @@ void KlevebrandMaxFlyDrone::run()
 
 void KlevebrandMaxFlyDrone::runMotors(float gyro_roll, float gyro_pitch, float gyro_yaw)
 {
-    motorLeftFront().writeMicroseconds(pid.pidThrottleLF(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle, yaw_compass_mode));
-    motorRightFront().writeMicroseconds(pid.pidThrottleRF(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle, yaw_compass_mode));
-    motorLeftBack().writeMicroseconds(pid.pidThrottleLB(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle, yaw_compass_mode));
-    motorRightBack().writeMicroseconds(pid.pidThrottleRB(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle, yaw_compass_mode));
+    motorLeftFront().setSpeed(pid.pidThrottleLF(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle, yaw_compass_mode));
+    motorRightFront().setSpeed(pid.pidThrottleRF(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle, yaw_compass_mode));
+    motorLeftBack().setSpeed(pid.pidThrottleLB(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle, yaw_compass_mode));
+    motorRightBack().setSpeed(pid.pidThrottleRB(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle, yaw_compass_mode));
 }
 
 void KlevebrandMaxFlyDrone::printThrottle()
