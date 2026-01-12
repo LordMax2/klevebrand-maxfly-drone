@@ -4,7 +4,7 @@
 #include "pid_optimizer.h"
 #include "gyro_pid.h"
 
-#define PID_THROTTLE_THRESHOLD 1100
+#define PID_THROTTLE_THRESHOLD 10 
 #define PID_MAX 40 
 
 #define THROTTLE_MINIMUM 0 

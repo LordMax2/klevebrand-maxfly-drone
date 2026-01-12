@@ -2,7 +2,7 @@
 
 void DronePwmReceiver::setThrottleYawPitchRoll(KlevebrandMaxFlyDrone *drone)
 {
-    float throttle_value = receiver.getChannelValue(throttle_receiver_channel_number);
+    float throttle_value = map(receiver.getChannelValue(throttle_receiver_channel_number), 1000, 2000, THROTTLE_MINIMUM, THROTTLE_MAXIMUM);
     drone->setThrottle(throttle_value);
 
     if (drone->getFlightMode() == acro)
