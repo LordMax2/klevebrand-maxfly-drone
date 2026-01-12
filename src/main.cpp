@@ -4,26 +4,26 @@
 #include "./components/drone_pwm_receiver/drone_pwm_receiver.h"
 #include "./components/klevebrand_flight_control_tower_client/klevebrand_flight_control_tower_client.h"
 
-const int motorPins[] = {3, 2, 6, 7};
+const int motor_pins[] = {3, 2, 6, 7};
 
-Servo motorServos[4];
+Servo motor_servos[4];
 
 ServoDroneMotor motors[4] = {
-  ServoDroneMotor(motorServos[0]),
-  ServoDroneMotor(motorServos[1]),
-  ServoDroneMotor(motorServos[2]),
-  ServoDroneMotor(motorServos[3])
+  ServoDroneMotor(motor_servos[0]),
+  ServoDroneMotor(motor_servos[1]),
+  ServoDroneMotor(motor_servos[2]),
+  ServoDroneMotor(motor_servos[3])
 };
 
 KlevebrandMaxFlyDrone drone = KlevebrandMaxFlyDrone(motors);
 DronePwmReceiver receiver = DronePwmReceiver(1, 4, 3, 2, 7);
-KlevebrandFlightControlTowerClient httpStepperClient(Serial3);
+KlevebrandFlightControlTowerClient http_stepper_client(Serial3);
 
 void setup()
 {
   // Attach the motors before starting the drone, this couldnt be done above in the "global" scope, so has to be done here
   for (int i = 0; i < 4; i++) {
-    motorServos[i].attach(motorPins[i]);
+    motor_servos[i].attach(motor_pins[i]);
   }
 
   // Startup the gyroscope and motors
@@ -33,7 +33,7 @@ void setup()
   receiver.setup();
 
   // Setup 4g LTE modem
-  httpStepperClient.setup();
+  http_stepper_client.setup();
 }
 
 void loop()
@@ -48,7 +48,7 @@ void loop()
   drone.run();
 
   // Get flight controller instructions
-  DroneRequestDto drone_request = httpStepperClient.getDroneRequest("1339");
+  DroneRequestDto drone_request = http_stepper_client.getDroneRequest("1339");
 
   if(drone_request.is_valid)
   {
