@@ -5,10 +5,10 @@
 #include "gyro_pid.h"
 
 #define PID_THROTTLE_THRESHOLD 1100
-#define PID_MAX 400
+#define PID_MAX 40 
 
-#define THROTTLE_MINIMUM 1000
-#define THROTTLE_MAXIMUM 2000
+#define THROTTLE_MINIMUM 0 
+#define THROTTLE_MAXIMUM 100 
 
 class QuadcopterPid : public GyroPid
 {
