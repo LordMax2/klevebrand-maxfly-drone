@@ -13,6 +13,7 @@ public:
   {
     this->motors = motors;
   }
+
   void setup() override;
   void run() override;
   void runMotors(float gyro_roll, float gyro_pitch, float gyro_yaw) override;

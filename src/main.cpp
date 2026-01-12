@@ -4,6 +4,7 @@
 #include "./components/drone_pwm_receiver/drone_pwm_receiver.h"
 #include "./components/klevebrand_flight_control_tower_client/klevebrand_flight_control_tower_client.h"
 
+
 const int motorPins[] = {3, 2, 6, 7};
 
 Servo motorServos[4];
