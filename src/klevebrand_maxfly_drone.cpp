@@ -9,7 +9,8 @@ void KlevebrandMaxFlyDrone::setup()
         Serial.println("FAILED TO START SERIAL...");
     }
     while (!Serial)
-        ;
+    {
+    }
 
     Serial.println("STARTING DRONE...");
 
@@ -24,9 +25,16 @@ void KlevebrandMaxFlyDrone::setup()
     Serial.println("DRONE STARTED!");
 }
 
+static long last_run_start_micros_timestamp = 0;
+
 void KlevebrandMaxFlyDrone::run()
 {
-    long start_micros_timestamp = micros();
+    if (delayToKeepFeedbackLoopHz(last_run_start_micros_timestamp) > 0)
+    {
+        return;
+    }
+
+    last_run_start_micros_timestamp = micros();
 
     // Get the latest data from the gyroscope
     updateGyro();
@@ -37,7 +45,7 @@ void KlevebrandMaxFlyDrone::run()
         resetPid();
         stopMotors();
 
-        //Serial.println("LOST CONNECTION");
+        // Serial.println("LOST CONNECTION");
     }
     else if (!isMotorsEnabled())
     {
@@ -45,7 +53,7 @@ void KlevebrandMaxFlyDrone::run()
         resetPid();
         stopMotors();
 
-        //Serial.println("MOTORS DISABLED");
+        // Serial.println("MOTORS DISABLED");
     }
     else
     {
@@ -72,8 +80,6 @@ void KlevebrandMaxFlyDrone::run()
         savePidErrors(gyro.roll(), gyro.pitch(), gyro.yaw());
 
         persistPidConstants();
-
-        delayToKeepFeedbackLoopHz(start_micros_timestamp);
     }
 }
 
