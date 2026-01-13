@@ -32,7 +32,7 @@ void loop()
   // Set drone flight values from the receiver
   receiver.setThrottleYawPitchRoll(&drone);
 
-  // Set the flight mode of the drone from the receiver 
+  // Set the flight mode of the drone from the receiver
   receiver.setFlightMode(&drone);
 
   // Run the drone feedback-loop
@@ -41,7 +41,7 @@ void loop()
   // Get flight controller instructions
   DroneRequestDto drone_request = http_stepper_client.getDroneRequest("1339");
 
-  if(drone_request.is_valid)
+  if (drone_request.is_valid)
   {
     Serial.println("Received valid drone request from flight control tower");
 
