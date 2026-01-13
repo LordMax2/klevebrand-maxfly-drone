@@ -4,15 +4,11 @@
 #include "./components/drone_pwm_receiver/drone_pwm_receiver.h"
 #include "./components/klevebrand_flight_control_tower_client/klevebrand_flight_control_tower_client.h"
 
-const int motor_pins[] = {3, 2, 6, 7};
-
-Servo motor_servos[4];
-
 ServoDroneMotor motors[4] = {
-  ServoDroneMotor(motor_servos[0]),
-  ServoDroneMotor(motor_servos[1]),
-  ServoDroneMotor(motor_servos[2]),
-  ServoDroneMotor(motor_servos[3])
+    ServoDroneMotor::getServoDroneMotor(3),
+    ServoDroneMotor::getServoDroneMotor(2),
+    ServoDroneMotor::getServoDroneMotor(6),
+    ServoDroneMotor::getServoDroneMotor(7),
 };
 
 KlevebrandMaxFlyDrone drone = KlevebrandMaxFlyDrone(motors);
@@ -21,11 +17,6 @@ KlevebrandFlightControlTowerClient http_stepper_client(Serial3);
 
 void setup()
 {
-  // Attach the motors before starting the drone, this couldnt be done above in the "global" scope, so has to be done here
-  for (int i = 0; i < 4; i++) {
-    motor_servos[i].attach(motor_pins[i]);
-  }
-
   // Startup the gyroscope and motors
   drone.setup();
 
