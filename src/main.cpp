@@ -4,6 +4,8 @@
 #include "./components/drone_pwm_receiver/drone_pwm_receiver.h"
 #include "./components/klevebrand_flight_control_tower_client/klevebrand_flight_control_tower_client.h"
 
+#include "./components/klevebrand-skywire-gps-stepper-client/klevebrand-skywire-gps-stepper-client.h"
+
 ServoDroneMotor motors[4] = {
     ServoDroneMotor::getServoDroneMotor(3),
     ServoDroneMotor::getServoDroneMotor(2),
@@ -15,6 +17,8 @@ KlevebrandMaxFlyDrone drone = KlevebrandMaxFlyDrone(motors);
 DronePwmReceiver receiver = DronePwmReceiver(1, 4, 3, 2, 7);
 KlevebrandFlightControlTowerClient http_stepper_client(Serial3);
 
+KlevebrandSkywireGpsStepperClient skywire_modem(Serial3);
+
 void setup()
 {
   // Startup the gyroscope and motors
@@ -22,6 +26,19 @@ void setup()
 
   // Startup the reciever
   receiver.setup();
+
+
+  skywire_modem.start();
+
+  while(true) {
+    SkywireResponseResult_t gps_result = skywire_modem.get();
+
+    if (gps_result.is_success)
+    {
+      Serial.println("GPS Data: ");
+      Serial.println(gps_result.response_content);
+    }
+  }
 
   // Setup 4g LTE modem
   http_stepper_client.setup();
