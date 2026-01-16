@@ -40,6 +40,12 @@ void DroneGpsController::goTo(float latitude, float longitude, float altitude)
         return;
     }
 
+    // If the drone tilts morethan 40 degrees, dont run throttle PID controller
+    if(abs(_drone.roll()) > 40.0f || abs(_drone.pitch()) > 40.0f)
+    {
+        return;
+    }
+
     _altitude_pid.updateIntegral(current_location_info.altitude, altitude);
     _altitude_pid.runOptimizer(current_location_info.altitude, altitude);
 
