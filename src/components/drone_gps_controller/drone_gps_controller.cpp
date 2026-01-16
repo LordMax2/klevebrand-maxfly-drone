@@ -10,7 +10,7 @@ void DroneGpsController::setup()
     {
         SkywireResponseResult_t result = skywire_gps_client.get();
 
-        if(result.is_success)
+        if (result.is_success)
         {
             _start_location_info = GpsLocationInfo_t::parseFromGpsAcpString(result.response_content);
 
@@ -34,10 +34,20 @@ void DroneGpsController::goTo(float latitude, float longitude, float altitude)
 
     GpsLocationInfo_t current_location_info = GpsLocationInfo_t::parseFromGpsAcpString(result.response_content);
 
-    if(current_location_info.fix < 2)
+    // Return early if no GPS fix
+    if (current_location_info.fix < 2)
     {
         return;
     }
+
+    _altitude_pid.updateIntegral(current_location_info.altitude, altitude);
+    _altitude_pid.runOptimizer(current_location_info.altitude, altitude);
+
+    float throttle_adjustment = _altitude_pid.throttlePid(current_location_info.altitude, altitude);
+    _drone.setThrottle(throttle_adjustment);
+
+    // Return early if we are within 2 meters of the target altitude
+    if(abs(altitude - current_location_info.altitude) > 2.0f) return;
 
     float yaw_destination_angle = getDestinationYawCompassAngle(latitude, longitude, current_location_info.latitude, current_location_info.longitude);
 
@@ -45,7 +55,8 @@ void DroneGpsController::goTo(float latitude, float longitude, float altitude)
 
     float yaw_error = yawError(_drone.yaw(), yaw_destination_angle);
 
-    if(yaw_error < 10.0f)
+    // Tilt towards target if the compass is less than 10 degrees off, otherwise level the drone again
+    if (yaw_error < 10.0f)
     {
         _drone.setDesiredPitchAngle(10.0f);
     }
@@ -55,7 +66,8 @@ void DroneGpsController::goTo(float latitude, float longitude, float altitude)
     }
 }
 
-float DroneGpsController::getDestinationYawCompassAngle(float target_latitude, float target_longitude, float current_latitude, float current_longitude) {
+float DroneGpsController::getDestinationYawCompassAngle(float target_latitude, float target_longitude, float current_latitude, float current_longitude)
+{
     return atan2f(target_latitude - current_latitude, target_longitude - current_longitude);
 }
 
