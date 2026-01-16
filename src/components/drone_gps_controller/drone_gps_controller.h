@@ -9,7 +9,7 @@
 class DroneGpsController
 {
 public:
-    DroneGpsController(HardwareSerial &hardwareSerial, KlevebrandMaxFlyDrone &drone) : skywire_gps_client(hardwareSerial), _start_location_info(GpsLocationInfo_t::empty()), _drone(drone), _altitude_pid(0.1f, 0.001f, 0.1f, 50) {}
+    DroneGpsController(HardwareSerial &hardwareSerial, KlevebrandMaxFlyDrone &drone) : skywire_gps_client(hardwareSerial), _start_location_info(GpsLocationInfo_t::empty()), _drone(drone), _altitude_pid(1.0f, 0.0f, 15.0f, 50) {}
 
     void setup();
     void goTo(float latitude, float longitude, float altitude);
