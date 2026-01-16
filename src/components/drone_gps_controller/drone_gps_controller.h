@@ -1,7 +1,7 @@
 #ifndef DRONE_GPS_CONTROLLER_H
 #define DRONE_GPS_CONTROLLER_H
 
-#include <components/klevebrand-skywire-gps-stepper-client/klevebrand-skywire-gps-stepper-client.h>
+#include <components/klevebrand_skywire_gps_stepper_client/klevebrand_skywire_gps_stepper_client.h>
 #include "./entities/gps_location_info.h"
 #include "../../klevebrand_maxfly_drone.h"
 #include "../throttle_altitude_pid/throttle_altitude_pid.h"
