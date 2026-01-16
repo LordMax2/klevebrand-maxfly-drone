@@ -26,15 +26,48 @@ void DroneGpsController::setup()
 void DroneGpsController::goTo(float latitude, float longitude, float altitude)
 {
     SkywireResponseResult_t result = skywire_gps_client.get();
-    
-    if(!result.is_success)
+
+    if (!result.is_success)
     {
         return;
     }
 
     GpsLocationInfo_t current_location_info = GpsLocationInfo_t::parseFromGpsAcpString(result.response_content);
 
-    float yaw_destination_angle = atan2f(latitude - current_location_info.latitude, longitude - current_location_info.longitude);
+    if(current_location_info.fix < 2)
+    {
+        return;
+    }
+
+    float yaw_destination_angle = getDestinationYawCompassAngle(latitude, longitude, current_location_info.latitude, current_location_info.longitude);
 
     _drone.setDesiredYawAngle(yaw_destination_angle);
+
+    float yaw_error = yawError(_drone.yaw(), yaw_destination_angle);
+
+    if(yaw_error < 10.0f)
+    {
+        _drone.setDesiredPitchAngle(10.0f);
+    }
+    else
+    {
+        _drone.setDesiredPitchAngle(0.0f);
+    }
+}
+
+float DroneGpsController::getDestinationYawCompassAngle(float target_latitude, float target_longitude, float current_latitude, float current_longitude) {
+    return atan2f(target_latitude - current_latitude, target_longitude - current_longitude);
+}
+
+float DroneGpsController::yawError(float gyro_yaw, float yaw_desired_angle)
+{
+    auto error = fmod((gyro_yaw + 180), 360) - fmod((yaw_desired_angle + 180), 360);
+    float absolute_error = min(abs(error), 360 - abs(error));
+
+    if (error < 0)
+    {
+        return -1 * absolute_error;
+    }
+
+    return absolute_error;
 }

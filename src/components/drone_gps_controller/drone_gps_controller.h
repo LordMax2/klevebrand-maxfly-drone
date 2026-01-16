@@ -18,6 +18,9 @@ private:
     GpsLocationInfo_t _start_location_info;
     KlevebrandMaxFlyDrone &_drone;
 
+    float yawError(float gyro_yaw, float yaw_desired_angle);
+    float getDestinationYawCompassAngle(float target_latitude, float target_longitude, float current_latitude, float current_longitude);
+
 };
 
 #endif // DRONE_GPS_CONTROLLER_H
