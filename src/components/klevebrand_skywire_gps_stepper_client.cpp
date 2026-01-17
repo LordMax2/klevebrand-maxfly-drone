@@ -1,4 +1,4 @@
-#include "klevebrand-skywire-gps-stepper-client.h"
+#include "klevebrand_skywire_gps_stepper_client.h"
 
 bool KlevebrandSkywireGpsStepperClient::start()
 {

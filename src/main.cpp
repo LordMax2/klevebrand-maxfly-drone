@@ -1,7 +1,7 @@
 #include "klevebrand_maxfly_drone.h"
 #include "pwm_receiver.h"
 #include "servo_drone_motor.h"
-#include "./components/drone_pwm_receiver/drone_pwm_receiver.h"
+#include "drone_pwm_receiver.h"
 
 ServoDroneMotor motors[4] = {
     ServoDroneMotor::getServoDroneMotor(3),

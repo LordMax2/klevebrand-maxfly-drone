@@ -2,7 +2,7 @@
 #define DRONE_PWM_RECEIVER_H
 
 #include "pwm_receiver.h"
-#include "./klevebrand_maxfly_drone.h"
+#include "klevebrand_maxfly_drone.h"
 
 class DronePwmReceiver
 {

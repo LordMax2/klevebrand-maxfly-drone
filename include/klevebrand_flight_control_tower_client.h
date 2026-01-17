@@ -2,7 +2,7 @@
 #define KLEVEBRAND_FLIGHT_CONTROL_TOWER_CLIENT_H
 
 #include "klevebrand-skywire-http-stepper-client.h"
-#include "./entities/drone_request_dto.h"
+#include "drone_request_dto.h"
 
 #define KLEVEBRAND_FLIGHT_CONTROL_TOWER_CLIENT_DEFAULT_BASE_URL "flightcontroltower.klevebrand.se"
 #define KLEVEBRAND_FLIGHT_CONTROL_TOWER_CLIENT_DEFAULT_PORT 80

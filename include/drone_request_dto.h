@@ -1,6 +1,8 @@
 #ifndef DRONE_REQUEST_DTO_H
 #define DRONE_REQUEST_DTO_H
 
+#include "Arduino.h"
+
 struct DroneRequestDto
 {
     DroneRequestDto(

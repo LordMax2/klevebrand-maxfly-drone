@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include "base_gyro_drone.h"
 #include "servo_drone_motor.h"
-#include "./components/quadcopter_pid/quadcopter_pid.h"
+#include "quadcopter_pid.h"
 
 class KlevebrandMaxFlyDrone : public BaseGyroDrone<QuadcopterPid>
 {
