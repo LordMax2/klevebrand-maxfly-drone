@@ -10,7 +10,7 @@
 class KlevebrandFlightControlTowerClient {
 public:
     KlevebrandFlightControlTowerClient(HardwareSerial& skywire_serial)
-        : http_stepper_client(skywire_serial, KLEVEBRAND_FLIGHT_CONTROL_TOWER_CLIENT_DEFAULT_BASE_URL, KLEVEBRAND_FLIGHT_CONTROL_TOWER_CLIENT_DEFAULT_PORT) {};
+        : http_stepper_client(skywire_serial, KLEVEBRAND_FLIGHT_CONTROL_TOWER_CLIENT_DEFAULT_BASE_URL, KLEVEBRAND_FLIGHT_CONTROL_TOWER_CLIENT_DEFAULT_PORT, 5000, true) {};
 
     void setup();
 
