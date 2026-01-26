@@ -10,7 +10,7 @@ ServoDroneMotor motors[4] = {
     ServoDroneMotor::getServoDroneMotor(7),
 };
 
-KlevebrandMaxFlyDrone drone = KlevebrandMaxFlyDrone(motors);
+KlevebrandMaxFlyDrone drone = KlevebrandMaxFlyDrone(motors, Serial3);
 DronePwmReceiver receiver = DronePwmReceiver(1, 4, 3, 2, 7);
 
 void setup()

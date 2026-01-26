@@ -2,17 +2,17 @@
 
 void DroneGpsController::setup()
 {
-    skywire_gps_client.start();
+    skywire_http_gps_stepper_client.start();
 
     bool recieved_start_location = false;
 
     while (!recieved_start_location)
     {
-        SkywireResponseResult_t result = skywire_gps_client.get();
+        String result = skywire_http_gps_stepper_client.getLatestGpsResponse();
 
-        if (result.is_success)
+        if (result.length() > 0)
         {
-            _start_location_info = GpsLocationInfo_t::parseFromGpsAcpString(result.response_content);
+            _start_location_info = GpsLocationInfo_t::parseFromGpsAcpString(result);
 
             recieved_start_location = true;
         }
@@ -25,14 +25,14 @@ void DroneGpsController::setup()
 
 void DroneGpsController::goTo(float latitude, float longitude, float altitude)
 {
-    SkywireResponseResult_t result = skywire_gps_client.get();
+    String result = skywire_http_gps_stepper_client.getLatestGpsResponse();
 
-    if (!result.is_success)
+    if(result.length() == 0)
     {
         return;
     }
 
-    GpsLocationInfo_t current_location_info = GpsLocationInfo_t::parseFromGpsAcpString(result.response_content);
+    GpsLocationInfo_t current_location_info = GpsLocationInfo_t::parseFromGpsAcpString(result);
 
     // Return early if no GPS fix
     if (current_location_info.fix < 2)

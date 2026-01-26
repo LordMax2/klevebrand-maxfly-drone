@@ -9,9 +9,9 @@
 class KlevebrandMaxFlyDrone : public BaseGyroDrone<QuadcopterPid>
 {
 public:
-  KlevebrandMaxFlyDrone(ServoDroneMotor* motors) : BaseGyroDrone<QuadcopterPid>(500, 200, 10000) 
+  KlevebrandMaxFlyDrone(ServoDroneMotor* motors, HardwareSerial &skywire_serial) : BaseGyroDrone<QuadcopterPid>(500, 200, 10000)
   {
-    this->motors = motors;
+    this->_motors = motors;
   }
 
   void setup() override;
@@ -33,11 +33,11 @@ public:
   };
 
 private:
-  ServoDroneMotor* motors;
-  ServoDroneMotor motorLeftFront() { return motors[0]; };
-  ServoDroneMotor motorRightFront() { return motors[1]; };
-  ServoDroneMotor motorLeftBack() { return motors[2]; };
-  ServoDroneMotor motorRightBack() { return motors[3]; };
+  ServoDroneMotor* _motors;
+  ServoDroneMotor motorLeftFront() { return _motors[0]; };
+  ServoDroneMotor motorRightFront() { return _motors[1]; };
+  ServoDroneMotor motorLeftBack() { return _motors[2]; };
+  ServoDroneMotor motorRightBack() { return _motors[3]; };
   void printThrottle();
 };
 
