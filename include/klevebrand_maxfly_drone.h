@@ -9,7 +9,7 @@
 class KlevebrandMaxFlyDrone : public BaseGyroDrone<QuadcopterPid>
 {
 public:
-  KlevebrandMaxFlyDrone(ServoDroneMotor* motors, HardwareSerial &skywire_serial) : BaseGyroDrone<QuadcopterPid>(500, 200, 10000)
+  KlevebrandMaxFlyDrone(ServoDroneMotor* motors) : BaseGyroDrone<QuadcopterPid>(500, 200, 10000)
   {
     this->_motors = motors;
   }
