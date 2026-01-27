@@ -2,13 +2,15 @@
 
 void DroneGpsController::setup()
 {
-    skywire_http_gps_stepper_client.start();
+    skywire_http_gps_step_worker.start();
 
     bool recieved_start_location = false;
 
     while (!recieved_start_location)
     {
-        String result = skywire_http_gps_stepper_client.getLatestGpsResponse();
+        skywire_http_gps_step_worker.run();
+
+        String result = skywire_http_gps_step_worker.getLatestGpsResponse();
 
         if (result.length() > 0)
         {
@@ -25,7 +27,9 @@ void DroneGpsController::setup()
 
 void DroneGpsController::goTo(float latitude, float longitude, float altitude)
 {
-    String result = skywire_http_gps_stepper_client.getLatestGpsResponse();
+    skywire_http_gps_step_worker.run();
+
+    String result = skywire_http_gps_step_worker.getLatestGpsResponse();
 
     if(result.length() == 0)
     {
