@@ -20,7 +20,6 @@ public:
     void run();
 
 private:
-    
     SkywireHttpGpsStepWorker skywire_http_gps_step_worker;
     GpsLocationInfo_t _start_location_info;
     KlevebrandMaxFlyDrone &_drone;

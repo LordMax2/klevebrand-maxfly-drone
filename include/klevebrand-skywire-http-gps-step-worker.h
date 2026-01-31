@@ -29,8 +29,8 @@ public:
 		this->steps[0] = new SkywireStep(skywire, "AT#HTTPCFG=0,\"" + base_url + "\"", debug_mode, nullptr);
 		this->steps[1] = new SkywireStep(skywire, "AT#HTTPQRY=0,0,\"/" + path + "\"", debug_mode, nullptr);
 		this->steps[2] = new HttpRingSkywireStep(skywire, debug_mode, nullptr);
-		this->steps[3] = new HttpRcvSkywireStep(skywire, debug_mode, setLatestGpsResponse);
-		this->steps[4] = new GpsAcpSkywireStep(skywire, debug_mode, setLatestHttpResponse);
+		this->steps[3] = new HttpRcvSkywireStep(skywire, debug_mode, setLatestHttpResponse);
+		this->steps[4] = new GpsAcpSkywireStep(skywire, debug_mode, setLatestGpsResponse);
 
 		resetState();
 	}
@@ -43,11 +43,11 @@ public:
 		return "";
 	}
 
-	static void setLatestGpsResponse(String response) {
+	static void setLatestGpsResponse(String& response) {
 		Serial.println(response);
 	}
 
-	static void setLatestHttpResponse(String response) {
+	static void setLatestHttpResponse(String& response) {
 		Serial.println(response);
 	}
 

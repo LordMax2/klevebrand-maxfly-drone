@@ -23,8 +23,6 @@ void setup()
 
   while(true) {
     gps_controller.run();
-
-    delay(1000);
   }
 
   // Startup the reciever
