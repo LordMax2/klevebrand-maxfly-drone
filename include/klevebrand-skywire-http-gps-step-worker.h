@@ -53,12 +53,18 @@ public:
 		response_copy.replace("\n", "");
 		response_copy.replace("ERROR", "");
 
-		Serial.println("HTTP RESPONSE:");
 		Serial.println(response_copy);
 	}
 
 	static void setLatestGpsResponse(String& response) {
-		Serial.println(response);
+		String response_copy = response;
+
+		response_copy.replace("OK", "");
+		response_copy.replace("$GPSACP: ", "");
+		response_copy.replace("\r", "");
+		response_copy.replace("\n", "");
+
+		Serial.println(response_copy);
 	}
 };
 
