@@ -27,7 +27,7 @@ public:
 		this->steps = new SkywireStep *[STEP_COUNT];
 
 		this->steps[0] = new SkywireStep(skywire, "AT#HTTPCFG=0,\"" + base_url + "\"", debug_mode, nullptr);
-		this->steps[1] = new SkywireStep(skywire, "AT#HTTPQRY=0,0,\"/" + path + "\"\r", debug_mode, nullptr);
+		this->steps[1] = new SkywireStep(skywire, "AT#HTTPQRY=0,0,\"/" + path + "\"", debug_mode, nullptr);
 		this->steps[2] = new HttpRingSkywireStep(skywire, debug_mode, nullptr);
 		this->steps[3] = new HttpRcvSkywireStep(skywire, debug_mode, setLatestGpsResponse);
 		this->steps[4] = new GpsAcpSkywireStep(skywire, debug_mode, setLatestHttpResponse);
@@ -36,24 +36,22 @@ public:
 	}
 	
 	String getLatestGpsResponse() {
-		return _latest_gps_response;
+		return "";
 	}
 
 	String getLatestHttpResponse() {
-		return _latest_http_response;
+		return "";
 	}
 
 	static void setLatestGpsResponse(String response) {
-		_latest_gps_response = response;
+		Serial.println(response);
 	}
 
 	static void setLatestHttpResponse(String response) {
-		_latest_http_response = response;
+		Serial.println(response);
 	}
 
 private:
-	static String _latest_gps_response;
-	static String _latest_http_response;
 };
 
 #endif // KLEVEBRAND_SKYWIRE_HTTP_STEPPER_CLIENT_H

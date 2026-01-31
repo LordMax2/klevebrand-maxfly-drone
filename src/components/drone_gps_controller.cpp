@@ -25,6 +25,11 @@ void DroneGpsController::setup()
     delay(1000);
 }
 
+void DroneGpsController::run()
+{
+    skywire_http_gps_step_worker.run();
+}
+
 void DroneGpsController::goTo(float latitude, float longitude, float altitude)
 {
     skywire_http_gps_step_worker.run();

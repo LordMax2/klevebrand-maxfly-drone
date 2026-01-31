@@ -2,6 +2,7 @@
 #include "pwm_receiver.h"
 #include "servo_drone_motor.h"
 #include "drone_pwm_receiver.h"
+#include "drone_gps_controller.h"
 
 ServoDroneMotor motors[4] = {
     ServoDroneMotor::getServoDroneMotor(3),
@@ -11,12 +12,20 @@ ServoDroneMotor motors[4] = {
 };
 
 KlevebrandMaxFlyDrone drone = KlevebrandMaxFlyDrone(motors);
+DroneGpsController gps_controller = DroneGpsController(Serial3, drone);
 DronePwmReceiver receiver = DronePwmReceiver(1, 4, 3, 2, 7);
 
 void setup()
 {
   // Startup the gyroscope and motors
   drone.setup();
+  gps_controller.setup();
+
+  while(true) {
+    gps_controller.run();
+
+    delay(1000);
+  }
 
   // Startup the reciever
   receiver.setup();
