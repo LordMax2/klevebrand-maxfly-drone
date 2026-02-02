@@ -4,7 +4,7 @@
 #include "klevebrand_maxfly_drone.h"
 #include "gps_location_info.h"
 #include "throttle_altitude_pid.h"
-#include "klevebrand-skywire-http-gps-step-worker.h"
+#include "klevebrand_skywire_http_gps_step_worker.h"
 
 class DroneGpsController
 {
