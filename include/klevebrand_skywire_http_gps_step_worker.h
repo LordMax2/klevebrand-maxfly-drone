@@ -8,6 +8,8 @@
 #include "klevebrand-skywire-framework-step-httprcv.h"
 #include "klevebrand-skywire-framework-step-gpsacp.h"
 #include "klevebrand-skywire-framework-step-httpring.h"
+#include "gps_location_info.h"
+#include "drone_request.h"
 
 #define STEP_COUNT 5
 
@@ -34,38 +36,17 @@ public:
 
 		resetState();
 	}
-	
-	String getLatestGpsResponse() {
-		return "";
-	}
 
-	String getLatestHttpResponse() {
-		return "";
-	}
+	String getLatestHttpResponse();
+	String getLatestGpsResponse();
+	DroneRequest_t getLatestDroneRequest();
+	GpsLocationInfo_t getLatestGpsLocationInfo();
+	static void setLatestHttpResponse(String &response);
+	static void setLatestGpsResponse(String &response);
 
-	static void setLatestHttpResponse(String &response)
-	{
-		String response_copy = response;
-
-		response_copy.replace("OK", "");
-		response_copy.replace("<<<", "");
-		response_copy.replace("\r", "");
-		response_copy.replace("\n", "");
-		response_copy.replace("ERROR", "");
-
-		Serial.println(response_copy);
-	}
-
-	static void setLatestGpsResponse(String& response) {
-		String response_copy = response;
-
-		response_copy.replace("OK", "");
-		response_copy.replace("$GPSACP: ", "");
-		response_copy.replace("\r", "");
-		response_copy.replace("\n", "");
-
-		Serial.println(response_copy);
-	}
+private:
+	static String latest_gps_response;
+	static String latest_http_response;
 };
 
 #endif // KLEVEBRAND_SKYWIRE_HTTP_STEPPER_CLIENT_H

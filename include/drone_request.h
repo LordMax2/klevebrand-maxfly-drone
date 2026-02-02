@@ -3,9 +3,9 @@
 
 #include "Arduino.h"
 
-struct DroneRequestDto
+struct DroneRequest_t
 {
-    DroneRequestDto(
+    DroneRequest_t(
         int flight_mode_id,
         float throttle,
         float yaw,
@@ -21,7 +21,7 @@ struct DroneRequestDto
                          enable_power(enable_power),
                          enable_motors(enable_motors), is_valid(is_valid) {}
 
-    static DroneRequestDto parseFromCsvString(String value)
+    static DroneRequest_t parseFromCsvString(String value)
     {
         int flight_mode_id = 0;
         float throttle = 0.0f;
@@ -71,7 +71,7 @@ struct DroneRequestDto
             filed_content = strtok(NULL, ",");
         }
 
-        return DroneRequestDto(
+        return DroneRequest_t(
             flight_mode_id,
             throttle,
             yaw,
@@ -82,9 +82,9 @@ struct DroneRequestDto
             true);
     };
 
-    static DroneRequestDto getInvalidDroneRequest()
+    static DroneRequest_t getInvalidDroneRequest()
     {
-        return DroneRequestDto(
+        return DroneRequest_t(
             0,
             0.0f,
             0.0f,
