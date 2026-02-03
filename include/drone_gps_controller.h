@@ -10,7 +10,7 @@ class DroneGpsController
 {
 public:
     DroneGpsController(HardwareSerial &hardwareSerial, KlevebrandMaxFlyDrone &drone) : 
-        skywire_http_gps_step_worker(hardwareSerial, "flightcontroltower.klevebrand.se", 80, "api/v1/dronerequest/1337"),
+        skywire_http_gps_step_worker(hardwareSerial, "flightcontroltower.klevebrand.se", 80, "api/v1/dronerequest/slim/1337"),
         _start_location_info(GpsLocationInfo_t::empty()), 
         _drone(drone), 
         _altitude_pid(1.0f, 0.0f, 15.0f, 50) {}

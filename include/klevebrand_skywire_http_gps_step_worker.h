@@ -24,7 +24,7 @@ public:
 		void (*on_http_completed_function)(String result_content) = nullptr,
 		void (*on_gps_completed_function)(String response_content) = nullptr,
 		unsigned long timeout_milliseconds = 5000,
-		bool debug_mode = false) : SkywireStepWorker(skywire_serial, debug_mode, STEP_COUNT)
+		bool debug_mode = true) : SkywireStepWorker(skywire_serial, debug_mode, STEP_COUNT)
 	{
 		this->steps = new SkywireStep *[STEP_COUNT];
 
@@ -37,7 +37,6 @@ public:
 		resetState();
 	}
 
-	String getLatestHttpResponse();
 	String getLatestGpsResponse();
 	DroneRequest_t getLatestDroneRequest();
 	GpsLocationInfo_t getLatestGpsLocationInfo();
@@ -46,7 +45,7 @@ public:
 
 private:
 	static String latest_gps_response;
-	static String latest_http_response;
+	static DroneRequest_t latest_drone_request_response;
 };
 
 #endif // KLEVEBRAND_SKYWIRE_HTTP_STEPPER_CLIENT_H

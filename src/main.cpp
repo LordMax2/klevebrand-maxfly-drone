@@ -21,7 +21,8 @@ void setup()
   drone.setup();
   gps_controller.setup();
 
-  while(true) {
+  while (true)
+  {
     gps_controller.run();
   }
 
