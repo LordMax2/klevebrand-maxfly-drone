@@ -72,7 +72,7 @@ void KlevebrandMaxFlyDrone::run()
         // print();
         // printConstants();
         // printThrottle();
-        printGyro();
+        // printGyro();
 
         // Run the motors with the calculated PID throttle
         runMotors(_gyro.roll(), _gyro.pitch(), _gyro.yaw());
