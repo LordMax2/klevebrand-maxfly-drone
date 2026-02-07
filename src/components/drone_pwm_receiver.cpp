@@ -14,14 +14,14 @@ void DronePwmReceiver::setThrottleYawPitchRoll(KlevebrandMaxFlyDrone *drone)
         }
         drone->setDesiredYawAngle(desired_yaw_angle);
 
-        float desired_pitch_angle = map(receiver.getChannelValue(pitch_receiver_channel_number), 1000, 2000, -120, 120);
+        float desired_pitch_angle = map(receiver.getChannelValue(pitch_receiver_channel_number), 1000, 2000, 120, -120);
         if (desired_pitch_angle < 5 && desired_pitch_angle > -5)
         {
             desired_pitch_angle = 0;
         }
         drone->setDesiredPitchAngle(desired_pitch_angle);
 
-        float desired_roll_angle = map(receiver.getChannelValue(roll_receiver_channel_number), 1000, 2000, -120, 120);
+        float desired_roll_angle = map(receiver.getChannelValue(roll_receiver_channel_number), 1000, 2000, 120, -120);
         if (desired_roll_angle < 5 && desired_roll_angle > -5)
         {
             desired_roll_angle = 0;

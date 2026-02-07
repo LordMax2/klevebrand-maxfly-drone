@@ -11,10 +11,10 @@ class KlevebrandMaxFlyDrone : public BaseGyroDrone<QuadcopterPid, Bno08xDroneGyr
 {
 private:
   ServoDroneMotor *_motors;
-  ServoDroneMotor motorLeftFront() { return _motors[0]; };
-  ServoDroneMotor motorRightFront() { return _motors[1]; };
-  ServoDroneMotor motorLeftBack() { return _motors[2]; };
-  ServoDroneMotor motorRightBack() { return _motors[3]; };
+  ServoDroneMotor& motorLeftFront() { return _motors[0]; };
+  ServoDroneMotor& motorRightFront() { return _motors[1]; };
+  ServoDroneMotor& motorLeftBack() { return _motors[2]; };
+  ServoDroneMotor& motorRightBack() { return _motors[3]; };
   Bno08xDroneGyro _gyro;
   void printThrottle();
 
@@ -33,6 +33,8 @@ public:
     motorRightFront().setSpeed(0);
     motorLeftBack().setSpeed(0);
     motorRightBack().setSpeed(0);
+
+    delay(1000);
   };
   void stopMotors() override
   {
