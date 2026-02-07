@@ -3,6 +3,7 @@
 #include "servo_drone_motor.h"
 #include "drone_pwm_receiver.h"
 #include "drone_gps_controller.h"
+#include "bno08x_drone_gyro.h"
 
 ServoDroneMotor motors[4] = {
     ServoDroneMotor::getServoDroneMotor(3),
