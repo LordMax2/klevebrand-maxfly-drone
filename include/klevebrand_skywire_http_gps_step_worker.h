@@ -24,7 +24,7 @@ public:
 		void (*on_http_completed_function)(String result_content) = nullptr,
 		void (*on_gps_completed_function)(String response_content) = nullptr,
 		unsigned long timeout_milliseconds = 5000,
-		bool debug_mode = true) : SkywireStepWorker(skywire_serial, debug_mode, STEP_COUNT)
+		bool debug_mode = false) : SkywireStepWorker(skywire_serial, debug_mode, STEP_COUNT)
 	{
 		this->steps = new SkywireStep *[STEP_COUNT];
 

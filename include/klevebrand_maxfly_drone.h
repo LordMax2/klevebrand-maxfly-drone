@@ -19,7 +19,7 @@ private:
   void printThrottle();
 
 public:
-  KlevebrandMaxFlyDrone(ServoDroneMotor *motors) : _gyro(-1), BaseGyroDrone<QuadcopterPid, Bno08xDroneGyro>(500, 200, 10000, &_gyro)
+  KlevebrandMaxFlyDrone(ServoDroneMotor *motors) : BaseGyroDrone<QuadcopterPid, Bno08xDroneGyro>(500, 200, 10000, &_gyro), _gyro(-1) 
   {
     this->_motors = motors;
   }
