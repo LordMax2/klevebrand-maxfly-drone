@@ -22,13 +22,7 @@ void setup()
   drone.setup();
   gps_controller.setup();
 
-  while (true)
-  {
-    gps_controller.run();
-  }
-
   // Startup the reciever
-
   receiver.setup();
 }
 
@@ -42,4 +36,7 @@ void loop()
 
   // Run the drone feedback-loop
   drone.run();
+
+  // Run the GPS controller
+  //gps_controller.run();
 }

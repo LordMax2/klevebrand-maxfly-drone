@@ -37,14 +37,13 @@ public:
 		resetState();
 	}
 
-	String getLatestGpsResponse();
+	GpsLocationInfo_t getLatestGpsResponse();
 	DroneRequest_t getLatestDroneRequest();
-	GpsLocationInfo_t getLatestGpsLocationInfo();
 	static void setLatestHttpResponse(String &response);
 	static void setLatestGpsResponse(String &response);
 
 private:
-	static String latest_gps_response;
+	static GpsLocationInfo_t latest_gps_response;
 	static DroneRequest_t latest_drone_request_response;
 };
 

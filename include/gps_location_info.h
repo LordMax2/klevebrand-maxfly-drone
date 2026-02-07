@@ -50,6 +50,11 @@ struct GpsLocationInfo_t
     int number_of_satellites;
     int number_of_satellites_glonass;
 
+    String toString()
+    {
+        return "Timestamp: " + timestamp_utc + ", Date: " + date + ", Latitude: " + String(latitude) + ", Longitude: " + String(longitude) + ", Altitude: " + String(altitude) + ", Fix: " + String(fix) + ", CourseOverGround: " + course_over_ground + ", SpeedOverGroundKmh: " + String(speed_over_ground_kmh) + ", SpeedOverGroundKnots: " + String(speed_over_ground_knots) + ", NumberOfSatellites: " + String(number_of_satellites) + ", NumberOfSatellitesGlonass: " + String(number_of_satellites_glonass);
+    }
+
     static GpsLocationInfo_t empty()
     {
         return GpsLocationInfo_t("", "", 0.0f, 0.0f, 0.0f, 0, "", 0.0f, 0.0f, 0, 0);
