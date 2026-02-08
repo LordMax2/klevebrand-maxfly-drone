@@ -85,19 +85,19 @@ void KlevebrandMaxFlyDrone::run()
 
 void KlevebrandMaxFlyDrone::runMotors(float gyro_roll, float gyro_pitch, float gyro_yaw)
 {
-    motorLeftFront().setSpeed(pid.pidThrottleLF(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle, yaw_compass_mode));
-    motorRightFront().setSpeed(pid.pidThrottleRF(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle, yaw_compass_mode));
-    motorLeftBack().setSpeed(pid.pidThrottleLB(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle, yaw_compass_mode));
-    motorRightBack().setSpeed(pid.pidThrottleRB(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle, yaw_compass_mode));
+    motorLeftFront().setSpeed(pid.pidThrottleLF(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle));
+    motorRightFront().setSpeed(pid.pidThrottleRF(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle));
+    motorLeftBack().setSpeed(pid.pidThrottleLB(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle));
+    motorRightBack().setSpeed(pid.pidThrottleRB(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle));
 }
 
 void KlevebrandMaxFlyDrone::printThrottle()
 {
-    Serial.print(pid.pidThrottleLF(throttle, _gyro.roll(), roll_desired_angle, _gyro.pitch(), pitch_desired_angle, _gyro.yaw(), yaw_desired_angle, yaw_compass_mode));
+    Serial.print(pid.pidThrottleLF(throttle, _gyro.roll(), roll_desired_angle, _gyro.pitch(), pitch_desired_angle, _gyro.yaw(), yaw_desired_angle));
     Serial.print("    ");
-    Serial.println(pid.pidThrottleRF(throttle, _gyro.roll(), roll_desired_angle, _gyro.pitch(), pitch_desired_angle, _gyro.yaw(), yaw_desired_angle, yaw_compass_mode));
-    Serial.print(pid.pidThrottleLB(throttle, _gyro.roll(), roll_desired_angle, _gyro.pitch(), pitch_desired_angle, _gyro.yaw(), yaw_desired_angle, yaw_compass_mode));
+    Serial.println(pid.pidThrottleRF(throttle, _gyro.roll(), roll_desired_angle, _gyro.pitch(), pitch_desired_angle, _gyro.yaw(), yaw_desired_angle));
+    Serial.print(pid.pidThrottleLB(throttle, _gyro.roll(), roll_desired_angle, _gyro.pitch(), pitch_desired_angle, _gyro.yaw(), yaw_desired_angle));
     Serial.print("    ");
-    Serial.println(pid.pidThrottleRB(throttle, _gyro.roll(), roll_desired_angle, _gyro.pitch(), pitch_desired_angle, _gyro.yaw(), yaw_desired_angle, yaw_compass_mode));
+    Serial.println(pid.pidThrottleRB(throttle, _gyro.roll(), roll_desired_angle, _gyro.pitch(), pitch_desired_angle, _gyro.yaw(), yaw_desired_angle));
     Serial.println("-----------------------------------------");
 }

@@ -58,7 +58,7 @@ void DroneGpsController::goTo(float latitude, float longitude, float altitude)
     _altitude_pid.updateIntegral(current_location_info.altitude, altitude);
     _altitude_pid.runOptimizer(current_location_info.altitude, altitude);
 
-    float throttle_adjustment = _altitude_pid.throttlePid(current_location_info.altitude, altitude);
+    float throttle_adjustment = _altitude_pid.pid(current_location_info.altitude, altitude);
     _drone.setThrottle(throttle_adjustment);
 
     // Return early if we are within 2 meters of the target altitude

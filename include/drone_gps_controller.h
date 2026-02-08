@@ -3,7 +3,7 @@
 
 #include "klevebrand_maxfly_drone.h"
 #include "gps_location_info.h"
-#include "throttle_altitude_pid.h"
+#include "pid.h"
 #include "klevebrand_skywire_http_gps_step_worker.h"
 
 class DroneGpsController
@@ -23,7 +23,7 @@ private:
     SkywireHttpGpsStepWorker skywire_http_gps_step_worker;
     GpsLocationInfo_t _start_location_info;
     KlevebrandMaxFlyDrone &_drone;
-    ThrottleAltitudePid _altitude_pid;
+    Pid _altitude_pid;
 
     float yawError(float gyro_yaw, float yaw_desired_angle);
     float getDestinationYawCompassAngle(float target_latitude, float target_longitude, float current_latitude, float current_longitude);

@@ -2,12 +2,12 @@
 #define KLEVEBRAND_MAXFLY_DRONE_H
 
 #include <Arduino.h>
-#include "base_gyro_drone.h"
+#include "template_gyro_drone.h"
 #include "servo_drone_motor.h"
 #include "quadcopter_pid.h"
 #include "bno08x_drone_gyro.h"
 
-class KlevebrandMaxFlyDrone : public BaseGyroDrone<QuadcopterPid, Bno08xDroneGyro>
+class KlevebrandMaxFlyDrone : public TemplateGyroDrone<QuadcopterPid, Bno08xDroneGyro>
 {
 private:
   ServoDroneMotor *_motors;
@@ -19,7 +19,7 @@ private:
   void printThrottle();
 
 public:
-  KlevebrandMaxFlyDrone(ServoDroneMotor *motors) : _gyro(-1), BaseGyroDrone<QuadcopterPid, Bno08xDroneGyro>(500, 200, 10000, &_gyro)
+  KlevebrandMaxFlyDrone(ServoDroneMotor *motors) : TemplateGyroDrone<QuadcopterPid, Bno08xDroneGyro>(500, 200, 10000, &_gyro), _gyro(10)
   {
     this->_motors = motors;
   }
