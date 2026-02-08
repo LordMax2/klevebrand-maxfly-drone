@@ -24,27 +24,26 @@ public:
 		void (*on_http_completed_function)(String result_content) = nullptr,
 		void (*on_gps_completed_function)(String response_content) = nullptr,
 		unsigned long timeout_milliseconds = 5000,
-		bool debug_mode = true) : SkywireStepWorker(skywire_serial, debug_mode, STEP_COUNT)
+		bool debug_mode = false) : SkywireStepWorker(skywire_serial, debug_mode, timeout_milliseconds, STEP_COUNT)
 	{
 		this->steps = new SkywireStep *[STEP_COUNT];
 
-		this->steps[0] = new SkywireStep(skywire, "AT#HTTPCFG=0,\"" + base_url + "\"", debug_mode, nullptr);
-		this->steps[1] = new SkywireStep(skywire, "AT#HTTPQRY=0,0,\"/" + path + "\"", debug_mode, nullptr);
-		this->steps[2] = new HttpRingSkywireStep(skywire, debug_mode, nullptr);
-		this->steps[3] = new HttpRcvSkywireStep(skywire, debug_mode, setLatestHttpResponse);
-		this->steps[4] = new GpsAcpSkywireStep(skywire, debug_mode, setLatestGpsResponse);
+		this->steps[0] = new GpsAcpSkywireStep(skywire, debug_mode, setLatestGpsResponse);
+		this->steps[1] = new SkywireStep(skywire, "AT#HTTPCFG=0,\"" + base_url + "\",80,0,\"\",\"\",0,5", debug_mode, nullptr);
+		this->steps[2] = new SkywireStep(skywire, "AT#HTTPQRY=0,0,\"/" + path + "\"", debug_mode, nullptr);
+		this->steps[3] = new HttpRingSkywireStep(skywire, debug_mode, nullptr);
+		this->steps[4] = new HttpRcvSkywireStep(skywire, debug_mode, setLatestHttpResponse);
 
 		resetState();
 	}
 
-	String getLatestGpsResponse();
+	GpsLocationInfo_t getLatestGpsResponse();
 	DroneRequest_t getLatestDroneRequest();
-	GpsLocationInfo_t getLatestGpsLocationInfo();
 	static void setLatestHttpResponse(String &response);
 	static void setLatestGpsResponse(String &response);
 
 private:
-	static String latest_gps_response;
+	static GpsLocationInfo_t latest_gps_response;
 	static DroneRequest_t latest_drone_request_response;
 };
 

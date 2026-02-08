@@ -20,15 +20,9 @@ void setup()
 
   // Startup the gyroscope and motors
   drone.setup();
-  //gps_controller.setup();
-
-  //while (true)
-  //{
-  //  gps_controller.run();
-  //}
+  gps_controller.setup();
 
   // Startup the reciever
-
   receiver.setup();
 }
 
@@ -42,4 +36,7 @@ void loop()
 
   // Run the drone feedback-loop
   drone.run();
+
+  // Run the GPS controller
+  //gps_controller.run();
 }
