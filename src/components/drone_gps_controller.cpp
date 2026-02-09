@@ -6,10 +6,15 @@ void DroneGpsController::setup()
 
     bool recieved_start_location = false;
 
-    Serial.println("WAITING FOR GPS LOCK");
+    unsigned long last_print_time_milliseconds = 0;
 
     while (!recieved_start_location)
     {
+        if (millis() - last_print_time_milliseconds > 3000)
+        {
+            Serial.println("WAITING FOR GPS LOCK");
+        }
+
         skywire_http_gps_step_worker.run();
 
         GpsLocationInfo_t result = skywire_http_gps_step_worker.getLatestGpsResponse();
@@ -20,7 +25,6 @@ void DroneGpsController::setup()
 
             Serial.println("GPS LOCK ACQUIRED");
         }
-
     }
 
     Serial.println("DRONE GPS CONTROLLER STARTED");
@@ -64,7 +68,7 @@ void DroneGpsController::goTo(float latitude, float longitude, float altitude)
 
     _drone.setDesiredYawAngle(yaw_destination_angle);
 
-    float yaw_error = yawError(_drone.yaw(), yaw_destination_angle);
+    float yaw_error = PidYawCompass::absoluteCompassError(_drone.yaw(), yaw_destination_angle);
 
     // Tilt towards target if the compass is less than 10 degrees off, otherwise level the drone again
     if (yaw_error < 10.0f)
@@ -80,17 +84,4 @@ void DroneGpsController::goTo(float latitude, float longitude, float altitude)
 float DroneGpsController::getDestinationYawCompassAngle(float target_latitude, float target_longitude, float current_latitude, float current_longitude)
 {
     return atan2f(target_latitude - current_latitude, target_longitude - current_longitude);
-}
-
-float DroneGpsController::yawError(float gyro_yaw, float yaw_desired_angle)
-{
-    auto error = fmod((gyro_yaw + 180), 360) - fmod((yaw_desired_angle + 180), 360);
-    float absolute_error = min(abs(error), 360 - abs(error));
-
-    if (error < 0)
-    {
-        return -1 * absolute_error;
-    }
-
-    return absolute_error;
 }
