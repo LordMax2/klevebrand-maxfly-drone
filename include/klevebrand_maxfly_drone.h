@@ -6,8 +6,9 @@
 #include "servo_drone_motor.h"
 #include "quadcopter_pid.h"
 #include "bno08x_drone_gyro.h"
+#include "eeprom_pid_repository.h"
 
-class KlevebrandMaxFlyDrone : public TemplateGyroDrone<QuadcopterPid, Bno08xDroneGyro>
+class KlevebrandMaxFlyDrone : public TemplateGyroDrone<QuadcopterPid, Bno08xDroneGyro, EepromPidRepository>
 {
 private:
   ServoDroneMotor *_motors;
@@ -16,10 +17,11 @@ private:
   ServoDroneMotor& motorLeftBack() { return _motors[2]; };
   ServoDroneMotor& motorRightBack() { return _motors[3]; };
   Bno08xDroneGyro _gyro;
+  EepromPidRepository _pid_repository;
   void printThrottle();
 
 public:
-  KlevebrandMaxFlyDrone(ServoDroneMotor *motors) : TemplateGyroDrone<QuadcopterPid, Bno08xDroneGyro>(500, 200, 10000, &_gyro), _gyro(10)
+  KlevebrandMaxFlyDrone(ServoDroneMotor *motors) : TemplateGyroDrone<QuadcopterPid, Bno08xDroneGyro, EepromPidRepository>(500, 200, 10000, &_gyro), _gyro(10)
   {
     this->_motors = motors;
   }

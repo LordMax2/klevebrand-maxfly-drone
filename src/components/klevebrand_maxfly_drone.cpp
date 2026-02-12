@@ -16,7 +16,7 @@ void KlevebrandMaxFlyDrone::setup()
 
     _gyro.setup();
 
-    eeprom_pid_repository.setup();
+    pid_repository->setup();
 
     setupMotors();
 
