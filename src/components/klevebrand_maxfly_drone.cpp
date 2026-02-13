@@ -2,17 +2,9 @@
 
 void KlevebrandMaxFlyDrone::setup()
 {
-    Serial.begin(SERIAL_BAUD_RATE);
+    _processor.setup();
 
-    if (!Serial)
-    {
-        Serial.println("FAILED TO START SERIAL...");
-    }
-    while (!Serial)
-    {
-    }
-
-    Serial.println("STARTING DRONE...");
+    _processor.print("STARTING DRONE...");
 
     _gyro.setup();
 
@@ -22,7 +14,7 @@ void KlevebrandMaxFlyDrone::setup()
 
     setFlightModeAcro();
 
-    Serial.println("DRONE STARTED!");
+    processor->print("DRONE STARTED!");
 }
 
 static long last_run_start_micros_timestamp = 0;
@@ -34,7 +26,7 @@ void KlevebrandMaxFlyDrone::run()
         return;
     }
 
-    last_run_start_micros_timestamp = micros();
+    last_run_start_micros_timestamp = _processor.microsecondsTimestamp();
 
     // Get the latest data from the gyroscope
     updateGyro();

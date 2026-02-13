@@ -8,20 +8,60 @@
 #include "bno08x_drone_gyro.h"
 #include "eeprom_pid_repository.h"
 
-class KlevebrandMaxFlyDrone : public TemplateGyroDrone<QuadcopterPid, Bno08xDroneGyro, EepromPidRepository>
+class HardwareProcessorArduino : public BaseHardwareProcessor
+{
+public:
+  HardwareProcessorArduino() : BaseHardwareProcessor() {};
+
+  void setup() override
+  {
+    Serial.begin(115200);
+
+    if (!Serial)
+    {
+        Serial.println("FAILED TO START SERIAL...");
+    }
+    while (!Serial)
+    {
+    }
+  }
+
+  unsigned long microsecondsTimestamp() override
+  {
+    return micros();
+  }
+
+  unsigned long millisecondsTimestamp() override
+  {
+    return millis();
+  }
+
+  void sleepMilliseconds(int milliseconds) override
+  {
+    delay(milliseconds);
+  }
+
+  void print(char *array) override
+  {
+    Serial.println(array);
+  }
+};
+
+class KlevebrandMaxFlyDrone : public TemplateGyroDrone<QuadcopterPid>
 {
 private:
   ServoDroneMotor *_motors;
-  ServoDroneMotor& motorLeftFront() { return _motors[0]; };
-  ServoDroneMotor& motorRightFront() { return _motors[1]; };
-  ServoDroneMotor& motorLeftBack() { return _motors[2]; };
-  ServoDroneMotor& motorRightBack() { return _motors[3]; };
+  ServoDroneMotor &motorLeftFront() { return _motors[0]; };
+  ServoDroneMotor &motorRightFront() { return _motors[1]; };
+  ServoDroneMotor &motorLeftBack() { return _motors[2]; };
+  ServoDroneMotor &motorRightBack() { return _motors[3]; };
   Bno08xDroneGyro _gyro;
   EepromPidRepository _pid_repository;
+  HardwareProcessorArduino _processor;
   void printThrottle();
 
 public:
-  KlevebrandMaxFlyDrone(ServoDroneMotor *motors) : TemplateGyroDrone<QuadcopterPid, Bno08xDroneGyro, EepromPidRepository>(500, 200, 10000, &_gyro, &_pid_repository), _gyro(10)
+  KlevebrandMaxFlyDrone(ServoDroneMotor *motors) : TemplateGyroDrone<QuadcopterPid>(500, 200, 10000, &_processor, &_gyro, &_pid_repository), _gyro(10)
   {
     this->_motors = motors;
   }

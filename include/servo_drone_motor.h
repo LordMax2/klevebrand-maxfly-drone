@@ -2,13 +2,13 @@
 #define SERVO_DRONE_MOTOR_H
 
 #include "Arduino.h"
-#include "template_drone_motor.h"
+#include "base_drone_motor.h"
 #include <Servo.h>
 
-class ServoDroneMotor : public TemplateDroneMotor<Servo>
+class ServoDroneMotor : public BaseDroneMotor
 {
 public:
-    ServoDroneMotor() : TemplateDroneMotor<Servo>() {}
+    ServoDroneMotor() : BaseDroneMotor() {}
 
     void setup(int pin)
     {
@@ -23,6 +23,8 @@ public:
 
         motor.writeMicroseconds(microseconds);
     }
+private:
+    Servo motor;
 };
 
 #endif // SERVO_DRONE_MOTOR_H
