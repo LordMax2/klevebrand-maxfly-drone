@@ -52,7 +52,7 @@ void KlevebrandMaxFlyDrone::run()
         // Increment the integral part of the PID loop
         if (throttle > PID_THROTTLE_THRESHOLD)
         {
-            runPidOptimizer();
+            runPidOptimizer(processor->millisecondsTimestamp());
             calculatePidIntegral(_gyro.roll(), _gyro.pitch(), _gyro.yaw());
         }
         else

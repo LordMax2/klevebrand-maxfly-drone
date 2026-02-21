@@ -56,7 +56,7 @@ void DroneGpsController::goTo(float latitude, float longitude, float altitude)
     }
 
     _altitude_pid.updateIntegral(current_location_info.altitude, altitude);
-    _altitude_pid.runOptimizer(current_location_info.altitude, altitude);
+    _altitude_pid.runOptimizer(current_location_info.altitude, altitude, millis());
 
     float throttle_adjustment = _altitude_pid.pid(current_location_info.altitude, altitude);
     _drone.setThrottle(throttle_adjustment);
