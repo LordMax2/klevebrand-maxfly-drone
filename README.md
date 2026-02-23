@@ -1,28 +1,44 @@
-# Klevebrand quadcopter flight controller
+# Klevebrand MaxFly Drone
 
-An open-source C++ flight controller for quadcopters, designed with a the vision: **it doesnt need to be harder than it needs to be**. Optimized for AVR microcontrollers like the ATmega2560, this project provides a lightweight yet powerful foundation for any drone.
+Open-source C++ flight controller **specifically for quadcopters**, built around one clear idea: **it doesn't need to be harder than it needs to be**.
 
-Its standout feature is a **self-calibrating PID system** using Black Box optimization, which makes the integration process with the quadcopter much easier!  
+This project takes the core from [Klevebrand All-Drone Controller](https://github.com/LordMax2/klevebrand-all-drone-controller) and implements everything you need for a solid, flyable quadcopter.
+
+Optimized for AVR microcontrollers like the **ATmega2560**, but should work on any AVR with enough RAM.
 
 ## Features
 
-*  **High-performance C++ code:** Written in clean, simple, easy to understand, modern C++.
-*  **Optimized for AVR Microcontrollers:** Specifically designed for the ATmega2560, but works with any AVR controller with sufficient RAM.
-*  **Precise Motion Tracking:** Integrates the high-quality **BNO085** 9-DOF IMU (gyroscope, accelerometer and magnetometer).
-*  **Self-Calibrating PID Stabilization:** **Black Box optimization** with **Simulated Annealing** that automatically tune PID values, eliminating the need for manual calibration for different drones/motors/batteries. And as a special caveat, it gets better the more you fly.
-*  **Radio Support:** Compatible with standard PWM receivers and 4G/LTE modems for long-range control.
+- **High-performance C++ code** — clean, simple, easy to understand, modern C++
+- **Optimized for AVR microcontrollers** — tuned especially for ATmega2560, lightweight and efficient
+- **Precise motion tracking** — uses the excellent **BNO085** 9-DOF IMU (gyro + accel + mag)
+- **Self-calibrating PID stabilization** — the killer feature from the core library:  
+  **Black Box optimization** + **Simulated Annealing** automatically tunes PID values  
+  → no endless manual tweaking for different motors, props, batteries or frames  
+  → gets noticeably better the more you fly it  
+  → quietly keeps adapting in real-time to wind, temperature, motor wear, etc.
+- **Radio support** — works with standard PWM receivers + can use 4G/LTE modems for serious long-range control
+- **GNSS/GPS** — Available GPS interface to be able to implement autopilot or real time flying metrics of GNSS/GPS data.
 
-## Artificial inteligence for the PID calibration
+## Artificial Intelligence for PID Calibration
 
-Tuning the PID controller for a drone to get a stable and reliable flight is a pretty time consuming, difficult and challenging task. This project offers a solution that automates the process, making it far simpler and more efficient and better.
+Tuning PID for a quadcopter so it flies stable and feels good is usually time-consuming, fiddly, and frustrating.
 
-Using a Simulated Annealing algorithm, the flight controller can autonomously run tests and intelligently adjust its PID parameters. This "Black Box" tuning method finds a near-optimal PID configuration with minimal manual input, ensuring a stable and responsive flight.
+This flight controller fixes that.
 
-Furthermore, this optimization runs continuously during flight, adapting to environmental changes like wind, rain, or motor defects. It constantly seeks the ideal configuration to keep the drone stable and maneuverable in real time.
+It uses a **Simulated Annealing** algorithm to run small test movements on its own, then smartly adjusts the PID parameters. This black-box method finds a near-optimal tune with almost no work from you — giving crisp, stable flight much faster.
 
-And the real caveat, is that it adapts to the most stable configuration, based on your flight style.
+The optimization **keeps running quietly during normal flights** and adapts on the fly to things like gusty wind, rain, aging motors, different battery levels, or prop changes.
+
+Over time it tunes itself to match **your flying style** — making the quad feel more and more dialed-in the way **you** like to fly.
+
+## How it relates to Klevebrand All-Drone Controller
+
+This is the **quadcopter-specific implementation** built on top of the general-purpose library:  
+https://github.com/LordMax2/klevebrand-all-drone-controller
+
+- The core lib handles the universal PID logic, sensor abstraction, self-tuning magic, etc.
+- MaxFly Drone adds the quad-specific mixer, motor outputs, receiver parsing, and AVR optimizations so you can actually build and fly a quad right away.
 
 ## License
 
-This project is licensed under the MIT `LICENSE`. 
-
+MIT License — see the `LICENSE` file.
