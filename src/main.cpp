@@ -8,7 +8,7 @@
 ServoDroneMotor motors[4];
 
 KlevebrandMaxFlyDrone drone = KlevebrandMaxFlyDrone(motors);
-DroneGpsController gps_controller = DroneGpsController(Serial3, drone);
+DroneGpsController gps_controller = DroneGpsController(&Serial3, drone);
 DronePwmReceiver receiver = DronePwmReceiver(1, 4, 3, 2, 7);
 
 void setup()
@@ -18,9 +18,12 @@ void setup()
   motors[2].setup(7);
   motors[3].setup(6);
 
+  Serial3.begin(115200);
+
   // Startup the gyroscope and motors
   drone.setup();
-  //gps_controller.setup();
+
+  gps_controller.setup();
 
   // Startup the reciever
   receiver.setup();

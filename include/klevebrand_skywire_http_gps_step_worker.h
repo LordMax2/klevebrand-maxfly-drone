@@ -2,12 +2,11 @@
 #define KLEVEBRAND_SKYWIRE_HTTP_STEPPER_CLIENT_H
 
 #include "Arduino.h"
-#include "klevebrand-skywire-framework.h"
-#include "klevebrand-skywire-framework-step-worker.h"
-#include "klevebrand-skywire-framework-step.h"
-#include "klevebrand-skywire-framework-step-httprcv.h"
-#include "klevebrand-skywire-framework-step-gpsacp.h"
-#include "klevebrand-skywire-framework-step-httpring.h"
+#include "skywire-step-worker.h"
+#include "skywire-step.h"
+#include "skywire-step-httprcv.h"
+#include "skywire-step-gpsacp.h"
+#include "skywire-step-httpring.h"
 #include "gps_location_info.h"
 #include "drone_request.h"
 
@@ -17,7 +16,7 @@ class SkywireHttpGpsStepWorker : public SkywireStepWorker
 {
 public:
 	SkywireHttpGpsStepWorker(
-		HardwareSerial &skywire_serial,
+		HardwareSerial *skywire_serial,
 		String base_url,
 		int port,
 		String path,
