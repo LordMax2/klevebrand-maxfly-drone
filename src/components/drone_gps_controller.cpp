@@ -15,9 +15,9 @@ void DroneGpsController::setup()
             Serial.println("WAITING FOR GPS LOCK");
         }
 
-        _skywire_http_gps_step_worker.run();
+        _skywire_http_gps_worker.run();
 
-        GpsLocationInfo_t result = _skywire_http_gps_step_worker.getLatestGpsResponse();
+        GpsLocationInfo_t result = _skywire_http_gps_worker.getLatestGpsResponse();
 
         if (result.fix == 3)
         {
@@ -34,14 +34,14 @@ void DroneGpsController::setup()
 
 void DroneGpsController::run()
 {
-    _skywire_http_gps_step_worker.run();
+    _skywire_http_gps_worker.run();
 }
 
 void DroneGpsController::goTo(float latitude, float longitude, float altitude)
 {
-    _skywire_http_gps_step_worker.run();
+    _skywire_http_gps_worker.run();
 
-    GpsLocationInfo_t current_location_info = _skywire_http_gps_step_worker.getLatestGpsResponse();
+    GpsLocationInfo_t current_location_info = _skywire_http_gps_worker.getLatestGpsResponse();
 
     // Return early if no GPS fix
     if (current_location_info.fix < 2)

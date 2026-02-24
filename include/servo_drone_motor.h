@@ -12,7 +12,7 @@ public:
 
     void setup(int pin)
     {
-        motor.attach(pin);
+        _motor.attach(pin);
     }
 
     void setSpeed(float percentage) override
@@ -21,10 +21,10 @@ public:
 
         microseconds = constrain(microseconds, 1000, 2000);
 
-        motor.writeMicroseconds(microseconds);
+        _motor.writeMicroseconds(microseconds);
     }
 private:
-    Servo motor;
+    Servo _motor;
 };
 
 #endif // SERVO_DRONE_MOTOR_H

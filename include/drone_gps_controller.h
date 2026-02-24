@@ -5,7 +5,7 @@
 #include "gps_location_info.h"
 #include "pid.h"
 #include "klevebrand_skywire_http_gps_step_worker.h"
-#include "skywire-step-startup-worker.h"
+#include "skywire-command-startup-worker.h"
 #include "pid_yaw_compass.h"
 
 class DroneGpsController
@@ -14,7 +14,7 @@ public:
     DroneGpsController(
         HardwareSerial *hardwareSerial,
         KlevebrandMaxFlyDrone &drone) : _skywire_startup_worker(hardwareSerial, true),
-                                        _skywire_http_gps_step_worker(hardwareSerial, "flightcontroltower.klevebrand.se", 80, "api/v1/dronerequest/1337"),
+                                        _skywire_http_gps_worker(hardwareSerial, "flightcontroltower.klevebrand.se", 80, "api/v1/dronerequest/1337"),
                                         _start_location_info(GpsLocationInfo_t::empty()),
                                         _drone(drone),
                                         _altitude_pid(1.0f, 0.0f, 15.0f, 50) {}
@@ -24,8 +24,8 @@ public:
     void run();
 
 private:
-    SkywireStepStartupWorker _skywire_startup_worker;
-    SkywireHttpGpsStepWorker _skywire_http_gps_step_worker;
+    SkywireCommandStartupWorker _skywire_startup_worker;
+    SkywireHttpGpsStepWorker _skywire_http_gps_worker;
     GpsLocationInfo_t _start_location_info;
     KlevebrandMaxFlyDrone &_drone;
     Pid _altitude_pid;

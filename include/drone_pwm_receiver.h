@@ -18,12 +18,11 @@ public:
         /*
          * Map the receiver channel numbers
          */
-        this->throttle_receiver_channel_number = throttle_receiver_channel_number;
-        this->yaw_receiver_channel_number = yaw_receiver_channel_number;
-        this->pitch_receiver_channel_number = pitch_receiver_channel_number;
-        this->roll_receiver_channel_number = roll_receiver_channel_number;
-
-        this->flight_mode_receiver_channel_number=flight_mode_receiver_channel_number;
+        this->_throttle_receiver_channel_number = throttle_receiver_channel_number;
+        this->_yaw_receiver_channel_number = yaw_receiver_channel_number;
+        this->_pitch_receiver_channel_number = pitch_receiver_channel_number;
+        this->_roll_receiver_channel_number = roll_receiver_channel_number;
+        this->_flight_mode_receiver_channel_number = flight_mode_receiver_channel_number;
     };
 
     void setup();
@@ -31,13 +30,13 @@ public:
     void setFlightMode(KlevebrandMaxFlyDrone *drone);
 
 private:
-    PwmReceiver receiver;
+    PwmReceiver _receiver;
 
-    int throttle_receiver_channel_number;
-    int yaw_receiver_channel_number;
-    int pitch_receiver_channel_number;
-    int roll_receiver_channel_number;
-    int flight_mode_receiver_channel_number;
+    int _throttle_receiver_channel_number;
+    int _yaw_receiver_channel_number;
+    int _pitch_receiver_channel_number;
+    int _roll_receiver_channel_number;
+    int _flight_mode_receiver_channel_number;
 
     float mapfloat(float x, float in_min, float in_max, float out_min, float out_max)
     {
