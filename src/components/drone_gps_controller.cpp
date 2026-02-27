@@ -37,7 +37,7 @@ void DroneGpsController::run()
     _skywire_http_gps_worker.run();
 }
 
-void DroneGpsController::goTo(float latitude, float longitude, float altitude)
+void DroneGpsController::goTo(KlevebrandMaxFlyDrone *drone, float latitude, float longitude, float altitude)
 {
     _skywire_http_gps_worker.run();
 
@@ -50,7 +50,7 @@ void DroneGpsController::goTo(float latitude, float longitude, float altitude)
     }
 
     // If the drone tilts morethan 40 degrees, dont run throttle PID controller
-    if(abs(_drone.roll()) > 40.0f || abs(_drone.pitch()) > 40.0f)
+    if(abs(drone->roll()) > 40.0f || abs(drone->pitch()) > 40.0f)
     {
         return;
     }
@@ -59,25 +59,25 @@ void DroneGpsController::goTo(float latitude, float longitude, float altitude)
     _altitude_pid.runOptimizer(current_location_info.altitude, altitude, millis());
 
     float throttle_adjustment = _altitude_pid.pid(current_location_info.altitude, altitude);
-    _drone.setThrottle(throttle_adjustment);
+    drone->setThrottle(throttle_adjustment);
 
     // Return early if we are within 2 meters of the target altitude
     if(abs(altitude - current_location_info.altitude) > 2.0f) return;
 
     float yaw_destination_angle = getDestinationYawCompassAngle(latitude, longitude, current_location_info.latitude, current_location_info.longitude);
 
-    _drone.setDesiredYawAngle(yaw_destination_angle);
+    drone->setDesiredYawAngle(yaw_destination_angle);
 
-    float yaw_error = PidYawCompass::absoluteCompassError(_drone.yaw(), yaw_destination_angle);
+    float yaw_error = PidYawCompass::absoluteCompassError(drone->yaw(), yaw_destination_angle);
 
     // Tilt towards target if the compass is less than 10 degrees off, otherwise level the drone again
     if (yaw_error < 10.0f)
     {
-        _drone.setDesiredPitchAngle(10.0f);
+        drone->setDesiredPitchAngle(10.0f);
     }
     else
     {
-        _drone.setDesiredPitchAngle(0.0f);
+        drone->setDesiredPitchAngle(0.0f);
     }
 }
 

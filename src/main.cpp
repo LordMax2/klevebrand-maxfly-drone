@@ -8,7 +8,7 @@
 ServoDroneMotor motors[4];
 
 KlevebrandMaxFlyDrone drone = KlevebrandMaxFlyDrone(motors);
-DroneGpsController gps_controller = DroneGpsController(&Serial3, drone);
+DroneGpsController gps_controller = DroneGpsController(&Serial3);
 DronePwmReceiver receiver = DronePwmReceiver(1, 4, 3, 2, 7);
 
 void setup()
@@ -41,5 +41,5 @@ void loop()
   drone.run();
 
   // Run the GPS controller
-  //gps_controller.run();
+  // gps_controller.run();
 }
