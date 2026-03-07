@@ -13,7 +13,7 @@ class DroneGpsController
 public:
     DroneGpsController(
         HardwareSerial *hardwareSerial) : _skywire_startup_worker(hardwareSerial, true),
-                                          _skywire_http_gps_worker(hardwareSerial, "flightcontroltower.klevebrand.se", 80, "api/v1/dronerequest/1337"),
+                                          _skywire_http_gps_worker(hardwareSerial, "flightcontroltower.klevebrand.se", 80, "api/v1/dronerequest/1337", "api/v1/drone/1337/setstate"),
                                           _start_location_info(GpsLocationInfo_t::empty()),
                                           _altitude_pid(1.0f, 0.0f, 15.0f, 50) {}
 

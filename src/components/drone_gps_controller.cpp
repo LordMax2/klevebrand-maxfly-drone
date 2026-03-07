@@ -8,24 +8,24 @@ void DroneGpsController::setup()
 
     unsigned long last_print_time_milliseconds = 0;
 
-    while (!recieved_start_location)
-    {
-        if (millis() - last_print_time_milliseconds > 3000)
-        {
-            Serial.println("WAITING FOR GPS LOCK");
-        }
+    //while (!recieved_start_location)
+    //{
+    //    if (millis() - last_print_time_milliseconds > 3000)
+    //    {
+    //        Serial.println("WAITING FOR GPS LOCK");
+    //    }
 
-        _skywire_http_gps_worker.run();
+    //    _skywire_http_gps_worker.run();
 
-        GpsLocationInfo_t result = _skywire_http_gps_worker.getLatestGpsResponse();
+    //    GpsLocationInfo_t result = _skywire_http_gps_worker.getLatestGpsResponse();
 
-        if (result.fix == 3)
-        {
-            recieved_start_location = true;
+    //    if (result.fix == 3)
+    //    {
+    //        recieved_start_location = true;
 
-            Serial.println("GPS LOCK ACQUIRED");
-        }
-    }
+    //        Serial.println("GPS LOCK ACQUIRED");
+    //    }
+    //}
 
     Serial.println("DRONE GPS CONTROLLER STARTED");
 
@@ -34,7 +34,11 @@ void DroneGpsController::setup()
 
 void DroneGpsController::run()
 {
-    _skywire_http_gps_worker.run();
+    bool result = _skywire_http_gps_worker.run();
+
+    if(result) {
+        _skywire_http_gps_worker.setPayloadToSend("1;1337;false;12.4;1.3;0.2;0.75;120.5;59.8586;17.6389;42.5;1013.2;2;87");
+    }
 }
 
 void DroneGpsController::goTo(KlevebrandMaxFlyDrone *drone, float latitude, float longitude, float altitude)
