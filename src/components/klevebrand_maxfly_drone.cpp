@@ -18,10 +18,11 @@ void KlevebrandMaxFlyDrone::setup()
 }
 
 static long last_run_start_micros_timestamp = 0;
+static long last_gyro_fetch_duration = 0;
 
 void KlevebrandMaxFlyDrone::run()
 {
-    if (delayToKeepFeedbackLoopHz(last_run_start_micros_timestamp) > 0)
+    if (delayToKeepFeedbackLoopHz(last_run_start_micros_timestamp - last_gyro_fetch_duration) > 0)
     {
         return;
     }
@@ -29,7 +30,12 @@ void KlevebrandMaxFlyDrone::run()
     last_run_start_micros_timestamp = _processor.microsecondsTimestamp();
 
     // Get the latest data from the gyroscope
+    long gyro_fetch_start_timestamp = _processor.microsecondsTimestamp();
+
     updateGyro();
+
+    last_gyro_fetch_duration = _processor.microsecondsTimestamp() - gyro_fetch_start_timestamp;
+
 
     if (hasLostConnection())
     {
@@ -52,7 +58,6 @@ void KlevebrandMaxFlyDrone::run()
         // Increment the integral part of the PID loop
         if (throttle > PID_THROTTLE_THRESHOLD)
         {
-            runPidOptimizer(processor->millisecondsTimestamp());
             calculatePidIntegral(_gyro.roll(), _gyro.pitch(), _gyro.yaw());
         }
         else
