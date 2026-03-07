@@ -13,10 +13,10 @@ DronePwmReceiver receiver = DronePwmReceiver(1, 4, 3, 2, 7);
 
 void setup()
 {
-  motors[0].setup(3);
-  motors[1].setup(2);
-  motors[2].setup(7);
-  motors[3].setup(6);
+  motors[0].setup(2);
+  motors[1].setup(3);
+  motors[2].setup(6);
+  motors[3].setup(7);
 
   Serial3.begin(115200);
 
