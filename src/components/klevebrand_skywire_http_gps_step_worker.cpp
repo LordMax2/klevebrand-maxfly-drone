@@ -16,7 +16,7 @@ void SkywireHttpGpsStepWorker::setLatestHttpResponse(String &response)
 
     _latest_drone_request_response = DroneRequest_t::parseFromCsvString(response_copy);
 
-    //Serial.println(latest_drone_request_response.toString());
+    //Serial.println(_latest_drone_request_response.toString());
 }
 
 DroneRequest_t SkywireHttpGpsStepWorker::getLatestDroneRequest()
