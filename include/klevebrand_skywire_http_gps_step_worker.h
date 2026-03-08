@@ -24,7 +24,7 @@ public:
 		String post_path,
 		void (*on_http_completed_function)(String result_content) = nullptr,
 		void (*on_gps_completed_function)(String response_content) = nullptr,
-		unsigned long timeout_milliseconds = 5000,
+		unsigned long timeout_milliseconds = 20000,
 		bool debug_mode = true) : SkywireCommandWorker(skywire_serial, debug_mode, timeout_milliseconds, STEP_COUNT)
 	{
 		this->steps = new SkywireCommand *[STEP_COUNT];
