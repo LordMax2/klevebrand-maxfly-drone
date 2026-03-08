@@ -41,5 +41,5 @@ void loop()
   drone.run();
 
   // Run the GPS controller
-  gps_controller.run();
+  gps_controller.run(&drone);
 }

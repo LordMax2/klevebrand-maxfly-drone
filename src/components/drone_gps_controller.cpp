@@ -32,13 +32,11 @@ void DroneGpsController::setup()
     delay(1000);
 }
 
-void DroneGpsController::run()
+void DroneGpsController::run(KlevebrandMaxFlyDrone *drone)
 {
-    bool result = _skywire_http_gps_worker.run();
+    _skywire_http_gps_worker.setPayloadToSend("1;1337;" + String(drone->isMotorsEnabled() ? "true" : "false") + ";" + String(drone->yaw()) + ";" + String(drone->pitch()) + ";" + String(drone->roll()) + ";" + String(drone->throttle) + ";120.5;59.8586;17.6389;42.5;1013.2;2;7");
 
-    if(result) {
-        _skywire_http_gps_worker.setPayloadToSend("1;1337;false;12.4;1.3;0.2;0.75;120.5;59.8586;17.6389;42.5;1013.2;2;87");
-    }
+    _skywire_http_gps_worker.run();
 }
 
 void DroneGpsController::goTo(KlevebrandMaxFlyDrone *drone, float latitude, float longitude, float altitude)

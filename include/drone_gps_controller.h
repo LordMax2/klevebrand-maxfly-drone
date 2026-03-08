@@ -19,7 +19,7 @@ public:
 
     void setup();
     void goTo(KlevebrandMaxFlyDrone *drone, float latitude, float longitude, float altitude);
-    void run();
+    void run(KlevebrandMaxFlyDrone *drone);
 
 private:
     SkywireCommandStartupWorker _skywire_startup_worker;

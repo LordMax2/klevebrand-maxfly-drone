@@ -11,7 +11,7 @@
 #include "gps_location_info.h"
 #include "drone_request.h"
 
-#define STEP_COUNT 7
+#define HTTP_GPS_STEP_COUNT 7
 
 class SkywireHttpGpsStepWorker : public SkywireCommandWorker
 {
@@ -25,17 +25,17 @@ public:
 		void (*on_http_completed_function)(String result_content) = nullptr,
 		void (*on_gps_completed_function)(String response_content) = nullptr,
 		unsigned long timeout_milliseconds = 20000,
-		bool debug_mode = true) : SkywireCommandWorker(skywire_serial, debug_mode, timeout_milliseconds, STEP_COUNT)
+		bool debug_mode = false) : SkywireCommandWorker(skywire_serial, debug_mode, timeout_milliseconds, HTTP_GPS_STEP_COUNT)
 	{
-		this->steps = new SkywireCommand *[STEP_COUNT];
+		this->steps = new SkywireCommand *[HTTP_GPS_STEP_COUNT];
 
 		//this->steps[0] = new GpsAcpSkywireCommand(skywire, debug_mode, setLatestGpsResponse);
 		this->steps[0] = new SkywireCommand(skywire, "AT#HTTPCFG=0,\"" + base_url + "\",80,0,\"\",\"\",0,5", debug_mode, nullptr);
 		this->steps[1] = new SkywireCommand(skywire, "AT#HTTPQRY=0,0,\"/" + get_path + "\"", debug_mode, nullptr);
 		this->steps[2] = new HttpRingSkywireCommand(skywire, debug_mode, nullptr);
 		this->steps[3] = new HttpRcvSkywireCommand(skywire, debug_mode, setLatestHttpResponse);
-		this->steps[4] = new HttpSndSkywireCommand(skywire, debug_mode, "/" + post_path, nullptr);
-		this->steps[5] = new HttpRingSkywireCommand(skywire, debug_mode, nullptr);
+		this->steps[4] = new SkywireCommand(skywire, "AT#HTTPCFG=0,\"" + base_url + "\",80,0,\"\",\"\",0,5", debug_mode, nullptr);
+		this->steps[5] = new HttpSndSkywireCommand(skywire, debug_mode, "/" + post_path, nullptr);
 		this->steps[6] = new HttpRcvSkywireCommand(skywire, debug_mode, nullptr);
 
 		resetState();
@@ -43,7 +43,7 @@ public:
 
 	void setPayloadToSend(String payload)
 	{
-		static_cast<HttpSndSkywireCommand *>(steps[4])->setPayload(payload);
+		static_cast<HttpSndSkywireCommand *>(steps[5])->setPayload(payload);
 	}
 	GpsLocationInfo_t getLatestGpsResponse();
 	DroneRequest_t getLatestDroneRequest();
