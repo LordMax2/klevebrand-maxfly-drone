@@ -32,10 +32,12 @@ void setup()
 void loop()
 {
   // Set drone flight values from the receiver
-  receiver.setThrottleYawPitchRoll(&drone);
+  //receiver.setThrottleYawPitchRoll(&drone);
+  drone.setThrottle(50);
+  drone.enableMotors();
 
   // Set the flight mode of the drone from the receiver
-  receiver.setFlightMode(&drone);
+  //receiver.setFlightMode(&drone);
 
   // Run the drone feedback-loop
   drone.run();

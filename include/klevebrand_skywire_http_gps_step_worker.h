@@ -11,7 +11,7 @@
 #include "gps_location_info.h"
 #include "drone_request.h"
 
-#define HTTP_GPS_STEP_COUNT 7
+#define HTTP_GPS_STEP_COUNT 6
 
 class SkywireHttpGpsStepWorker : public SkywireCommandWorker
 {
@@ -29,26 +29,29 @@ public:
 	{
 		this->steps = new SkywireCommand *[HTTP_GPS_STEP_COUNT];
 
+		String http_cfg_command = "AT#HTTPCFG=0,\"" + base_url + "\",80,0,\"\",\"\",0,5";
+		String http_qry_command = "AT#HTTPQRY=0,0,\"/" + get_path + "\"";
+		String http_snd_path = "/" + post_path;
+
 		//this->steps[0] = new GpsAcpSkywireCommand(skywire, debug_mode, setLatestGpsResponse);
-		this->steps[0] = new SkywireCommand(skywire, "AT#HTTPCFG=0,\"" + base_url + "\",80,0,\"\",\"\",0,5", debug_mode, nullptr);
-		this->steps[1] = new SkywireCommand(skywire, "AT#HTTPQRY=0,0,\"/" + get_path + "\"", debug_mode, nullptr);
+		this->steps[0] = new SkywireCommand(skywire, http_cfg_command.c_str(), debug_mode, nullptr);
+		this->steps[1] = new SkywireCommand(skywire, http_qry_command.c_str(), debug_mode, nullptr);
 		this->steps[2] = new HttpRingSkywireCommand(skywire, debug_mode, nullptr);
 		this->steps[3] = new HttpRcvSkywireCommand(skywire, debug_mode, setLatestHttpResponse);
-		this->steps[4] = new SkywireCommand(skywire, "AT#HTTPCFG=0,\"" + base_url + "\",80,0,\"\",\"\",0,5", debug_mode, nullptr);
-		this->steps[5] = new HttpSndSkywireCommand(skywire, debug_mode, "/" + post_path, nullptr);
-		this->steps[6] = new HttpRcvSkywireCommand(skywire, debug_mode, nullptr);
+		this->steps[4] = new HttpSndSkywireCommand(skywire, debug_mode, http_snd_path.c_str(), nullptr);
+		this->steps[5] = new HttpRcvSkywireCommand(skywire, debug_mode, nullptr);
 
-		resetState();
+		reset();
 	}
 
-	void setPayloadToSend(String payload)
+	void setPayloadToSend(char payload[1024])
 	{
-		static_cast<HttpSndSkywireCommand *>(steps[5])->setPayload(payload);
+		static_cast<HttpSndSkywireCommand *>(steps[4])->setPayload(payload);
 	}
 	GpsLocationInfo_t getLatestGpsResponse();
 	DroneRequest_t getLatestDroneRequest();
-	static void setLatestHttpResponse(String &response);
-	static void setLatestGpsResponse(String &response);
+	static void setLatestHttpResponse(char response[512]);
+	static void setLatestGpsResponse(char response[512]);
 
 private:
 	static GpsLocationInfo_t _latest_gps_response;

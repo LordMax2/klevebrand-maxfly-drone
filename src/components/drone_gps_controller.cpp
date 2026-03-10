@@ -34,7 +34,9 @@ void DroneGpsController::setup()
 
 void DroneGpsController::run(KlevebrandMaxFlyDrone *drone)
 {
-    _skywire_http_gps_worker.setPayloadToSend("1;1337;" + String(drone->isMotorsEnabled() ? "true" : "false") + ";" + String(drone->yaw()) + ";" + String(drone->pitch()) + ";" + String(drone->roll()) + ";" + String(drone->throttle) + ";120.5;59.8586;17.6389;42.5;1013.2;2;7");
+    String payload_to_send = "1;1337;" + String(drone->isMotorsEnabled() ? "true" : "false") + ";" + String(drone->yaw()) + ";" + String(drone->pitch()) + ";" + String(drone->roll()) + ";" + String(drone->throttle) + ";120.5;59.8586;17.6389;42.5;1013.2;2;7";
+
+    _skywire_http_gps_worker.setPayloadToSend(payload_to_send.c_str());
 
     _skywire_http_gps_worker.run();
 }

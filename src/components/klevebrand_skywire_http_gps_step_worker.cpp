@@ -3,7 +3,7 @@
 DroneRequest_t SkywireHttpGpsStepWorker::_latest_drone_request_response = DroneRequest_t::empty();
 GpsLocationInfo_t SkywireHttpGpsStepWorker::_latest_gps_response = GpsLocationInfo_t::empty();
 
-void SkywireHttpGpsStepWorker::setLatestHttpResponse(String &response)
+void SkywireHttpGpsStepWorker::setLatestHttpResponse(char response[512])
 {
     String response_copy = response;
 
@@ -24,7 +24,7 @@ DroneRequest_t SkywireHttpGpsStepWorker::getLatestDroneRequest()
     return _latest_drone_request_response;
 }
 
-void SkywireHttpGpsStepWorker::setLatestGpsResponse(String &response)
+void SkywireHttpGpsStepWorker::setLatestGpsResponse(char response[512])
 {
     String response_copy = response;
 
