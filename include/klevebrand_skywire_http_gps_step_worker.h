@@ -27,8 +27,6 @@ public:
 		unsigned long timeout_milliseconds = 20000,
 		bool debug_mode = false) : SkywireCommandWorker(skywire_serial, debug_mode, timeout_milliseconds, HTTP_GPS_STEP_COUNT)
 	{
-		this->steps = new SkywireCommand *[HTTP_GPS_STEP_COUNT];
-
 		String http_cfg_command = "AT#HTTPCFG=0,\"" + base_url + "\",80,0,\"\",\"\",0,5";
 		String http_qry_command = "AT#HTTPQRY=0,0,\"/" + get_path + "\"";
 		String http_snd_path = "/" + post_path;
