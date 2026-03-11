@@ -1,8 +1,10 @@
 #include "drone_gps_controller.h"
 
-void DroneGpsController::setup()
+void DroneGpsController::setup(HardwareSerial *hardware_serial)
 {
-    while(!_skywire_startup_worker.run()) {}
+    auto startup_worker = SkywireCommandStartupWorker(hardware_serial, true);
+
+    while(!startup_worker.run()) {}
 
     bool recieved_start_location = false;
 

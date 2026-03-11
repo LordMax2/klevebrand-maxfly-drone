@@ -23,7 +23,7 @@ void setup()
   // Startup the gyroscope and motors
   drone.setup();
 
-  //gps_controller.setup();
+  gps_controller.setup(&Serial3);
 
   // Startup the reciever
   receiver.setup();
@@ -32,16 +32,16 @@ void setup()
 void loop()
 {
   // Set drone flight values from the receiver
-  receiver.setThrottleYawPitchRoll(&drone);
-  //drone.setThrottle(50);
-  //drone.enableMotors();
+  //receiver.setThrottleYawPitchRoll(&drone);
+  drone.setThrottle(50);
+  drone.enableMotors();
 
   // Set the flight mode of the drone from the receiver
-  receiver.setFlightMode(&drone);
+  //receiver.setFlightMode(&drone);
 
   // Run the drone feedback-loop
   drone.run();
 
   // Run the GPS controller
-  //gps_controller.run(&drone);
+  gps_controller.run(&drone);
 }

@@ -12,22 +12,20 @@ class DroneGpsController
 {
 public:
     DroneGpsController(
-        HardwareSerial *hardwareSerial) : _skywire_startup_worker(hardwareSerial, true),
-                                          _skywire_http_gps_worker(hardwareSerial, "flightcontroltower.klevebrand.se", 80, "api/v1/dronerequest/1337", "api/v1/drone/1337/setstate"),
+        HardwareSerial *hardware_serial) : _skywire_http_gps_worker(hardware_serial, "flightcontroltower.klevebrand.se", 80, "api/v1/dronerequest/1337", "api/v1/drone/1337/setstate"),
                                           _start_location_info(GpsLocationInfo_t::empty()),
                                           _altitude_pid(1.0f, 0.0f, 15.0f, 50) {}
 
-    void setup();
+    static void setup(HardwareSerial *hardware_serial);
     void goTo(KlevebrandMaxFlyDrone *drone, float latitude, float longitude, float altitude);
     void run(KlevebrandMaxFlyDrone *drone);
 
 private:
-    SkywireCommandStartupWorker _skywire_startup_worker;
     SkywireHttpGpsStepWorker _skywire_http_gps_worker;
     GpsLocationInfo_t _start_location_info;
     Pid _altitude_pid;
 
-    float getDestinationYawCompassAngle(float target_latitude, float target_longitude, float current_latitude, float current_longitude);
+    static float getDestinationYawCompassAngle(float target_latitude, float target_longitude, float current_latitude, float current_longitude);
 };
 
 #endif // DRONE_GPS_CONTROLLER_H
