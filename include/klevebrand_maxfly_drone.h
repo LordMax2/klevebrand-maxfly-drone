@@ -19,11 +19,12 @@ private:
   ServoDroneMotor &motorRightBack() { return _motors[3]; };
   Bno08xDroneGyro _gyro;
   EepromPidRepository _pid_repository;
+  BaseDronePosition _position;
   HardwareProcessorArduino _processor;
   void printThrottle();
 
 public:
-  KlevebrandMaxFlyDrone(ServoDroneMotor *motors) : TemplateDrone<QuadcopterPid>(500, 200, 10000, &_processor, &_gyro, &_pid_repository), _gyro(10)
+  KlevebrandMaxFlyDrone(ServoDroneMotor *motors) : TemplateDrone<QuadcopterPid>(500, 200, 10000, &_processor, &_gyro, &_pid_repository, &_position), _gyro(10)
   {
     this->_motors = motors;
   }

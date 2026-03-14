@@ -56,7 +56,7 @@ void KlevebrandMaxFlyDrone::run()
     else
     {
         // Increment the integral part of the PID loop
-        if (throttle > PID_THROTTLE_THRESHOLD)
+        if (getThrottle() > PID_THROTTLE_THRESHOLD)
         {
             calculatePidIntegral(_gyro.roll(), _gyro.pitch(), _gyro.yaw());
         }
@@ -82,19 +82,19 @@ void KlevebrandMaxFlyDrone::run()
 
 void KlevebrandMaxFlyDrone::runMotors(float gyro_roll, float gyro_pitch, float gyro_yaw)
 {
-    motorLeftFront().setSpeed(pid.pidThrottleLF(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle));
-    motorRightFront().setSpeed(pid.pidThrottleRF(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle));
-    motorLeftBack().setSpeed(pid.pidThrottleLB(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle));
-    motorRightBack().setSpeed(pid.pidThrottleRB(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle));
+    motorLeftFront().setSpeed(pid.pidThrottleLF(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch, getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle()));
+    motorRightFront().setSpeed(pid.pidThrottleRF(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch, getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle()));
+    motorLeftBack().setSpeed(pid.pidThrottleLB(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch, getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle()));
+    motorRightBack().setSpeed(pid.pidThrottleRB(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch, getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle()));
 }
 
 void KlevebrandMaxFlyDrone::printThrottle()
 {
-    Serial.print(pid.pidThrottleLF(throttle, _gyro.roll(), roll_desired_angle, _gyro.pitch(), pitch_desired_angle, _gyro.yaw(), yaw_desired_angle));
+    Serial.print(pid.pidThrottleLF(getThrottle(), _gyro.roll(), getDesiredRollAngle(), _gyro.pitch(), getDesiredPitchAngle(), _gyro.yaw(), getDesiredYawAngle()));
     Serial.print("    ");
-    Serial.println(pid.pidThrottleRF(throttle, _gyro.roll(), roll_desired_angle, _gyro.pitch(), pitch_desired_angle, _gyro.yaw(), yaw_desired_angle));
-    Serial.print(pid.pidThrottleLB(throttle, _gyro.roll(), roll_desired_angle, _gyro.pitch(), pitch_desired_angle, _gyro.yaw(), yaw_desired_angle));
+    Serial.println(pid.pidThrottleRF(getThrottle(), _gyro.roll(), getDesiredRollAngle(), _gyro.pitch(), getDesiredPitchAngle(), _gyro.yaw(), getDesiredYawAngle()));
+    Serial.print(pid.pidThrottleLB(getThrottle(), _gyro.roll(), getDesiredRollAngle(), _gyro.pitch(), getDesiredPitchAngle(), _gyro.yaw(), getDesiredYawAngle()));
     Serial.print("    ");
-    Serial.println(pid.pidThrottleRB(throttle, _gyro.roll(), roll_desired_angle, _gyro.pitch(), pitch_desired_angle, _gyro.yaw(), yaw_desired_angle));
+    Serial.println(pid.pidThrottleRB(getThrottle(), _gyro.roll(), getDesiredRollAngle(), _gyro.pitch(), getDesiredPitchAngle(), _gyro.yaw(), getDesiredYawAngle()));
     Serial.println("-----------------------------------------");
 }

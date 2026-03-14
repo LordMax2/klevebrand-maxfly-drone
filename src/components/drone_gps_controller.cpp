@@ -36,7 +36,7 @@ void DroneGpsController::setup(HardwareSerial *hardware_serial)
 
 void DroneGpsController::run(KlevebrandMaxFlyDrone *drone)
 {
-    String payload_to_send = "1;1337;" + String(drone->isMotorsEnabled() ? "true" : "false") + ";" + String(drone->yaw()) + ";" + String(drone->pitch()) + ";" + String(drone->roll()) + ";" + String(drone->throttle) + ";120.5;59.8586;17.6389;42.5;1013.2;2;7";
+    String payload_to_send = "1;1337;" + String(drone->isMotorsEnabled() ? "true" : "false") + ";" + String(drone->getYaw()) + ";" + String(drone->getPitch()) + ";" + String(drone->getRoll()) + ";" + String(drone->getThrottle()) + ";120.5;59.8586;17.6389;42.5;1013.2;2;7";
 
     _skywire_http_gps_worker.setPayloadToSend(payload_to_send.c_str());
 
@@ -56,7 +56,7 @@ void DroneGpsController::goTo(KlevebrandMaxFlyDrone *drone, float latitude, floa
     }
 
     // If the drone tilts morethan 40 degrees, dont run throttle PID controller
-    if(abs(drone->roll()) > 40.0f || abs(drone->pitch()) > 40.0f)
+    if(abs(drone->getRoll()) > 40.0f || abs(drone->getPitch()) > 40.0f)
     {
         return;
     }
@@ -74,7 +74,7 @@ void DroneGpsController::goTo(KlevebrandMaxFlyDrone *drone, float latitude, floa
 
     drone->setDesiredYawAngle(yaw_destination_angle);
 
-    float yaw_error = PidYawCompass::absoluteCompassError(drone->yaw(), yaw_destination_angle);
+    float yaw_error = PidYawCompass::absoluteCompassError(drone->getYaw(), yaw_destination_angle);
 
     // Tilt towards target if the compass is less than 10 degrees off, otherwise level the drone again
     if (yaw_error < 10.0f)
