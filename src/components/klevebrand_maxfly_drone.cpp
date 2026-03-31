@@ -20,11 +20,11 @@ void KlevebrandMaxFlyDrone::setup()
 static long last_run_start_micros_timestamp = 0;
 static long last_gyro_fetch_duration = 0;
 
-void KlevebrandMaxFlyDrone::run()
+bool KlevebrandMaxFlyDrone::run()
 {
     if (delayToKeepFeedbackLoopHz(last_run_start_micros_timestamp - last_gyro_fetch_duration) > 0)
     {
-        return;
+        return false;
     }
 
     last_run_start_micros_timestamp = _processor.microsecondsTimestamp();
@@ -78,6 +78,8 @@ void KlevebrandMaxFlyDrone::run()
 
         persistPidConstants();
     }
+
+    return true;
 }
 
 void KlevebrandMaxFlyDrone::runMotors(float gyro_roll, float gyro_pitch, float gyro_yaw)

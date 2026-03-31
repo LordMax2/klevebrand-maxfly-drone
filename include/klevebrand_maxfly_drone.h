@@ -6,7 +6,6 @@
 #include "servo_drone_motor.h"
 #include "quadcopter_pid.h"
 #include "bno08x_drone_gyro.h"
-#include "eeprom_pid_repository.h"
 #include "hardware_processor_arduino.h"
 
 class KlevebrandMaxFlyDrone : public TemplateDrone<QuadcopterPid>
@@ -18,7 +17,7 @@ private:
   ServoDroneMotor &motorLeftBack() { return _motors[2]; };
   ServoDroneMotor &motorRightBack() { return _motors[3]; };
   Bno08xDroneGyro _gyro;
-  EepromPidRepository _pid_repository;
+  BasePidRepository _pid_repository;
   BaseDronePosition _position;
   HardwareProcessorArduino _processor;
   void printThrottle();
@@ -30,7 +29,7 @@ public:
   }
 
   void setup() override;
-  void run() override;
+  bool run() override;
   void runMotors(float gyro_roll, float gyro_pitch, float gyro_yaw) override;
   void setupMotors() override
   {

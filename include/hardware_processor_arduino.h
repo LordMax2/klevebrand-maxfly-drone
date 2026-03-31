@@ -37,7 +37,7 @@ public:
     delay(milliseconds);
   }
 
-  void print(char *array) override
+  void print(const char *array) override
   {
     Serial.println(array);
   }
