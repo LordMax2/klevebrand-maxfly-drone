@@ -23,7 +23,7 @@ void setup()
   // Startup the gyroscope and motors
   drone.setup();
 
-  //gps_controller.setup(&Serial3);
+  gps_controller.setup(&Serial3);
 
   // Startup the reciever
   receiver.setup();
@@ -41,5 +41,5 @@ void loop()
   drone.run();
 
   // Run the GPS controller
-  //gps_controller.run(&drone);
+  gps_controller.run(&drone);
 }

@@ -22,10 +22,8 @@ public:
 		int port,
 		String get_path,
 		String post_path,
-		void (*on_http_completed_function)(String result_content) = nullptr,
-		void (*on_gps_completed_function)(String response_content) = nullptr,
-		unsigned long timeout_milliseconds = 20000,
-		bool debug_mode = false) : SkywireCommandWorker(skywire_serial, debug_mode, timeout_milliseconds, HTTP_GPS_STEP_COUNT)
+		unsigned long timeout_milliseconds,
+		bool debug_mode) : SkywireCommandWorker(skywire_serial, debug_mode, timeout_milliseconds, HTTP_GPS_STEP_COUNT)
 	{
 		String http_cfg_command = "AT#HTTPCFG=0,\"" + base_url + "\",80,0,\"\",\"\",0,5";
 		String http_qry_command = "AT#HTTPQRY=0,0,\"/" + get_path + "\"";
