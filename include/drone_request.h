@@ -26,11 +26,23 @@ struct DroneRequest_t
         return DroneRequest_t(0, false, false, 0.0f, 0.0f);
     }
     
-    String toString() {
-        return "FlightModeId: " + String(flight_mode_id) + ", EnablePower: " + String(enable_power) + ", EnableMotors: " + String(enable_motors) + ", Longitude: " + String(longitude) + ", Latitude: " + String(latitude);
+    String toString() const {
+        String result;
+        result.reserve(96);
+        result += F("FlightModeId: ");
+        result += flight_mode_id;
+        result += F(", EnablePower: ");
+        result += enable_power;
+        result += F(", EnableMotors: ");
+        result += enable_motors;
+        result += F(", Longitude: ");
+        result += longitude;
+        result += F(", Latitude: ");
+        result += latitude;
+        return result;
     }
 
-    static DroneRequest_t parseFromCsvString(String &value)
+    static DroneRequest_t parseFromCsvString(const char *value)
     {
         int flight_mode_id = 0;
         bool enable_power = 0;
@@ -38,8 +50,10 @@ struct DroneRequest_t
         float longitude = 0;
         float latitude = 0;
 
-        const char *char_array_pointer = value.c_str();
-        char *field_content = strtok((char *)char_array_pointer, ",");
+        char buffer[96];
+        strncpy(buffer, value != nullptr ? value : "", sizeof(buffer) - 1);
+        buffer[sizeof(buffer) - 1] = '\0';
+        char *field_content = strtok(buffer, ",");
 
         int field_index = 0;
 
@@ -70,6 +84,11 @@ struct DroneRequest_t
         }
 
         return DroneRequest_t(flight_mode_id, enable_power, enable_motors, longitude, latitude);
+    }
+
+    static DroneRequest_t parseFromCsvString(String &value)
+    {
+        return parseFromCsvString(value.c_str());
     }
 };
 

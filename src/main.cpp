@@ -2,44 +2,74 @@
 #include "pwm_receiver.h"
 #include "servo_drone_motor.h"
 #include "drone_pwm_receiver.h"
-#include "drone_gps_controller.h"
-#include "bno08x_drone_gyro.h"
+#include "skywire-command-startup-worker.h"
+#include "skywire-command-tcp-gps-step-worker.h"
+
+#define SKYWIRE_EXPERIMENTAL
 
 ServoDroneMotor motors[4];
 
 KlevebrandMaxFlyDrone drone = KlevebrandMaxFlyDrone(motors);
-DroneGpsController gps_controller = DroneGpsController(&Serial3);
+
+#ifdef SKYWIRE_EXPERIMENTAL
+SkywireTcpGpsStepWorker *worker;
+#endif
 DronePwmReceiver receiver = DronePwmReceiver(1, 4, 3, 2, 7);
 
-void setup()
-{
-  motors[0].setup(2);
-  motors[1].setup(3);
-  motors[2].setup(6);
-  motors[3].setup(7);
 
-  Serial3.begin(115200);
+void setup() {
+    motors[0].setup(2);
+    motors[1].setup(3);
+    motors[2].setup(6);
+    motors[3].setup(7);
 
-  // Startup the gyroscope and motors
-  drone.setup();
+    Serial3.begin(115200);
 
-  gps_controller.setup(&Serial3);
+    // Startup the gyroscope and motors
+    drone.setup();
 
-  // Startup the reciever
-  receiver.setup();
+#ifdef SKYWIRE_EXPERIMENTAL
+    SkywireCommandStartupWorker startup_worker(&Serial3, true);
+
+    while (!startup_worker.run()) {
+    }
+    Serial.println("Skywire started.");
+#endif
+
+    // Startup the reciever
+    receiver.setup();
 }
 
-void loop()
-{
-  // Set drone flight values from the receiver
-  receiver.setThrottleYawPitchRoll(&drone);
+void loop() {
+#ifdef SKYWIRE_EXPERIMENTAL
+    if (worker == nullptr) {
+        worker = new SkywireTcpGpsStepWorker(&Serial3, "flightcontroltower.klevebrand.se", 13000, 20000, true);
+    }
+#endif
+    // Set drone flight values from the receiver
+    receiver.setThrottleYawPitchRoll(&drone);
 
-  // Set the flight mode of the drone from the receiver
-  receiver.setFlightMode(&drone);
+    // Set the flight mode of the drone from the receiver
+    receiver.setFlightMode(&drone);
 
-  // Run the drone feedback-loop
-  drone.run();
+    // Run the drone feedback-loop
+    drone.run();
 
-  // Run the GPS controller
-  gps_controller.run(&drone);
+#ifdef SKYWIRE_EXPERIMENTAL
+    // Run the GPS controller
+    char payload_to_send[128];
+    snprintf_P(
+        payload_to_send,
+        sizeof(payload_to_send),
+        PSTR("1;1337;%s;%d;%d;%d;%d;120.5;59.8586;17.6389;42.5;1013.2;2;7"),
+        drone.isMotorsEnabled() ? "true" : "false",
+        drone.getYaw(),
+        drone.getPitch(),
+        drone.getRoll(),
+        drone.getThrottle()
+    );
+
+    worker->setPayloadToSend(payload_to_send);
+    worker->run();
+#endif
 }
