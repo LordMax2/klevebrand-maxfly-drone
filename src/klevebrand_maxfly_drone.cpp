@@ -12,7 +12,8 @@ void KlevebrandMaxFlyDrone::setup()
 
     setupMotors();
 
-    setFlightModeAcro();
+    //setFlightModeAcro();
+    setFlightModeAutoLevel();
 
     processor->print("DRONE STARTED!");
 }

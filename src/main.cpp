@@ -29,7 +29,7 @@ void setup() {
     drone.setup();
 
 #ifdef SKYWIRE_EXPERIMENTAL
-    SkywireCommandStartupWorker startup_worker(&Serial3, true);
+    SkywireCommandStartupWorker startup_worker(&Serial3, false);
 
     while (!startup_worker.run()) {
     }
@@ -43,7 +43,7 @@ void setup() {
 void loop() {
 #ifdef SKYWIRE_EXPERIMENTAL
     if (worker == nullptr) {
-        worker = new SkywireTcpGpsStepWorker(&Serial3, "flightcontroltower.klevebrand.se", 13000, 20000, true);
+        worker = new SkywireTcpGpsStepWorker(&Serial3, "flightcontroltower.klevebrand.se", 13000, 20000, false);
     }
 #endif
     // Set drone flight values from the receiver
@@ -55,18 +55,27 @@ void loop() {
     // Run the drone feedback-loop
     drone.run();
 
+    Serial.println(drone.getRoll());
+
 #ifdef SKYWIRE_EXPERIMENTAL
     // Run the GPS controller
+    char yawStr[8], pitchStr[8], rollStr[8], throttleStr[8];
+
+    dtostrf(drone.getYaw(), 6, 1, yawStr);
+    dtostrf(drone.getPitch(), 6, 1, pitchStr);
+    dtostrf(drone.getRoll(), 6, 1, rollStr);
+    dtostrf(drone.getThrottle(), 6, 1, throttleStr);
+
     char payload_to_send[128];
     snprintf_P(
         payload_to_send,
         sizeof(payload_to_send),
-        PSTR("1;1337;%s;%d;%d;%d;%d;120.5;59.8586;17.6389;42.5;1013.2;2;7"),
+        PSTR("1;1337;%s;%s;%s;%s;%s;120.5;59.8586;17.6389;42.5;1013.2;2;7"),
         drone.isMotorsEnabled() ? "true" : "false",
-        drone.getYaw(),
-        drone.getPitch(),
-        drone.getRoll(),
-        drone.getThrottle()
+        yawStr,
+        pitchStr,
+        rollStr,
+        throttleStr
     );
 
     worker->setPayloadToSend(payload_to_send);
