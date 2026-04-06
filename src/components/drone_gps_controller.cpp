@@ -37,6 +37,7 @@ void DroneGpsController::setup(HardwareSerial *hardware_serial)
 void DroneGpsController::run(KlevebrandMaxFlyDrone *drone)
 {
     String payload_to_send = "1;1337;" + String(drone->isMotorsEnabled() ? "true" : "false") + ";" + String(drone->getYaw()) + ";" + String(drone->getPitch()) + ";" + String(drone->getRoll()) + ";" + String(drone->getThrottle()) + ";120.5;59.8586;17.6389;42.5;1013.2;2;7";
+    //String payload_to_send = "1;1337;true;1;2;3;99;120.5;59.8586;17.6389;42.5;1013.2;2;7";
 
     _skywire_http_gps_worker.setPayloadToSend(payload_to_send.c_str());
 
