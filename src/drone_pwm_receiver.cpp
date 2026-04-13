@@ -1,5 +1,8 @@
 #include "drone_pwm_receiver.h"
 
+#include "flight_mode_acro_local.h"
+#include "flight_mode_auto_level_local.h"
+
 void DronePwmReceiver::setThrottleYawPitchRoll(KlevebrandMaxFlyDrone *drone)
 {
     float throttle_value = map(_receiver.getChannelValue(_throttle_receiver_channel_number), 1000, 2000, THROTTLE_MINIMUM, THROTTLE_MAXIMUM);
@@ -61,12 +64,14 @@ void DronePwmReceiver::setFlightMode(KlevebrandMaxFlyDrone *drone)
     else if (flight_mode_pwm_signal >= 1250 && flight_mode_pwm_signal < 1750)
     {
         drone->enableMotors();
-        drone->setFlightModeAcro();
+        const auto acro_local = FLightModeAcroLocal();
+        drone->activateFlightMode(acro_local);
     }
     else if (flight_mode_pwm_signal >= 1750)
     {
         drone->enableMotors();
-        drone->setFlightModeAutoLevel();
+        const auto auto_level_local = FlightModeAutoLevelLocal();
+        drone->activateFlightMode(auto_level_local);
     }
 }
 
