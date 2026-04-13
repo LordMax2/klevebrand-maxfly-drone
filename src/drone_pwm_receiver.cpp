@@ -66,7 +66,7 @@ void DronePwmReceiver::setFlightMode(KlevebrandMaxFlyDrone *drone)
     else if (flight_mode_pwm_signal >= 1750)
     {
         drone->enableMotors();
-        drone->setFlightModeAcro();
+        drone->setFlightModeAutoLevel();
     }
 }
 

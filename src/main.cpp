@@ -5,7 +5,7 @@
 #include "skywire-command-startup-worker.h"
 #include "skywire-command-tcp-gps-step-worker.h"
 
-#define SKYWIRE_EXPERIMENTAL
+//#define SKYWIRE_EXPERIMENTAL
 
 ServoDroneMotor motors[4];
 
@@ -54,8 +54,6 @@ void loop() {
 
     // Run the drone feedback-loop
     drone.run();
-
-    Serial.println(drone.getRoll());
 
 #ifdef SKYWIRE_EXPERIMENTAL
     // Run the GPS controller
