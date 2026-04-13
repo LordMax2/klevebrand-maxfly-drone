@@ -5,7 +5,7 @@ void DronePwmReceiver::setThrottleYawPitchRoll(KlevebrandMaxFlyDrone *drone)
     float throttle_value = map(_receiver.getChannelValue(_throttle_receiver_channel_number), 1000, 2000, THROTTLE_MINIMUM, THROTTLE_MAXIMUM);
     drone->setThrottle(throttle_value);
 
-    if (drone->getFlightMode() == acro)
+    if (drone->getFlightMode().type() == acro)
     {
         float desired_yaw_angle = map(_receiver.getChannelValue(_yaw_receiver_channel_number), 1000, 2000, 180, -180);
         if (desired_yaw_angle < 5 && desired_yaw_angle > -5)
@@ -31,7 +31,7 @@ void DronePwmReceiver::setThrottleYawPitchRoll(KlevebrandMaxFlyDrone *drone)
         return;
     }
 
-    if (drone->getFlightMode() == auto_level)
+    if (drone->getFlightMode().type() == auto_level)
     {
         float desired_yaw_angle = map(_receiver.getChannelValue(_yaw_receiver_channel_number), 1000, 2000, 120, -120);
         if (desired_yaw_angle < 5 && desired_yaw_angle > -5)
