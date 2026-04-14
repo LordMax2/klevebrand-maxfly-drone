@@ -1,7 +1,6 @@
 #include "klevebrand_maxfly_drone.h"
 
-void KlevebrandMaxFlyDrone::setup()
-{
+void KlevebrandMaxFlyDrone::setup() {
     _processor.setup();
 
     _processor.print("STARTING DRONE...");
@@ -18,51 +17,49 @@ void KlevebrandMaxFlyDrone::setup()
     processor->print("DRONE STARTED!");
 }
 
-static long last_run_start_micros_timestamp = 0;
-static long last_gyro_fetch_duration = 0;
+static unsigned long last_run_start_micros_timestamp = 0;
+static unsigned long last_gyro_fetch_duration = 0;
+static unsigned long last_pid_optimizer_run = 0;
 
-bool KlevebrandMaxFlyDrone::run()
-{
-    if (delayToKeepFeedbackLoopHz(last_run_start_micros_timestamp - last_gyro_fetch_duration) > 0)
-    {
+bool KlevebrandMaxFlyDrone::run() {
+    if (delayToKeepFeedbackLoopHz(last_run_start_micros_timestamp - last_gyro_fetch_duration) > 0) {
         return false;
     }
 
-    last_run_start_micros_timestamp = _processor.microsecondsTimestamp();
+    const unsigned long now_micros = _processor.microsecondsTimestamp();
+
+    last_run_start_micros_timestamp = now_micros;
 
     // Get the latest data from the gyroscope
-    long gyro_fetch_start_timestamp = _processor.microsecondsTimestamp();
+    unsigned long gyro_fetch_start_timestamp = now_micros;
 
     updateGyro();
 
     last_gyro_fetch_duration = _processor.microsecondsTimestamp() - gyro_fetch_start_timestamp;
 
+    const unsigned long now_millis = _processor.millisecondsTimestamp();
 
-    if (hasLostConnection())
-    {
+    if (hasLostConnection()) {
         // If connection is dead, stop the drone
         resetPid();
         stopMotors();
 
         // Serial.println("LOST CONNECTION");
-    }
-    else if (!isMotorsEnabled())
-    {
+    } else if (!isMotorsEnabled()) {
         // If the motors are diabled, stop the drone
         resetPid();
         stopMotors();
 
         // Serial.println("MOTORS DISABLED");
-    }
-    else
-    {
+    } else {
         // Increment the integral part of the PID loop
-        if (getThrottle() > PID_THROTTLE_THRESHOLD)
-        {
+        if (getThrottle() > PID_THROTTLE_THRESHOLD) {
             calculatePidIntegral(_gyro.roll(), _gyro.pitch(), _gyro.yaw());
-        }
-        else
-        {
+
+            if (true && now_millis - last_pid_optimizer_run > 1 * 1000) {
+                runPidOptimizer(now_millis);
+            }
+        } else {
             resetPid();
         }
 
@@ -83,21 +80,27 @@ bool KlevebrandMaxFlyDrone::run()
     return true;
 }
 
-void KlevebrandMaxFlyDrone::runMotors(float gyro_roll, float gyro_pitch, float gyro_yaw)
-{
-    motorLeftFront().setSpeed(pid.pidThrottleLF(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch, getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle()));
-    motorRightFront().setSpeed(pid.pidThrottleRF(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch, getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle()));
-    motorLeftBack().setSpeed(pid.pidThrottleLB(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch, getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle()));
-    motorRightBack().setSpeed(pid.pidThrottleRB(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch, getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle()));
+void KlevebrandMaxFlyDrone::runMotors(float gyro_roll, float gyro_pitch, float gyro_yaw) {
+    motorLeftFront().setSpeed(pid.pidThrottleLF(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch,
+                                                getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle()));
+    motorRightFront().setSpeed(pid.pidThrottleRF(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch,
+                                                 getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle()));
+    motorLeftBack().setSpeed(pid.pidThrottleLB(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch,
+                                               getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle()));
+    motorRightBack().setSpeed(pid.pidThrottleRB(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch,
+                                                getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle()));
 }
 
-void KlevebrandMaxFlyDrone::printThrottle()
-{
-    Serial.print(pid.pidThrottleLF(getThrottle(), _gyro.roll(), getDesiredRollAngle(), _gyro.pitch(), getDesiredPitchAngle(), _gyro.yaw(), getDesiredYawAngle()));
+void KlevebrandMaxFlyDrone::printThrottle() {
+    Serial.print(pid.pidThrottleLF(getThrottle(), _gyro.roll(), getDesiredRollAngle(), _gyro.pitch(),
+                                   getDesiredPitchAngle(), _gyro.yaw(), getDesiredYawAngle()));
     Serial.print("    ");
-    Serial.println(pid.pidThrottleRF(getThrottle(), _gyro.roll(), getDesiredRollAngle(), _gyro.pitch(), getDesiredPitchAngle(), _gyro.yaw(), getDesiredYawAngle()));
-    Serial.print(pid.pidThrottleLB(getThrottle(), _gyro.roll(), getDesiredRollAngle(), _gyro.pitch(), getDesiredPitchAngle(), _gyro.yaw(), getDesiredYawAngle()));
+    Serial.println(pid.pidThrottleRF(getThrottle(), _gyro.roll(), getDesiredRollAngle(), _gyro.pitch(),
+                                     getDesiredPitchAngle(), _gyro.yaw(), getDesiredYawAngle()));
+    Serial.print(pid.pidThrottleLB(getThrottle(), _gyro.roll(), getDesiredRollAngle(), _gyro.pitch(),
+                                   getDesiredPitchAngle(), _gyro.yaw(), getDesiredYawAngle()));
     Serial.print("    ");
-    Serial.println(pid.pidThrottleRB(getThrottle(), _gyro.roll(), getDesiredRollAngle(), _gyro.pitch(), getDesiredPitchAngle(), _gyro.yaw(), getDesiredYawAngle()));
+    Serial.println(pid.pidThrottleRB(getThrottle(), _gyro.roll(), getDesiredRollAngle(), _gyro.pitch(),
+                                     getDesiredPitchAngle(), _gyro.yaw(), getDesiredYawAngle()));
     Serial.println("-----------------------------------------");
 }
