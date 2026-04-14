@@ -56,7 +56,7 @@ bool KlevebrandMaxFlyDrone::run() {
         if (getThrottle() > PID_THROTTLE_THRESHOLD) {
             calculatePidIntegral(_gyro.roll(), _gyro.pitch(), _gyro.yaw());
 
-            if (true && now_millis - last_pid_optimizer_run > 1 * 1000) {
+            if (true) {
                 runPidOptimizer(now_millis);
             }
         } else {
