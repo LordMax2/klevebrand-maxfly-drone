@@ -12,6 +12,8 @@ class KlevebrandMaxFlyDrone : public TemplateDrone<QuadcopterPid>
 {
 private:
   ServoDroneMotor *_motors;
+  static constexpr int motor_pin_count = 4;
+  int _motor_pins[motor_pin_count];
   ServoDroneMotor &motorLeftFront() { return _motors[0]; };
   ServoDroneMotor &motorRightFront() { return _motors[1]; };
   ServoDroneMotor &motorLeftBack() { return _motors[2]; };
@@ -21,22 +23,32 @@ private:
   BaseDronePosition _position;
   HardwareProcessorArduino _processor;
   void printThrottle();
+  void attachMotors();
+  void detachMotors();
 
 public:
-  KlevebrandMaxFlyDrone(ServoDroneMotor *motors) : TemplateDrone<QuadcopterPid>(500, 200, 10000, &_processor, &_gyro, &_pid_repository, &_position), _gyro(10)
+  KlevebrandMaxFlyDrone(ServoDroneMotor *motors, const int motor_pins[motor_pin_count]) : TemplateDrone<QuadcopterPid>(500, 200, 10000, &_processor, &_gyro, &_pid_repository, &_position), _gyro(10)
   {
     this->_motors = motors;
+    for (int i = 0; i < motor_pin_count; i++)
+    {
+      _motor_pins[i] = motor_pins[i];
+    }
   }
 
   void setup() override;
   bool run() override;
   void runMotors(float gyro_roll, float gyro_pitch, float gyro_yaw) override;
+  void enableMotors();
+  void disableMotors();
   void setupMotors() override
   {
-    motorLeftFront().setSpeed(0);
-    motorRightFront().setSpeed(0);
-    motorLeftBack().setSpeed(0);
-    motorRightBack().setSpeed(0);
+    for (int i = 0; i < motor_pin_count; i++)
+    {
+      _motors[i].setup(_motor_pins[i]);
+    }
+
+    stopMotors();
 
     delay(1000);
   };
