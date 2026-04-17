@@ -4,10 +4,10 @@
 #include "pwm_receiver.h"
 #include "klevebrand_maxfly_drone.h"
 
-class DronePwmReceiver
+class PwmReceiverController
 {
 public:
-    DronePwmReceiver(
+    PwmReceiverController(
         int throttle_receiver_channel_number,
         int yaw_receiver_channel_number,
         int pitch_receiver_channel_number,
@@ -26,6 +26,9 @@ public:
     };
 
     void setup();
+    bool hasValidSignal();
+    bool wantsControl();
+    void apply(KlevebrandMaxFlyDrone *drone);
     void setThrottleYawPitchRoll(KlevebrandMaxFlyDrone *drone);
     void setFlightMode(KlevebrandMaxFlyDrone *drone);
 
