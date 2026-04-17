@@ -41,14 +41,12 @@ bool KlevebrandMaxFlyDrone::run() {
 
     if (hasLostConnection()) {
         // If connection is dead, stop the drone
-        resetPid();
-        stopMotors();
+        disableMotors();
 
         // Serial.println("LOST CONNECTION");
     } else if (!isMotorsEnabled()) {
         // If the motors are diabled, stop the drone
-        resetPid();
-        stopMotors();
+        disableMotors();
 
         // Serial.println("MOTORS DISABLED");
     } else {
@@ -89,6 +87,34 @@ void KlevebrandMaxFlyDrone::runMotors(float gyro_roll, float gyro_pitch, float g
                                                getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle()));
     motorRightBack().setSpeed(pid.pidThrottleRB(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch,
                                                 getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle()));
+}
+
+void KlevebrandMaxFlyDrone::attachMotors() {
+    motorLeftFront().attach();
+    motorRightFront().attach();
+    motorLeftBack().attach();
+    motorRightBack().attach();
+}
+
+void KlevebrandMaxFlyDrone::detachMotors() {
+    motorLeftFront().detach();
+    motorRightFront().detach();
+    motorLeftBack().detach();
+    motorRightBack().detach();
+}
+
+void KlevebrandMaxFlyDrone::enableMotors() {
+    attachMotors();
+    stopMotors();
+    BaseDrone::enableMotors();
+}
+
+void KlevebrandMaxFlyDrone::disableMotors() {
+    setThrottle(0);
+    stopMotors();
+    resetPid();
+    BaseDrone::disableMotors();
+    detachMotors();
 }
 
 void KlevebrandMaxFlyDrone::printThrottle() {

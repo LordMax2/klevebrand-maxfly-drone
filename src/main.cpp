@@ -8,19 +8,15 @@
 //#define SKYWIRE_EXPERIMENTAL
 
 ServoDroneMotor motors[4];
+constexpr int motor_pins[4] = {2, 3, 6, 7};
 
-auto drone = KlevebrandMaxFlyDrone(motors);
+auto drone = KlevebrandMaxFlyDrone(motors, motor_pins);
 
 auto receiver = PwmReceiverController(1, 4, 3, 2, 7);
 SkywireDroneController skywire_controller;
 auto control_arbiter = ControlManager(&receiver, &skywire_controller);
 
 void setup() {
-    motors[0].setup(2);
-    motors[1].setup(3);
-    motors[2].setup(6);
-    motors[3].setup(7);
-
     // Startup the gyroscope and motors
     drone.setup();
 

@@ -3,6 +3,11 @@
 #include "flight_mode_acro_local.h"
 #include "flight_mode_auto_level_local.h"
 
+#define PWM_SIGNAL_MINIMUM 1000
+#define PWM_SIGNAL_MID_LOW 1250
+#define PWM_SIGNAL_MID_HIGH 1750
+#define PWM_SIGNAL_ENABLE_THRESHOLD 1050
+
 bool PwmReceiverController::hasValidSignal()
 {
     return _receiver.getChannelValue(_throttle_receiver_channel_number) >= 1000 &&
@@ -76,22 +81,44 @@ void PwmReceiverController::setThrottleYawPitchRoll(KlevebrandMaxFlyDrone *drone
 void PwmReceiverController::setFlightMode(KlevebrandMaxFlyDrone *drone)
 {
     int flight_mode_pwm_signal = _receiver.getChannelValue(_flight_mode_receiver_channel_number);
+    int throttle_pwm_signal = _receiver.getChannelValue(_throttle_receiver_channel_number);
+    bool throttle_is_zero = throttle_pwm_signal >= PWM_SIGNAL_MINIMUM &&
+                            throttle_pwm_signal <= PWM_SIGNAL_ENABLE_THRESHOLD;
 
-    if (flight_mode_pwm_signal >= 1000 && flight_mode_pwm_signal < 1250)
+    if (flight_mode_pwm_signal >= PWM_SIGNAL_MINIMUM && flight_mode_pwm_signal < PWM_SIGNAL_MID_LOW)
     {
         drone->disableMotors();
+
+        const auto none_flight_mode = FlightMode();
+        drone->activateFlightMode(none_flight_mode);
     }
-    else if (flight_mode_pwm_signal >= 1250 && flight_mode_pwm_signal < 1750)
+    else if (flight_mode_pwm_signal >= PWM_SIGNAL_MID_LOW && flight_mode_pwm_signal < PWM_SIGNAL_MID_HIGH && drone->getFlightMode().type() != acro)
     {
-        drone->enableMotors();
         const auto acro_local = FLightModeAcroLocal();
         drone->activateFlightMode(acro_local);
+
+        if (throttle_is_zero)
+        {
+            drone->enableMotors();
+        }
+        else
+        {
+            drone->disableMotors();
+        }
     }
-    else if (flight_mode_pwm_signal >= 1750)
+    else if (flight_mode_pwm_signal >= PWM_SIGNAL_MID_HIGH && drone->getFlightMode().type() != auto_level)
     {
-        drone->enableMotors();
         const auto auto_level_local = FlightModeAutoLevelLocal();
         drone->activateFlightMode(auto_level_local);
+
+        if (throttle_is_zero)
+        {
+            drone->enableMotors();
+        }
+        else
+        {
+            drone->disableMotors();
+        }
     }
 }
 
