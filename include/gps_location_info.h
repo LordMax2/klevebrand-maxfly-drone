@@ -12,15 +12,15 @@ struct GpsLocationInfo_t
     GpsLocationInfo_t(
         const char *timestamp,
         const char *date,
-        float latitude,
-        float longitude,
-        float altitude,
-        int fix,
+        const float latitude,
+        const float longitude,
+        const float altitude,
+        const int fix,
         const char *course_over_ground,
-        float speed_over_ground_kmh,
-        float speed_over_ground_knots,
-        int number_of_satellites,
-        int number_of_satellites_glonass)
+        const float speed_over_ground_kmh,
+        const float speed_over_ground_knots,
+        const int number_of_satellites,
+        const int number_of_satellites_glonass)
     {
         strncpy(this->timestamp_utc, timestamp != nullptr ? timestamp : "", sizeof(this->timestamp_utc) - 1);
         this->timestamp_utc[sizeof(this->timestamp_utc) - 1] = '\0';
@@ -88,7 +88,7 @@ struct GpsLocationInfo_t
 
     static GpsLocationInfo_t empty()
     {
-        return GpsLocationInfo_t("", "", 0.0f, 0.0f, 0.0f, 0, "", 0.0f, 0.0f, 0, 0);
+        return {"", "", 0.0f, 0.0f, 0.0f, 0, "", 0.0f, 0.0f, 0, 0};
     }
 
     static GpsLocationInfo_t parseFromGpsAcpString(const char *value)

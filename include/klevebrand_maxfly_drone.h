@@ -13,7 +13,7 @@ class KlevebrandMaxFlyDrone : public TemplateDrone<QuadcopterPid>
 private:
   ServoDroneMotor *_motors;
   static constexpr int motor_pin_count = 4;
-  int _motor_pins[motor_pin_count];
+  int _motor_pins[motor_pin_count]{};
   ServoDroneMotor &motorLeftFront() { return _motors[0]; };
   ServoDroneMotor &motorRightFront() { return _motors[1]; };
   ServoDroneMotor &motorLeftBack() { return _motors[2]; };

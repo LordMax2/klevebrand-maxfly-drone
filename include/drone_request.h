@@ -6,11 +6,11 @@
 struct DroneRequest_t
 {
     DroneRequest_t(
-        int flight_mode_id,
-        bool enable_power,
-        bool enable_motors,
-        float longitude,
-        float latitude) : flight_mode_id(flight_mode_id),
+        const int flight_mode_id,
+        const bool enable_power,
+        const bool enable_motors,
+        const float longitude,
+        const float latitude) : flight_mode_id(flight_mode_id),
                           enable_power(enable_power),
                           enable_motors(enable_motors),
                           longitude(longitude),
@@ -23,7 +23,7 @@ struct DroneRequest_t
     float latitude;
 
     static DroneRequest_t empty() {
-        return DroneRequest_t(0, false, false, 0.0f, 0.0f);
+        return {0, false, false, 0.0f, 0.0f};
     }
     
     String toString() const {
@@ -45,8 +45,8 @@ struct DroneRequest_t
     static DroneRequest_t parseFromCsvString(const char *value)
     {
         int flight_mode_id = 0;
-        bool enable_power = 0;
-        bool enable_motors = 0;
+        bool enable_power = false;
+        bool enable_motors = false;
         float longitude = 0;
         float latitude = 0;
 
@@ -57,7 +57,7 @@ struct DroneRequest_t
 
         int field_index = 0;
 
-        while (field_content != NULL && field_index < 5)
+        while (field_content != nullptr && field_index < 5)
         {
             switch (field_index)
             {
@@ -80,13 +80,13 @@ struct DroneRequest_t
 
             field_index++;
 
-            field_content = strtok(NULL, ",");
+            field_content = strtok(nullptr, ",");
         }
 
-        return DroneRequest_t(flight_mode_id, enable_power, enable_motors, longitude, latitude);
+        return {flight_mode_id, enable_power, enable_motors, longitude, latitude};
     }
 
-    static DroneRequest_t parseFromCsvString(String &value)
+    static DroneRequest_t parseFromCsvString(const String &value)
     {
         return parseFromCsvString(value.c_str());
     }

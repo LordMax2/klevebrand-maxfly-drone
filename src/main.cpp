@@ -1,5 +1,4 @@
 #include "klevebrand_maxfly_drone.h"
-#include "pwm_receiver.h"
 #include "servo_drone_motor.h"
 #include "control_manager.h"
 #include "pwm_receiver_controller.h"
