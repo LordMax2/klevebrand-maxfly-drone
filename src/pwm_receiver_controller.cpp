@@ -37,7 +37,7 @@ void PwmReceiverController::setThrottleYawPitchRoll(KlevebrandMaxFlyDrone *drone
     float throttle_value = map(getChannelValue(_throttle_receiver_channel_number), 1000, 2000, THROTTLE_MINIMUM, THROTTLE_MAXIMUM);
     drone->setThrottle(throttle_value);
 
-    if (drone->getFlightMode().type() == acro)
+    if (drone->getFlightMode()->type() == acro)
     {
         float desired_yaw_angle = map(getChannelValue(_yaw_receiver_channel_number), 1000, 2000, 180, -180);
         if (desired_yaw_angle < 5 && desired_yaw_angle > -5)
@@ -63,7 +63,7 @@ void PwmReceiverController::setThrottleYawPitchRoll(KlevebrandMaxFlyDrone *drone
         return;
     }
 
-    if (drone->getFlightMode().type() == auto_level)
+    if (drone->getFlightMode()->type() == auto_level)
     {
         float desired_yaw_angle = map(getChannelValue(_yaw_receiver_channel_number), 1000, 2000, 120, -120);
         if (desired_yaw_angle < 5 && desired_yaw_angle > -5)
@@ -93,13 +93,13 @@ void PwmReceiverController::setFlightMode(KlevebrandMaxFlyDrone *drone)
     {
         drone->disableMotors();
 
-        const auto none_flight_mode = FlightMode();
-        drone->activateFlightMode(none_flight_mode);
+        static auto none_flight_mode = FlightMode();
+        drone->activateFlightMode(&none_flight_mode);
     }
-    else if (flight_mode_pwm_signal >= PWM_SIGNAL_MID_LOW && flight_mode_pwm_signal < PWM_SIGNAL_MID_HIGH && drone->getFlightMode().type() != acro)
+    else if (flight_mode_pwm_signal >= PWM_SIGNAL_MID_LOW && flight_mode_pwm_signal < PWM_SIGNAL_MID_HIGH && drone->getFlightMode()->type() != acro)
     {
-        const auto acro_local = FLightModeAcroLocal();
-        drone->activateFlightMode(acro_local);
+        static auto acro_local = FLightModeAcroLocal();
+        drone->activateFlightMode(&acro_local);
 
         if (throttle_is_zero)
         {
@@ -110,10 +110,10 @@ void PwmReceiverController::setFlightMode(KlevebrandMaxFlyDrone *drone)
             drone->disableMotors();
         }
     }
-    else if (flight_mode_pwm_signal >= PWM_SIGNAL_MID_HIGH && drone->getFlightMode().type() != auto_level)
+    else if (flight_mode_pwm_signal >= PWM_SIGNAL_MID_HIGH && drone->getFlightMode()->type() != auto_level)
     {
-        const auto auto_level_local = FlightModeAutoLevelLocal();
-        drone->activateFlightMode(auto_level_local);
+        static auto auto_level_local = FlightModeAutoLevelLocal();
+        drone->activateFlightMode(&auto_level_local);
 
         if (throttle_is_zero)
         {

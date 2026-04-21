@@ -112,13 +112,13 @@ void SkywireDroneController::apply(KlevebrandMaxFlyDrone *drone)
 
     if (_request.flight_mode_id == auto_level)
     {
-        const auto auto_level_local = FlightModeAutoLevelLocal();
-        drone->activateFlightMode(auto_level_local);
+        static auto auto_level_local = FlightModeAutoLevelLocal();
+        drone->activateFlightMode(&auto_level_local);
     }
     else if (_request.flight_mode_id == acro)
     {
-        const auto acro_local = FLightModeAcroLocal();
-        drone->activateFlightMode(acro_local);
+        static auto acro_local = FLightModeAcroLocal();
+        drone->activateFlightMode(&acro_local);
     }
 
     // Mission coordinates are intentionally not applied yet.

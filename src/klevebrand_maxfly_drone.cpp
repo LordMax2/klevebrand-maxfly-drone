@@ -1,5 +1,28 @@
 #include "klevebrand_maxfly_drone.h"
 
+KlevebrandMaxFlyDrone::KlevebrandMaxFlyDrone(ServoDroneMotor *motors, const int motor_pins[motor_pin_count])
+    : TemplateDrone<QuadcopterPid>(500, 200, 10000, &_processor, &_gyro, &_pid_repository, &_position), _motors(motors), _gyro(10) {
+    for (int i = 0; i < motor_pin_count; i++) {
+        _motor_pins[i] = motor_pins[i];
+    }
+}
+
+ServoDroneMotor &KlevebrandMaxFlyDrone::motorLeftFront() const {
+    return _motors[0];
+}
+
+ServoDroneMotor &KlevebrandMaxFlyDrone::motorRightFront() const {
+    return _motors[1];
+}
+
+ServoDroneMotor &KlevebrandMaxFlyDrone::motorLeftBack() const {
+    return _motors[2];
+}
+
+ServoDroneMotor &KlevebrandMaxFlyDrone::motorRightBack() const {
+    return _motors[3];
+}
+
 void KlevebrandMaxFlyDrone::setup() {
     _processor.setup();
 
@@ -19,19 +42,18 @@ void KlevebrandMaxFlyDrone::setup() {
 
 static unsigned long last_run_start_micros_timestamp = 0;
 static unsigned long last_gyro_fetch_duration = 0;
-static unsigned long last_pid_optimizer_run = 0;
 
 bool KlevebrandMaxFlyDrone::run() {
     if (delayToKeepFeedbackLoopHz(last_run_start_micros_timestamp - last_gyro_fetch_duration) > 0) {
         return false;
     }
 
-    const unsigned long now_micros = _processor.microsecondsTimestamp();
-
-    last_run_start_micros_timestamp = now_micros;
+    const unsigned long current_time = _processor.microsecondsTimestamp();
+    const unsigned long delta_time = current_time - last_run_start_micros_timestamp;
+    last_run_start_micros_timestamp = current_time;
 
     // Get the latest data from the gyroscope
-    unsigned long gyro_fetch_start_timestamp = now_micros;
+    const unsigned long gyro_fetch_start_timestamp = _processor.microsecondsTimestamp();
 
     updateGyro();
 
@@ -68,7 +90,7 @@ bool KlevebrandMaxFlyDrone::run() {
         // printGyro();
 
         // Run the motors with the calculated PID throttle
-        runMotors(_gyro.roll(), _gyro.pitch(), _gyro.yaw());
+        runMotors(_gyro.roll(), _gyro.pitch(), _gyro.yaw(), delta_time / 1000000.0f);
 
         savePidErrors(_gyro.roll(), _gyro.pitch(), _gyro.yaw());
 
@@ -78,25 +100,50 @@ bool KlevebrandMaxFlyDrone::run() {
     return true;
 }
 
-void KlevebrandMaxFlyDrone::runMotors(float gyro_roll, float gyro_pitch, float gyro_yaw) {
-    motorLeftFront().setSpeed(pid.pidThrottleLF(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch,
-                                                getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle()));
-    motorRightFront().setSpeed(pid.pidThrottleRF(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch,
-                                                 getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle()));
-    motorLeftBack().setSpeed(pid.pidThrottleLB(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch,
-                                               getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle()));
-    motorRightBack().setSpeed(pid.pidThrottleRB(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch,
-                                                getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle()));
+void KlevebrandMaxFlyDrone::setupMotors() {
+    for (int i = 0; i < motor_pin_count; i++) {
+        _motors[i].setup(_motor_pins[i]);
+    }
+
+    stopMotors();
+
+    delay(1000);
 }
 
-void KlevebrandMaxFlyDrone::attachMotors() {
+void KlevebrandMaxFlyDrone::stopMotors() {
+    motorLeftFront().setSpeed(0);
+    motorRightFront().setSpeed(0);
+    motorLeftBack().setSpeed(0);
+    motorRightBack().setSpeed(0);
+}
+
+void KlevebrandMaxFlyDrone::runMotors(float gyro_roll, float gyro_pitch, float gyro_yaw, float delta_time_seconds) {
+    const float pid_throttle_lf = pid.pidThrottleLF(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch, getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle(), delta_time_seconds);
+    const float pid_throttle_rf = pid.pidThrottleRF(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch, getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle(), delta_time_seconds);
+    const float pid_throttle_lb = pid.pidThrottleLB(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch, getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle(), delta_time_seconds);
+    const float pid_throttle_rb = pid.pidThrottleRB(getThrottle(), gyro_roll, getDesiredRollAngle(), gyro_pitch, getDesiredPitchAngle(), gyro_yaw, getDesiredYawAngle(), delta_time_seconds);
+
+    const float max_motor_pid_throttle = max(max(pid_throttle_lf, pid_throttle_rf), max(pid_throttle_lb, pid_throttle_rb));
+
+    float throttle_reduction = 0.0f;
+    if (max_motor_pid_throttle > 100.0f) {
+        throttle_reduction = max_motor_pid_throttle - 100.0f;
+    }
+
+    motorLeftFront().setSpeed(max(0.0f, pid_throttle_lf - throttle_reduction));
+    motorRightFront().setSpeed(max(0.0f, pid_throttle_rf - throttle_reduction));
+    motorLeftBack().setSpeed(max(0.0f, pid_throttle_lb - throttle_reduction));
+    motorRightBack().setSpeed(max(0.0f, pid_throttle_rb - throttle_reduction));
+}
+
+void KlevebrandMaxFlyDrone::attachMotors() const {
     motorLeftFront().attach();
     motorRightFront().attach();
     motorLeftBack().attach();
     motorRightBack().attach();
 }
 
-void KlevebrandMaxFlyDrone::detachMotors() {
+void KlevebrandMaxFlyDrone::detachMotors() const {
     motorLeftFront().detach();
     motorRightFront().detach();
     motorLeftBack().detach();
@@ -117,16 +164,16 @@ void KlevebrandMaxFlyDrone::disableMotors() {
     detachMotors();
 }
 
-void KlevebrandMaxFlyDrone::printThrottle() {
+void KlevebrandMaxFlyDrone::printThrottle(float delta_time_seconds) {
     Serial.print(pid.pidThrottleLF(getThrottle(), _gyro.roll(), getDesiredRollAngle(), _gyro.pitch(),
-                                   getDesiredPitchAngle(), _gyro.yaw(), getDesiredYawAngle()));
+                                   getDesiredPitchAngle(), _gyro.yaw(), getDesiredYawAngle(), delta_time_seconds));
     Serial.print("    ");
     Serial.println(pid.pidThrottleRF(getThrottle(), _gyro.roll(), getDesiredRollAngle(), _gyro.pitch(),
-                                     getDesiredPitchAngle(), _gyro.yaw(), getDesiredYawAngle()));
+                                     getDesiredPitchAngle(), _gyro.yaw(), getDesiredYawAngle(), delta_time_seconds));
     Serial.print(pid.pidThrottleLB(getThrottle(), _gyro.roll(), getDesiredRollAngle(), _gyro.pitch(),
-                                   getDesiredPitchAngle(), _gyro.yaw(), getDesiredYawAngle()));
+                                   getDesiredPitchAngle(), _gyro.yaw(), getDesiredYawAngle(), delta_time_seconds));
     Serial.print("    ");
     Serial.println(pid.pidThrottleRB(getThrottle(), _gyro.roll(), getDesiredRollAngle(), _gyro.pitch(),
-                                     getDesiredPitchAngle(), _gyro.yaw(), getDesiredYawAngle()));
+                                     getDesiredPitchAngle(), _gyro.yaw(), getDesiredYawAngle(), delta_time_seconds));
     Serial.println("-----------------------------------------");
 }
