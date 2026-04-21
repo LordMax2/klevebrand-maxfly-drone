@@ -10,7 +10,7 @@
 class FLightModeAcroLocal : public FlightModeAcro {
 public:
     PidConstants_t pidConstants() const override {
-        return {0.04, 0.002, 0.6, 0.04, 0.002, 0.6, 0.04, 0.002, 0.6};
+        return {0.04, 0.4, 0.003, 0.04, 0.4, 0.003, 0.04, 0.4, 0.003};
     }
 };
 
