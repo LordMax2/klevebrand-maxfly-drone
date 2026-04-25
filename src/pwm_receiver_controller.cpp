@@ -14,43 +14,51 @@ volatile int PwmReceiverController::_channel_number_to_gpio_map_array[CHANNEL_CO
 volatile unsigned long PwmReceiverController::_pulse_start_micros[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
 volatile int PwmReceiverController::_pulse_widths[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
 
-bool PwmReceiverController::hasValidSignal() {
+bool PwmReceiverController::hasValidSignal()
+{
     return getChannelValue(_throttle_receiver_channel_number) >= 1000 &&
-           getChannelValue(_yaw_receiver_channel_number) >= 1000 &&
-           getChannelValue(_pitch_receiver_channel_number) >= 1000 &&
-           getChannelValue(_roll_receiver_channel_number) >= 1000 &&
-           getChannelValue(_flight_mode_receiver_channel_number) >= 1000;
+        getChannelValue(_yaw_receiver_channel_number) >= 1000 &&
+        getChannelValue(_pitch_receiver_channel_number) >= 1000 &&
+        getChannelValue(_roll_receiver_channel_number) >= 1000 &&
+        getChannelValue(_flight_mode_receiver_channel_number) >= 1000;
 }
 
-bool PwmReceiverController::wantsControl() {
+bool PwmReceiverController::wantsControl()
+{
     return hasValidSignal();
 }
 
-void PwmReceiverController::apply(KlevebrandMaxFlyDrone *drone) {
+void PwmReceiverController::apply(KlevebrandMaxFlyDrone* drone)
+{
     setThrottleYawPitchRoll(drone);
     setFlightMode(drone);
 }
 
-void PwmReceiverController::setThrottleYawPitchRoll(KlevebrandMaxFlyDrone *drone) {
+void PwmReceiverController::setThrottleYawPitchRoll(KlevebrandMaxFlyDrone* drone)
+{
     float throttle_value = map(getChannelValue(_throttle_receiver_channel_number), 1000, 2000, THROTTLE_MINIMUM,
                                THROTTLE_MAXIMUM);
     drone->setThrottle(throttle_value);
 
-    if (drone->getFlightMode()->type() == acro) {
+    if (drone->getFlightMode()->type() == acro)
+    {
         float desired_yaw_angle = map(getChannelValue(_yaw_receiver_channel_number), 1000, 2000, 180, -180);
-        if (desired_yaw_angle < 5 && desired_yaw_angle > -5) {
+        if (desired_yaw_angle < 5 && desired_yaw_angle > -5)
+        {
             desired_yaw_angle = 0;
         }
         drone->setDesiredYawAngle(desired_yaw_angle);
 
         float desired_pitch_angle = map(getChannelValue(_pitch_receiver_channel_number), 1000, 2000, 120, -120);
-        if (desired_pitch_angle < 5 && desired_pitch_angle > -5) {
+        if (desired_pitch_angle < 5 && desired_pitch_angle > -5)
+        {
             desired_pitch_angle = 0;
         }
         drone->setDesiredPitchAngle(desired_pitch_angle);
 
         float desired_roll_angle = map(getChannelValue(_roll_receiver_channel_number), 1000, 2000, 120, -120);
-        if (desired_roll_angle < 5 && desired_roll_angle > -5) {
+        if (desired_roll_angle < 5 && desired_roll_angle > -5)
+        {
             desired_roll_angle = 0;
         }
         drone->setDesiredRollAngle(desired_roll_angle);
@@ -58,9 +66,11 @@ void PwmReceiverController::setThrottleYawPitchRoll(KlevebrandMaxFlyDrone *drone
         return;
     }
 
-    if (drone->getFlightMode()->type() == auto_level) {
+    if (drone->getFlightMode()->type() == auto_level)
+    {
         float desired_yaw_angle = map(getChannelValue(_yaw_receiver_channel_number), 1000, 2000, 120, -120);
-        if (desired_yaw_angle < 5 && desired_yaw_angle > -5) {
+        if (desired_yaw_angle < 5 && desired_yaw_angle > -5)
+        {
             desired_yaw_angle = 0;
         }
         drone->setDesiredYawAngle(desired_yaw_angle);
@@ -75,21 +85,27 @@ void PwmReceiverController::setThrottleYawPitchRoll(KlevebrandMaxFlyDrone *drone
     }
 }
 
-void PwmReceiverController::setFlightMode(KlevebrandMaxFlyDrone *drone) {
+void PwmReceiverController::setFlightMode(KlevebrandMaxFlyDrone* drone)
+{
     int flight_mode_pwm_signal = getChannelValue(_flight_mode_receiver_channel_number);
 
-    if (flight_mode_pwm_signal >= PWM_SIGNAL_MINIMUM && flight_mode_pwm_signal < PWM_SIGNAL_MID_LOW) {
+    if (flight_mode_pwm_signal >= PWM_SIGNAL_MINIMUM && flight_mode_pwm_signal < PWM_SIGNAL_MID_LOW)
+    {
         drone->disableMotors();
 
         static auto none_flight_mode = FlightMode();
         drone->activateFlightMode(&none_flight_mode);
-    } else if (flight_mode_pwm_signal >= PWM_SIGNAL_MID_LOW && flight_mode_pwm_signal < PWM_SIGNAL_MID_HIGH && drone->
-               getFlightMode()->type() != acro) {
+    }
+    else if (flight_mode_pwm_signal >= PWM_SIGNAL_MID_LOW && flight_mode_pwm_signal < PWM_SIGNAL_MID_HIGH && drone->
+        getFlightMode()->type() != acro)
+    {
         static auto acro_local = FLightModeAcroLocal();
         drone->activateFlightMode(&acro_local);
 
         drone->enableMotors();
-    } else if (flight_mode_pwm_signal >= PWM_SIGNAL_MID_HIGH && drone->getFlightMode()->type() != auto_level) {
+    }
+    else if (flight_mode_pwm_signal >= PWM_SIGNAL_MID_HIGH && drone->getFlightMode()->type() != auto_level)
+    {
         static auto auto_level_local = FlightModeAutoLevelLocal();
         drone->activateFlightMode(&auto_level_local);
 
@@ -97,68 +113,82 @@ void PwmReceiverController::setFlightMode(KlevebrandMaxFlyDrone *drone) {
     }
 }
 
-void PwmReceiverController::setup() {
-    if (_channel_number_to_gpio_map_array[0] != -1) {
+void PwmReceiverController::setup()
+{
+    if (_channel_number_to_gpio_map_array[0] != -1)
+    {
         pinMode(_channel_number_to_gpio_map_array[0], INPUT);
         attachPCINT(digitalPinToPCINT(_channel_number_to_gpio_map_array[0]), recordPinChangePulseWidthChannel1, CHANGE);
     }
 
-    if (_channel_number_to_gpio_map_array[1] != -1) {
+    if (_channel_number_to_gpio_map_array[1] != -1)
+    {
         pinMode(_channel_number_to_gpio_map_array[1], INPUT);
         attachPCINT(digitalPinToPCINT(_channel_number_to_gpio_map_array[1]), recordPinChangePulseWidthChannel2, CHANGE);
     }
 
-    if (_channel_number_to_gpio_map_array[2] != -1) {
+    if (_channel_number_to_gpio_map_array[2] != -1)
+    {
         pinMode(_channel_number_to_gpio_map_array[2], INPUT);
         attachPCINT(digitalPinToPCINT(_channel_number_to_gpio_map_array[2]), recordPinChangePulseWidthChannel3, CHANGE);
     }
 
-    if (_channel_number_to_gpio_map_array[3] != -1) {
+    if (_channel_number_to_gpio_map_array[3] != -1)
+    {
         pinMode(_channel_number_to_gpio_map_array[3], INPUT);
         attachPCINT(digitalPinToPCINT(_channel_number_to_gpio_map_array[3]), recordPinChangePulseWidthChannel4, CHANGE);
     }
 
-    if (_channel_number_to_gpio_map_array[4] != -1) {
+    if (_channel_number_to_gpio_map_array[4] != -1)
+    {
         pinMode(_channel_number_to_gpio_map_array[4], INPUT);
         attachPCINT(digitalPinToPCINT(_channel_number_to_gpio_map_array[4]), recordPinChangePulseWidthChannel5, CHANGE);
     }
 
-    if (_channel_number_to_gpio_map_array[5] != -1) {
+    if (_channel_number_to_gpio_map_array[5] != -1)
+    {
         pinMode(_channel_number_to_gpio_map_array[5], INPUT);
         attachPCINT(digitalPinToPCINT(_channel_number_to_gpio_map_array[5]), recordPinChangePulseWidthChannel6, CHANGE);
     }
 
-    if (_channel_number_to_gpio_map_array[6] != -1) {
+    if (_channel_number_to_gpio_map_array[6] != -1)
+    {
         pinMode(_channel_number_to_gpio_map_array[6], INPUT);
         attachPCINT(digitalPinToPCINT(_channel_number_to_gpio_map_array[6]), recordPinChangePulseWidthChannel7, CHANGE);
     }
 
-    if (_channel_number_to_gpio_map_array[7] != -1) {
+    if (_channel_number_to_gpio_map_array[7] != -1)
+    {
         pinMode(_channel_number_to_gpio_map_array[7], INPUT);
         attachPCINT(digitalPinToPCINT(_channel_number_to_gpio_map_array[7]), recordPinChangePulseWidthChannel8, CHANGE);
     }
 }
 
-void PwmReceiverController::recordPinChangePulseWidth(int channelNumber) {
+void PwmReceiverController::recordPinChangePulseWidth(int channelNumber)
+{
     int channelNumberIndex = channelNumber - 1;
     int pinState = digitalRead(_channel_number_to_gpio_map_array[channelNumberIndex]);
 
-    if (pinState == HIGH) {
+    if (pinState == HIGH)
+    {
         _pulse_start_micros[channelNumberIndex] = micros();
 
         return;
     }
 
-    if (_pulse_start_micros[channelNumberIndex] != 0) {
-        _pulse_widths[channelNumberIndex] = (int) (micros() - _pulse_start_micros[channelNumberIndex]);
+    if (_pulse_start_micros[channelNumberIndex] != 0)
+    {
+        _pulse_widths[channelNumberIndex] = (int)(micros() - _pulse_start_micros[channelNumberIndex]);
         _pulse_start_micros[channelNumberIndex] = 0;
 
         return;
     }
 }
 
-int PwmReceiverController::getChannelValue(int channelNumber) {
-    if (channelNumber < 1 || channelNumber > CHANNEL_COUNT) {
+int PwmReceiverController::getChannelValue(int channelNumber)
+{
+    if (channelNumber < 1 || channelNumber > CHANNEL_COUNT)
+    {
         return -1;
     }
 

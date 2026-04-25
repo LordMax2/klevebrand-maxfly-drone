@@ -7,17 +7,25 @@
 
 #include "flight_mode_auto_level.h"
 
-class FlightModeAutoLevelLocal : public FlightModeAutoLevel {
+class FlightModeAutoLevelLocal : public FlightModeAutoLevel
+{
 public:
-    int pidConstantsStorageKey() const override {
+    int pidConstantsStorageKey() const override
+    {
         return 1280;
     }
 
-    PidConstants_t pidConstants() const override {
-        return {0.078f, 0.10f, 0.0083f, 0.125f, 0.20f, 0.00125f, 0.05f, 0.10f, 0.001f};
+    PidConstants_t pidConstants() const override
+    {
+        return {
+            0.078f, 0.10f, 0.0083f,
+            0.125f, 0.20f, 0.00125f,
+            0.05f, 0.10f, 0.001f
+        };
     }
 
-    bool yawCompassMode() const override {
+    bool yawCompassMode() const override
+    {
         return true;
     }
 };
