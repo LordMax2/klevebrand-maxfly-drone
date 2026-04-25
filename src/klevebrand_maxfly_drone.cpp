@@ -50,6 +50,7 @@ bool KlevebrandMaxFlyDrone::run() {
 
     const unsigned long current_time = _processor.microsecondsTimestamp();
     const unsigned long delta_time = current_time - last_run_start_micros_timestamp;
+    const unsigned long delta_time_seconds = delta_time / 1000000.0f;
     last_run_start_micros_timestamp = current_time;
 
     // Get the latest data from the gyroscope
@@ -66,7 +67,7 @@ bool KlevebrandMaxFlyDrone::run() {
         disableMotors();
 
         // Serial.println("LOST CONNECTION");
-    } else if (!isMotorsEnabled()) {
+    } else if (!isMotorsEnabled() && false) {
         // If the motors are diabled, stop the drone
         disableMotors();
 
@@ -74,11 +75,7 @@ bool KlevebrandMaxFlyDrone::run() {
     } else {
         // Increment the integral part of the PID loop
         if (getThrottle() > PID_THROTTLE_THRESHOLD) {
-            calculatePidIntegral(_gyro.roll(), _gyro.pitch(), _gyro.yaw());
-
-            if (true) {
-                runPidOptimizer(now_millis);
-            }
+            calculatePidIntegral(_gyro.roll(), _gyro.pitch(), _gyro.yaw(), delta_time_seconds);
         } else {
             resetPid();
         }
@@ -86,11 +83,11 @@ bool KlevebrandMaxFlyDrone::run() {
         // To debug stuff
         // print();
         // printConstants();
-        // printThrottle();
+        // printThrottle(delta_time_seconds);
         // printGyro();
 
         // Run the motors with the calculated PID throttle
-        runMotors(_gyro.roll(), _gyro.pitch(), _gyro.yaw(), delta_time / 1000000.0f);
+        runMotors(_gyro.roll(), _gyro.pitch(), _gyro.yaw(), delta_time_seconds);
 
         savePidErrors(_gyro.roll(), _gyro.pitch(), _gyro.yaw());
 

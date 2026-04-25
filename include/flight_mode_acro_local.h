@@ -9,8 +9,12 @@
 
 class FLightModeAcroLocal : public FlightModeAcro {
 public:
+    int pidConstantsStorageKey() const override {
+        return 1152;
+    }
+
     PidConstants_t pidConstants() const override {
-        return {0.04, 0.4, 0.003, 0.04, 0.4, 0.003, 0.04, 0.4, 0.003};
+        return {0.025f, 0.20f, 0.0020f, 0.04f, 0.4f, 0.003f, 0.04f, 0.4f, 0.003f};
     }
 };
 

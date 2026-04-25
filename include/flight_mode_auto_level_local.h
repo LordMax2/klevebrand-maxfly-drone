@@ -9,8 +9,12 @@
 
 class FlightModeAutoLevelLocal : public FlightModeAutoLevel {
 public:
+    int pidConstantsStorageKey() const override {
+        return 1280;
+    }
+
     PidConstants_t pidConstants() const override {
-        return {0.125f, 0.2f, 0.0125f, 0.125f, 0.2f, 0.00125f, 0.05f, 0.1f, 0.001f};
+        return {0.078f, 0.10f, 0.0083f, 0.125f, 0.20f, 0.00125f, 0.05f, 0.10f, 0.001f};
     }
 
     bool yawCompassMode() const override {

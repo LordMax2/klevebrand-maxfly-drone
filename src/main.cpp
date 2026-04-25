@@ -6,14 +6,14 @@
 
 //#define SKYWIRE_EXPERIMENTAL
 
-ServoDroneMotor motors[4];
-constexpr int motor_pins[4] = {2, 3, 6, 7};
+static ServoDroneMotor motors[4];
+static constexpr int motor_pins[4] = {2, 3, 6, 7};
 
-auto drone = KlevebrandMaxFlyDrone(motors, motor_pins);
+static auto drone = KlevebrandMaxFlyDrone(motors, motor_pins);
 
-auto receiver = PwmReceiverController(1, 4, 3, 2, 7);
-SkywireDroneController skywire_controller;
-auto control_arbiter = ControlManager(&receiver, &skywire_controller);
+static auto receiver = PwmReceiverController(1, 4, 3, 2, 7);
+static SkywireDroneController skywire_controller;
+static auto control_arbiter = ControlManager(&receiver, &skywire_controller);
 
 void setup() {
     // Startup the gyroscope and motors
