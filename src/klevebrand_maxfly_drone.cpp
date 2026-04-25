@@ -50,7 +50,7 @@ bool KlevebrandMaxFlyDrone::run() {
 
     const unsigned long current_time = _processor.microsecondsTimestamp();
     const unsigned long delta_time = current_time - last_run_start_micros_timestamp;
-    const unsigned long delta_time_seconds = delta_time / 1000000.0f;
+    const float delta_time_seconds = delta_time / 1000000.0f;
     last_run_start_micros_timestamp = current_time;
 
     // Get the latest data from the gyroscope
@@ -149,11 +149,11 @@ void KlevebrandMaxFlyDrone::detachMotors() const {
 
 void KlevebrandMaxFlyDrone::enableMotors() {
     attachMotors();
-    stopMotors();
     BaseDrone::enableMotors();
 }
 
 void KlevebrandMaxFlyDrone::disableMotors() {
+    Serial.println("DISABLING MOTORS");
     setThrottle(0);
     stopMotors();
     resetPid();
