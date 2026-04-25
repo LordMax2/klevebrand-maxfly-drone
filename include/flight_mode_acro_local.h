@@ -18,15 +18,9 @@ public:
     PidConstants_t pidConstants() const override
     {
         return {
-            0.025f,
-            0.005f,
-            0.0020f,
-            0.035f,
-            0.010f,
-            0.0030f,
-            0.035f,
-            0.010f,
-            0.0030f
+            0.040f, 0.030f, 0.003f,
+            0.040f, 0.050f, 0.003f,
+            0.040f, 0.050f, 0.003f
         };
     }
 };
