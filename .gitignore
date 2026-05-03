@@ -4,3 +4,4 @@
 cache
 lib/
 compile_commands.json
+.claude/

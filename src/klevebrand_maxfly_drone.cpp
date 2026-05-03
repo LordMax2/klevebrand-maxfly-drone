@@ -60,7 +60,7 @@ bool KlevebrandMaxFlyDrone::run() {
 
     last_gyro_fetch_duration = _processor.microsecondsTimestamp() - gyro_fetch_start_timestamp;
 
-    if (hasLostConnection()) {
+    if (hasLostConnection() && false) {
         // If connection is dead, stop the drone
         disableMotors();
 

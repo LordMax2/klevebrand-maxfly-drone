@@ -41,11 +41,11 @@ public:
 
     bool run() override;
 
-    void runMotors(float gyro_roll, float gyro_pitch, float gyro_yaw, float delta_time_seconds);
+    void runMotors(float gyro_roll, float gyro_pitch, float gyro_yaw, float delta_time_seconds) override;
 
-    void enableMotors();
+    void enableMotors() override;
 
-    void disableMotors();
+    void disableMotors() override;
 
     void setupMotors() override;
 
