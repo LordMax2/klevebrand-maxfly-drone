@@ -3,10 +3,15 @@
 #include "flight_mode_acro_local.h"
 #include "flight_mode_auto_level_local.h"
 
-#define PWM_SIGNAL_MINIMUM 1000
-#define PWM_SIGNAL_MID_LOW 1250
-#define PWM_SIGNAL_MID_HIGH 1750
-#define PWM_SIGNAL_ENABLE_THRESHOLD 1050
+constexpr int PWM_SIGNAL_MINIMUM = 1000;
+constexpr int PWM_SIGNAL_MID_LOW = 1250;
+constexpr int PWM_SIGNAL_MID_HIGH = 1750;
+constexpr int PWM_SIGNAL_ENABLE_THRESHOLD = 1050;
+constexpr int PWM_DEADZONE = 20;
+
+constexpr float ACRO_EXPONENTIAL_INCREASE_RATE = 0.5f;
+constexpr float MAX_ACRO_RATE_PITCH_ROLL = 300.0f;
+constexpr float MAX_ACRO_RATE_YAW = 300.0f;
 
 volatile int PwmReceiverController::_channel_number_to_gpio_map_array[CHANNEL_COUNT] = {
     A8, A9, A10, A11, A12, A13, A14, A15
@@ -42,26 +47,13 @@ void PwmReceiverController::setThrottleYawPitchRoll(KlevebrandMaxFlyDrone* drone
 
     if (drone->getFlightMode()->type() == acro)
     {
-        float desired_yaw_angle = map(getChannelValue(_yaw_receiver_channel_number), 1000, 2000, 180, -180);
-        if (desired_yaw_angle < 5 && desired_yaw_angle > -5)
-        {
-            desired_yaw_angle = 0;
-        }
-        drone->setDesiredYawAngle(desired_yaw_angle);
+        float roll  = applyExpo(normalizeChannel(_roll_receiver_channel_number),  ACRO_EXPONENTIAL_INCREASE_RATE);
+        float pitch = applyExpo(normalizeChannel(_pitch_receiver_channel_number), ACRO_EXPONENTIAL_INCREASE_RATE);
+        float yaw   = applyExpo(normalizeChannel(_yaw_receiver_channel_number),   ACRO_EXPONENTIAL_INCREASE_RATE);
 
-        float desired_pitch_angle = map(getChannelValue(_pitch_receiver_channel_number), 1000, 2000, 120, -120);
-        if (desired_pitch_angle < 5 && desired_pitch_angle > -5)
-        {
-            desired_pitch_angle = 0;
-        }
-        drone->setDesiredPitchAngle(desired_pitch_angle);
-
-        float desired_roll_angle = map(getChannelValue(_roll_receiver_channel_number), 1000, 2000, 120, -120);
-        if (desired_roll_angle < 5 && desired_roll_angle > -5)
-        {
-            desired_roll_angle = 0;
-        }
-        drone->setDesiredRollAngle(desired_roll_angle);
+        drone->setDesiredRollAngle( -(roll  * MAX_ACRO_RATE_PITCH_ROLL));
+        drone->setDesiredPitchAngle(-(pitch * MAX_ACRO_RATE_PITCH_ROLL));
+        drone->setDesiredYawAngle(  -(yaw   * MAX_ACRO_RATE_YAW));
 
         return;
     }
@@ -193,4 +185,22 @@ int PwmReceiverController::getChannelValue(int channelNumber)
     }
 
     return constrain(_pulse_widths[channelNumber - 1], 1000, 2000);
+}
+
+float PwmReceiverController::normalizeChannel(int channel_number)
+{
+    const int centered = getChannelValue(channel_number) - 1500;
+
+    if (abs(centered) < PWM_DEADZONE) return 0.0f;
+
+    return constrain(centered / 500.0f, -1.0f, 1.0f);
+}
+
+float PwmReceiverController::applyExpo(float input, float expo)
+{
+    const float sign = (input >= 0.0f) ? 1.0f : -1.0f;
+
+    const float abs_input = abs(input);
+
+    return sign * (abs_input * abs_input * abs_input * expo + abs_input * (1.0f - expo));
 }

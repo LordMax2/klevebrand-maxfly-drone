@@ -60,10 +60,8 @@ private:
     static volatile unsigned long _pulse_start_micros[CHANNEL_COUNT];
     static volatile int _pulse_widths[CHANNEL_COUNT];
 
-    float mapfloat(float x, float in_min, float in_max, float out_min, float out_max)
-    {
-        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-    }
+    float normalizeChannel(int channel_number);
+    static float applyExpo(float input, float expo);
 };
 
 #endif // DRONE_PWM_RECEIVER_H

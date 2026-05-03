@@ -6,6 +6,7 @@
 #include "gyro_pid.h"
 
 #define PID_THROTTLE_THRESHOLD 10 
+#define PID_ACRO_MAX_ANGLE_RATE_THRESHOLD 30
 #define PID_MAX 15
 
 #define THROTTLE_MINIMUM 0 
