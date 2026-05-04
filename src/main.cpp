@@ -9,7 +9,7 @@
 static ServoDroneMotor motors[4];
 static constexpr int motor_pins[4] = {2, 3, 6, 7};
 
-static auto drone = KlevebrandMaxFlyDrone(motors, motor_pins);
+static KlevebrandMaxFlyDrone drone(motors, motor_pins);
 
 static auto receiver = PwmReceiverController(1, 4, 3, 2, 7);
 static SkywireDroneController skywire_controller;
