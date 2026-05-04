@@ -39,6 +39,8 @@ void PwmReceiverController::apply(KlevebrandMaxFlyDrone* drone)
     setFlightMode(drone);
 }
 
+static unsigned long last_yaw_set_timestamp_millis = 0;
+
 void PwmReceiverController::setThrottleYawPitchRoll(KlevebrandMaxFlyDrone* drone)
 {
     float throttle_value = map(getChannelValue(_throttle_receiver_channel_number), 1000, 2000, THROTTLE_MINIMUM,
@@ -47,25 +49,34 @@ void PwmReceiverController::setThrottleYawPitchRoll(KlevebrandMaxFlyDrone* drone
 
     if (drone->getFlightMode()->type() == acro)
     {
-        float roll  = applyExpo(normalizeChannel(_roll_receiver_channel_number),  ACRO_EXPONENTIAL_INCREASE_RATE);
+        float roll = applyExpo(normalizeChannel(_roll_receiver_channel_number), ACRO_EXPONENTIAL_INCREASE_RATE);
         float pitch = applyExpo(normalizeChannel(_pitch_receiver_channel_number), ACRO_EXPONENTIAL_INCREASE_RATE);
-        float yaw   = applyExpo(normalizeChannel(_yaw_receiver_channel_number),   ACRO_EXPONENTIAL_INCREASE_RATE);
+        float yaw = applyExpo(normalizeChannel(_yaw_receiver_channel_number), ACRO_EXPONENTIAL_INCREASE_RATE);
 
-        drone->setDesiredRollAngle( -(roll  * MAX_ACRO_RATE_PITCH_ROLL));
+        drone->setDesiredRollAngle(-(roll * MAX_ACRO_RATE_PITCH_ROLL));
         drone->setDesiredPitchAngle(-(pitch * MAX_ACRO_RATE_PITCH_ROLL));
-        drone->setDesiredYawAngle(  -(yaw   * MAX_ACRO_RATE_YAW));
+        drone->setDesiredYawAngle(-(yaw * MAX_ACRO_RATE_YAW));
 
         return;
     }
 
     if (drone->getFlightMode()->type() == auto_level)
     {
-        float desired_yaw_angle = map(getChannelValue(_yaw_receiver_channel_number), 1000, 2000, 120, -120);
+        float desired_yaw_angle = map(getChannelValue(_yaw_receiver_channel_number), 1000, 2000, 5, -5);
         if (desired_yaw_angle < 5 && desired_yaw_angle > -5)
         {
             desired_yaw_angle = 0;
         }
-        drone->setDesiredYawAngle(desired_yaw_angle);
+        else
+        {
+            last_yaw_set_timestamp_millis = millis();
+        }
+
+        if (millis() - last_yaw_set_timestamp_millis > 10)
+        {
+            const float new_desired_yaw_angle = drone->getDesiredYawAngle() + desired_yaw_angle;
+            drone->setDesiredYawAngle(new_desired_yaw_angle);
+        }
 
         float desired_pitch_angle = map(getChannelValue(_pitch_receiver_channel_number), 1000, 2000, -60, 60);
         drone->setDesiredPitchAngle(desired_pitch_angle);
@@ -85,7 +96,7 @@ void PwmReceiverController::setFlightMode(KlevebrandMaxFlyDrone* drone)
     {
         drone->disableMotors();
 
-        static auto none_flight_mode = FlightMode();
+        static auto none_flight_mode = BaseFlightMode();
         drone->activateFlightMode(&none_flight_mode);
     }
     else if (flight_mode_pwm_signal >= PWM_SIGNAL_MID_LOW && flight_mode_pwm_signal < PWM_SIGNAL_MID_HIGH && drone->

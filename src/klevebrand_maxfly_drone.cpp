@@ -42,7 +42,7 @@ void KlevebrandMaxFlyDrone::setup()
 
     setupMotors();
 
-    static auto none_flight_mode = FlightMode();
+    static auto none_flight_mode = BaseFlightMode();
     activateFlightMode(&none_flight_mode);
 
     processor->print("DRONE STARTED!");
