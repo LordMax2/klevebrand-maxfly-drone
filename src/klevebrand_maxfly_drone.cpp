@@ -58,17 +58,14 @@ bool KlevebrandMaxFlyDrone::run()
         return false;
     }
 
-    const unsigned long current_time = _processor.microsecondsTimestamp();
+    const unsigned long current_time = timestampMicroseconds();
     const unsigned long delta_time = current_time - last_run_start_micros_timestamp;
     const float delta_time_seconds = delta_time / 1000000.0f;
     last_run_start_micros_timestamp = current_time;
 
-    // Get the latest data from the gyroscope
-    const unsigned long gyro_fetch_start_timestamp = _processor.microsecondsTimestamp();
-
     updateGyro();
 
-    last_gyro_fetch_duration = _processor.microsecondsTimestamp() - gyro_fetch_start_timestamp;
+    last_gyro_fetch_duration = timestampMicroseconds() - current_time;
 
     if (hasLostConnection() && false)
     {
@@ -86,23 +83,26 @@ bool KlevebrandMaxFlyDrone::run()
     }
     else
     {
+        const float gyro_roll = getRoll();
+        const float gyro_pitch = getPitch();
+        const float gyro_yaw = getYaw();
+
         // Increment the integral part of the PID loop
-        if (getThrottle() > PID_THROTTLE_THRESHOLD)
-        {
-            if (getFlightModeType() != acro ||
-                (
-                    getDesiredYawAngle() < PID_ACRO_MAX_ANGLE_RATE_THRESHOLD &&
-                    getDesiredPitchAngle() < PID_ACRO_MAX_ANGLE_RATE_THRESHOLD &&
-                    getDesiredRollAngle() < PID_ACRO_MAX_ANGLE_RATE_THRESHOLD
-                )
-            )
-            {
-                calculatePidIntegral(_gyro.roll(), _gyro.pitch(), _gyro.yaw(), delta_time_seconds);
-            }
-        }
-        else
+        if (getThrottle() < PID_THROTTLE_THRESHOLD)
         {
             resetPid();
+        }
+        else if
+        (
+            getFlightModeType() != acro ||
+            (
+                getDesiredYawAngle() < PID_ACRO_MAX_ANGLE_RATE_INTEGRAL_THRESHOLD &&
+                getDesiredPitchAngle() < PID_ACRO_MAX_ANGLE_RATE_INTEGRAL_THRESHOLD &&
+                getDesiredRollAngle() < PID_ACRO_MAX_ANGLE_RATE_INTEGRAL_THRESHOLD
+            )
+        )
+        {
+            calculatePidIntegral(gyro_roll, gyro_pitch, gyro_yaw, delta_time_seconds);
         }
 
         // To debug stuff
@@ -112,9 +112,9 @@ bool KlevebrandMaxFlyDrone::run()
         // printGyro();
 
         // Run the motors with the calculated PID throttle
-        runMotors(_gyro.roll(), _gyro.pitch(), _gyro.yaw(), delta_time_seconds);
+        runMotors(gyro_roll, gyro_pitch, gyro_yaw, delta_time_seconds);
 
-        savePidErrors(_gyro.roll(), _gyro.pitch(), _gyro.yaw());
+        savePidErrors(gyro_roll, gyro_pitch, gyro_yaw);
 
         persistPidConstants();
     }

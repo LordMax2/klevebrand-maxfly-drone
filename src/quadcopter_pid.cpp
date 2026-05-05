@@ -2,6 +2,11 @@
 
 QuadcopterPidMotorThrottle_t QuadcopterPid::getPidMotorThrottle(const float throttle, const float gyro_roll, const float roll_desired_angle, const float gyro_pitch, const float pitch_desired_angle, const float gyro_yaw, const float yaw_desired_angle, const float delta_time_seconds)
 {
+    if (throttle < PID_THROTTLE_THRESHOLD)
+    {
+        return {0.0f, 0.0f, 0.0f, 0.0f};
+    }
+
     const float pid_throttle_lf = pidThrottleLF(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle, delta_time_seconds);
     const float pid_throttle_rf = pidThrottleRF(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle, delta_time_seconds);
     const float pid_throttle_lb = pidThrottleLB(throttle, gyro_roll, roll_desired_angle, gyro_pitch, pitch_desired_angle, gyro_yaw, yaw_desired_angle, delta_time_seconds);
@@ -25,32 +30,20 @@ QuadcopterPidMotorThrottle_t QuadcopterPid::getPidMotorThrottle(const float thro
 
 float QuadcopterPid::pidThrottleLF(const float throttle, const float gyro_roll, const float roll_desired_angle, const float gyro_pitch, const float pitch_desired_angle, const float gyro_yaw, const float yaw_desired_angle, const float delta_time_seconds)
 {
-  if (throttle < PID_THROTTLE_THRESHOLD)
-    return THROTTLE_MINIMUM;
-
-  return throttle - rollPid(gyro_roll, roll_desired_angle, delta_time_seconds) + pitchPid(gyro_pitch, pitch_desired_angle, delta_time_seconds) + yawPid(gyro_yaw, yaw_desired_angle, delta_time_seconds);
+    return throttle - rollPid(gyro_roll, roll_desired_angle, delta_time_seconds) + pitchPid(gyro_pitch, pitch_desired_angle, delta_time_seconds) + yawPid(gyro_yaw, yaw_desired_angle, delta_time_seconds);
 }
 
 float QuadcopterPid::pidThrottleLB(const float throttle, const float gyro_roll, const float roll_desired_angle, const float gyro_pitch, const float pitch_desired_angle, const float gyro_yaw, const float yaw_desired_angle, const float delta_time_seconds)
 {
-  if (throttle < PID_THROTTLE_THRESHOLD)
-    return THROTTLE_MINIMUM;
-
-  return throttle - rollPid(gyro_roll, roll_desired_angle, delta_time_seconds) - pitchPid(gyro_pitch, pitch_desired_angle, delta_time_seconds) - yawPid(gyro_yaw, yaw_desired_angle, delta_time_seconds);
+    return throttle - rollPid(gyro_roll, roll_desired_angle, delta_time_seconds) - pitchPid(gyro_pitch, pitch_desired_angle, delta_time_seconds) - yawPid(gyro_yaw, yaw_desired_angle, delta_time_seconds);
 }
 
 float QuadcopterPid::pidThrottleRF(const float throttle, const float gyro_roll, const float roll_desired_angle, const float gyro_pitch, const float pitch_desired_angle, const float gyro_yaw, const float yaw_desired_angle, const float delta_time_seconds)
 {
-  if (throttle < PID_THROTTLE_THRESHOLD)
-    return THROTTLE_MINIMUM;
-
-  return throttle + rollPid(gyro_roll, roll_desired_angle, delta_time_seconds) + pitchPid(gyro_pitch, pitch_desired_angle, delta_time_seconds) - yawPid(gyro_yaw, yaw_desired_angle, delta_time_seconds);
+    return throttle + rollPid(gyro_roll, roll_desired_angle, delta_time_seconds) + pitchPid(gyro_pitch, pitch_desired_angle, delta_time_seconds) - yawPid(gyro_yaw, yaw_desired_angle, delta_time_seconds);
 }
 
 float QuadcopterPid::pidThrottleRB(const float throttle, const float gyro_roll, const float roll_desired_angle, const float gyro_pitch, const float pitch_desired_angle, const float gyro_yaw, const float yaw_desired_angle, const float delta_time_seconds)
 {
-  if (throttle < PID_THROTTLE_THRESHOLD)
-    return THROTTLE_MINIMUM;
-
-  return throttle + rollPid(gyro_roll, roll_desired_angle, delta_time_seconds) - pitchPid(gyro_pitch, pitch_desired_angle, delta_time_seconds) + yawPid(gyro_yaw, yaw_desired_angle, delta_time_seconds);
+    return throttle + rollPid(gyro_roll, roll_desired_angle, delta_time_seconds) - pitchPid(gyro_pitch, pitch_desired_angle, delta_time_seconds) + yawPid(gyro_yaw, yaw_desired_angle, delta_time_seconds);
 }
