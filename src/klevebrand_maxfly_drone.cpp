@@ -85,7 +85,16 @@ bool KlevebrandMaxFlyDrone::run()
     {
         const float gyro_roll = getRoll();
         const float gyro_pitch = getPitch();
-        const float gyro_yaw = getYaw();
+        float gyro_yaw = getYaw();
+
+        // The IMU on the drone seems to be oriented in the wrong direction, where backwards points to north, flip it 180 deg
+        if (getFlightModeType() == auto_level)
+        {
+            float gyro_yaw_rotated_180 = gyro_yaw + 180;
+            if (gyro_yaw_rotated_180 >= 180) gyro_yaw_rotated_180 -= 360;
+
+            gyro_yaw = gyro_yaw_rotated_180 * -1;
+        }
 
         // Increment the integral part of the PID loop
         if (getThrottle() < PID_THROTTLE_THRESHOLD)
@@ -116,7 +125,7 @@ bool KlevebrandMaxFlyDrone::run()
 
         savePidErrors(gyro_roll, gyro_pitch, gyro_yaw);
 
-        persistPidConstants();
+        // persistPidConstants();
     }
 
     return true;
