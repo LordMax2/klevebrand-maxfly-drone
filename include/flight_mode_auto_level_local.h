@@ -24,6 +24,21 @@ public:
         };
     }
 
+    void activate(BaseDrone* drone, BaseDroneGyro* gyro, BaseHardwareProcessor* processor) const override
+    {
+        gyro->reset();
+
+        processor->sleepMilliseconds(1000);
+
+        gyro->setModeEuler();
+
+        processor->sleepMilliseconds(1000);
+
+        gyro->reload();
+
+        drone->setDesiredYawAngle(gyro->yaw());
+    }
+
     bool yawCompassMode() const override
     {
         return true;
