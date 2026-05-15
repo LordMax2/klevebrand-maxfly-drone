@@ -36,6 +36,8 @@ void KlevebrandMaxFlyDrone::setup()
 
     _processor.print("STARTING DRONE...");
 
+    _position.setup();
+
     _gyro.setup();
 
     pid_repository->setup();
@@ -62,6 +64,8 @@ bool KlevebrandMaxFlyDrone::run()
     const unsigned long delta_time = current_time - last_run_start_micros_timestamp;
     const float delta_time_seconds = delta_time / 1000000.0f;
     last_run_start_micros_timestamp = current_time;
+
+    _position.run();
 
     updateGyro();
 

@@ -7,6 +7,7 @@
 #include "quadcopter_pid.h"
 #include "bno08x_drone_gyro.h"
 #include "hardware_processor_arduino.h"
+#include "quadcopter_position.h"
 
 class KlevebrandMaxFlyDrone : public TemplateDrone<QuadcopterPid> {
 private:
@@ -25,7 +26,7 @@ private:
 
     Bno08xDroneGyro _gyro;
     BasePidRepository _pid_repository;
-    BaseDronePosition _position;
+    QuadcopterPosition _position;
     HardwareProcessorArduino _processor;
 
     void printThrottle(float delta_time_seconds);

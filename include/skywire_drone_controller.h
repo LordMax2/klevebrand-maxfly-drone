@@ -1,7 +1,7 @@
 #ifndef SKYWIRE_DRONE_CONTROLLER_H
 #define SKYWIRE_DRONE_CONTROLLER_H
 
-#define SKYWIRE_EXPERIMENTAL
+//#define SKYWIRE_EXPERIMENTAL
 
 #include "drone_request.h"
 #include "klevebrand_maxfly_drone.h"
