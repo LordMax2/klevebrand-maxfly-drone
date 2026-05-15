@@ -30,7 +30,7 @@ public:
 
         processor->sleepMilliseconds(1000);
 
-        gyro->setModeEuler();
+        static_cast<Bno08xDroneGyro*>(gyro)->setModeEulerAndAcceleration();
 
         processor->sleepMilliseconds(1000);
 
