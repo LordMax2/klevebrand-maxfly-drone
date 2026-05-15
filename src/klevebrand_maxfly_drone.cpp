@@ -1,7 +1,7 @@
 #include "klevebrand_maxfly_drone.h"
 
 KlevebrandMaxFlyDrone::KlevebrandMaxFlyDrone(ServoDroneMotor* motors, const int motor_pins[motor_pin_count])
-    : TemplateDrone<QuadcopterPid>(500, 200, 10000, &_processor, &_gyro, &_pid_repository, &_position), _motors(motors),
+    : TemplateDrone(500, 200, 10000, &_processor, &_gyro, &_pid_repository, &_position), _motors(motors),
       _gyro(10)
 {
     for (int i = 0; i < motor_pin_count; i++)

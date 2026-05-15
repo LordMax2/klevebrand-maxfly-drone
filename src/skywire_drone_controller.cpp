@@ -57,6 +57,9 @@ void SkywireDroneController::run(KlevebrandMaxFlyDrone *drone)
 
     _worker->setPayloadToSend(payload_to_send);
     _worker->run();
+
+    setRequest(_worker->getLatestDroneRequest());
+    requestControl();
 #else
     (void)drone;
 #endif
@@ -94,7 +97,7 @@ bool SkywireDroneController::wantsControl() const
     return _wants_control && _has_pending_request;
 }
 
-void SkywireDroneController::apply(KlevebrandMaxFlyDrone *drone)
+void SkywireDroneController::apply(KlevebrandMaxFlyDrone *drone) const
 {
     if (drone == nullptr || !_has_pending_request)
     {

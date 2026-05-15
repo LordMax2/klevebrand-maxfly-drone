@@ -4,8 +4,6 @@
 #include "pwm_receiver_controller.h"
 #include "skywire_drone_controller.h"
 
-//#define SKYWIRE_EXPERIMENTAL
-
 static ServoDroneMotor motors[4];
 static constexpr int motor_pins[4] = {2, 3, 6, 7};
 
