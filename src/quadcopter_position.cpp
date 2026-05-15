@@ -28,7 +28,7 @@ float QuadcopterPosition::getAltitude() {
 void QuadcopterPosition::run() {
     const unsigned long now = micros();
 
-    if (_last_run_timestamp_microseconds != 0 && now - _last_run_timestamp_microseconds < run_interval_micros) {
+    if (_last_run_timestamp_microseconds != 0 && now - _last_run_timestamp_microseconds < run_interval_microseconds) {
         return;
     }
 
