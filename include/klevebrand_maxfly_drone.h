@@ -1,7 +1,6 @@
 #ifndef KLEVEBRAND_MAXFLY_DRONE_H
 #define KLEVEBRAND_MAXFLY_DRONE_H
 
-#include <Arduino.h>
 #include "template_drone.h"
 #include "servo_drone_motor.h"
 #include "quadcopter_pid.h"
@@ -10,7 +9,6 @@
 #include "quadcopter_position.h"
 
 class KlevebrandMaxFlyDrone : public TemplateDrone<QuadcopterPid> {
-private:
     ServoDroneMotor *_motors;
     static constexpr int motor_pin_count = 4;
 

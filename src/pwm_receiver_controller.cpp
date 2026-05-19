@@ -47,7 +47,7 @@ void PwmReceiverController::setThrottleYawPitchRoll(KlevebrandMaxFlyDrone* drone
                                THROTTLE_MAXIMUM);
     drone->setThrottle(throttle_value);
 
-    if (drone->getFlightMode()->type() == acro)
+    if (drone->getControlModeType() == acro)
     {
         float roll = applyExpo(normalizeChannel(_roll_receiver_channel_number), ACRO_EXPONENTIAL_INCREASE_RATE);
         float pitch = applyExpo(normalizeChannel(_pitch_receiver_channel_number), ACRO_EXPONENTIAL_INCREASE_RATE);
@@ -60,7 +60,7 @@ void PwmReceiverController::setThrottleYawPitchRoll(KlevebrandMaxFlyDrone* drone
         return;
     }
 
-    if (drone->getFlightMode()->type() == auto_level)
+    if (drone->getControlModeType() == auto_level)
     {
         float desired_yaw_angle = map(getChannelValue(_yaw_receiver_channel_number), 1000, 2000, 5, -5);
         if (desired_yaw_angle < 5 && desired_yaw_angle > -5)
@@ -96,21 +96,21 @@ void PwmReceiverController::setFlightMode(KlevebrandMaxFlyDrone* drone)
     {
         drone->disableMotors();
 
-        static auto none_flight_mode = BaseFlightMode();
-        drone->activateFlightMode(&none_flight_mode);
+        static auto none_flight_mode = BaseControlMode();
+        drone->activateControlMode(&none_flight_mode);
     }
     else if (flight_mode_pwm_signal >= PWM_SIGNAL_MID_LOW && flight_mode_pwm_signal < PWM_SIGNAL_MID_HIGH && drone->
-        getFlightMode()->type() != acro)
+        getControlModeType() != acro)
     {
         static auto acro_local = FLightModeAcroLocal();
-        drone->activateFlightMode(&acro_local);
+        drone->activateControlMode(&acro_local);
 
         drone->enableMotors();
     }
-    else if (flight_mode_pwm_signal >= PWM_SIGNAL_MID_HIGH && drone->getFlightMode()->type() != auto_level)
+    else if (flight_mode_pwm_signal >= PWM_SIGNAL_MID_HIGH && drone->getControlModeType() != auto_level)
     {
         static auto auto_level_local = FlightModeAutoLevelLocal();
-        drone->activateFlightMode(&auto_level_local);
+        drone->activateControlMode(&auto_level_local);
 
         drone->enableMotors();
     }
