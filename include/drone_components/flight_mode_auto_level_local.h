@@ -1,9 +1,9 @@
 #ifndef KLEVEBRAND_MAXFLY_DRONE_FLIGHT_MODE_AUTO_LEVEL_LOCAL_H
 #define KLEVEBRAND_MAXFLY_DRONE_FLIGHT_MODE_AUTO_LEVEL_LOCAL_H
 
-#include "flight_mode_auto_level.h"
+#include "base_control_mode.h"
 
-class FlightModeAutoLevelLocal : public FlightModeAutoLevel
+class FlightModeAutoLevelLocal : public BaseControlMode
 {
 public:
     int pidConstantsStorageKey() const override
