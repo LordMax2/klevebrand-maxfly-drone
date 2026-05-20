@@ -1,6 +1,6 @@
-#include "control_manager.h"
+#include "../../include/receivers/control_manager.h"
 
-void ControlManager::setup()
+void ControlManager::setup() const
 {
     if (_pwm_receiver != nullptr)
     {
@@ -9,7 +9,7 @@ void ControlManager::setup()
 
     if (_skywire_controller != nullptr)
     {
-        _skywire_controller->setup();
+        SkywireDroneController::setup();
     }
 }
 

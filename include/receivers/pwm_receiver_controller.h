@@ -1,10 +1,7 @@
 #ifndef DRONE_PWM_RECEIVER_H
 #define DRONE_PWM_RECEIVER_H
 
-#include <Arduino.h>
-#include <PinChangeInterrupt.h>
-
-#include "klevebrand_maxfly_drone.h"
+#include "../klevebrand_maxfly_drone.h"
 
 #define CHANNEL_COUNT 8
 
@@ -29,7 +26,7 @@ public:
         this->_flight_mode_receiver_channel_number = flight_mode_receiver_channel_number;
     };
 
-    void setup();
+    static void setup();
     bool hasValidSignal();
     bool wantsControl();
     void apply(KlevebrandMaxFlyDrone *drone);

@@ -1,4 +1,6 @@
-#include "quadcopter_pid.h"
+#include "../../include/drone_components/quadcopter_pid.h"
+
+#include "Arduino.h"
 
 QuadcopterPidMotorThrottle_t QuadcopterPid::getPidMotorThrottle(const float throttle, const float gyro_roll, const float roll_desired_angle, const float gyro_pitch, const float pitch_desired_angle, const float gyro_yaw, const float yaw_desired_angle, const float delta_time_seconds)
 {

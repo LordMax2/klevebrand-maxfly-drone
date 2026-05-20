@@ -2,8 +2,8 @@
 #define KLEVEBRAND_MAXFLY_DRONE_H
 
 #include "template_drone.h"
-#include "servo_drone_motor.h"
-#include "quadcopter_pid.h"
+#include "drone_components/servo_drone_motor.h"
+#include "drone_components/quadcopter_pid.h"
 #include "bno08x_drone_gyro.h"
 #include "hardware_processor_arduino.h"
 #include "quadcopter_position.h"

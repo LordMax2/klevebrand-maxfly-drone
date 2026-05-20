@@ -3,14 +3,14 @@
 
 //#define SKYWIRE_EXPERIMENTAL
 
-#include "drone_request.h"
-#include "klevebrand_maxfly_drone.h"
+#include "../entities/drone_request.h"
+#include "../klevebrand_maxfly_drone.h"
 
 class SkywireDroneController
 {
 public:
     static void setup();
-    void run(KlevebrandMaxFlyDrone *drone);
+    static void run(const KlevebrandMaxFlyDrone *drone);
     void setRequest(const DroneRequest_t &request);
     void clearRequest();
     void requestControl();

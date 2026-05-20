@@ -1,8 +1,8 @@
 #include "klevebrand_maxfly_drone.h"
-#include "servo_drone_motor.h"
-#include "control_manager.h"
-#include "pwm_receiver_controller.h"
-#include "skywire_drone_controller.h"
+#include "drone_components/servo_drone_motor.h"
+#include "receivers/control_manager.h"
+#include "receivers/pwm_receiver_controller.h"
+#include "receivers/skywire_drone_controller.h"
 
 static ServoDroneMotor motors[4];
 static constexpr int motor_pins[4] = {2, 3, 6, 7};

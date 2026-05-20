@@ -1,8 +1,6 @@
 #ifndef QUADCOPTER_PID_H 
 #define QUADCOPTER_PID_H
 
-#include <Arduino.h>
-#include "pid_optimizer.h"
 #include "gyro_pid.h"
 
 #define PID_THROTTLE_THRESHOLD 10 

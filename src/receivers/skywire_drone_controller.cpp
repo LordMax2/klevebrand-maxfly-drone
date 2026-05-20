@@ -1,7 +1,7 @@
-#include "skywire_drone_controller.h"
+#include "receivers/skywire_drone_controller.h"
 
-#include "flight_mode_acro_local.h"
-#include "flight_mode_auto_level_local.h"
+#include "drone_components/flight_mode_acro_local.h"
+#include "drone_components/flight_mode_auto_level_local.h"
 
 #ifdef SKYWIRE_EXPERIMENTAL
 #include "skywire-command-startup-worker.h"
@@ -23,7 +23,7 @@ void SkywireDroneController::setup()
 #endif
 }
 
-void SkywireDroneController::run(KlevebrandMaxFlyDrone *drone)
+void SkywireDroneController::run(const KlevebrandMaxFlyDrone *drone)
 {
 #ifdef SKYWIRE_EXPERIMENTAL
     if (drone == nullptr)

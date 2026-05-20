@@ -17,7 +17,7 @@ public:
     ControlManager(PwmReceiverController *pwm_receiver, SkywireDroneController *skywire_controller)
         : _pwm_receiver(pwm_receiver), _skywire_controller(skywire_controller) {}
 
-    void setup();
+    void setup() const;
     void run(KlevebrandMaxFlyDrone *drone);
     ActiveControlSource_t activeControlSource() const;
 
