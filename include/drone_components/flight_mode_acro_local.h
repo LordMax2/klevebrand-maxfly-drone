@@ -11,6 +11,11 @@ public:
         return 1152;
     }
 
+    ControlMode_t type() const override
+    {
+        return acro;
+    }
+
     PidConstants_t pidConstants() const override
     {
         return {
@@ -18,6 +23,21 @@ public:
             0.04f, 0.4f, 0.003f,
             0.04f, 0.4f, 0.003f
         };
+    }
+
+    void activate(BaseDrone* drone, BaseDroneGyro* gyro, BaseHardwareProcessor* processor) const override
+    {
+        gyro->reset();
+
+        processor->sleepMilliseconds(1000);
+
+        static_cast<Bno08xDroneGyro*>(gyro)->setModeAcro();
+
+        processor->sleepMilliseconds(1000);
+
+        gyro->reload();
+
+        drone->setDesiredYawAngle(gyro->yaw());
     }
 };
 

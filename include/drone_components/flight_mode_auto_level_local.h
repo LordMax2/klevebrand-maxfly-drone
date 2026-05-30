@@ -11,12 +11,17 @@ public:
         return 1280;
     }
 
+    ControlMode_t type() const override
+    {
+        return auto_level;
+    }
+
     PidConstants_t pidConstants() const override
     {
         return {
-            0.05f, 0.00f, 0.003f,
-            0.4f, 0.04f, 0.03f,
-            0.4f, 0.04f, 0.03f
+            0.00f, 0.00f, 0.000f,
+            0.20f, 0.001f, 0.025f,
+            0.20f, 0.001f, 0.025f
         };
     }
 
