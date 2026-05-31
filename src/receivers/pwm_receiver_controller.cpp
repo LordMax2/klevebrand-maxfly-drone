@@ -14,6 +14,9 @@ constexpr float ACRO_EXPONENTIAL_INCREASE_RATE = 0.5f;
 constexpr float MAX_ACRO_RATE_PITCH_ROLL = 300.0f;
 constexpr float MAX_ACRO_RATE_YAW = 300.0f;
 
+constexpr float YAW_STEP_EXPONENTIAL_INCREASE_RATE = 0.5f;
+constexpr float MAX_YAW_STEP_DEGREES = 5.0f;
+
 volatile int PwmReceiverController::_channel_number_to_gpio_map_array[CHANNEL_COUNT] = {
     A8, A9, A10, A11, A12, A13, A14, A15
 };
@@ -63,20 +66,15 @@ void PwmReceiverController::setThrottleYawPitchRoll(KlevebrandMaxFlyDrone* drone
 
     if (drone->getControlModeType() == auto_level)
     {
-        float desired_yaw_angle = map(getChannelValue(_yaw_receiver_channel_number), 1000, 2000, 5, -5);
-        if (desired_yaw_angle < 5 && desired_yaw_angle > -5)
-        {
-            desired_yaw_angle = 0;
-        }
-        else
-        {
-            last_yaw_set_timestamp_millis = millis();
-        }
+        float yaw_stick = normalizeChannel(_yaw_receiver_channel_number);
+        float yaw_increment = -applyExpo(yaw_stick, YAW_STEP_EXPONENTIAL_INCREASE_RATE) * MAX_YAW_STEP_DEGREES;
 
-        if (millis() - last_yaw_set_timestamp_millis > 10)
+        if (millis() - last_yaw_set_timestamp_millis > 50)
         {
-            const float new_desired_yaw_angle = drone->getDesiredYawAngle() + desired_yaw_angle;
+            const float new_desired_yaw_angle = constrain(drone->getDesiredYawAngle() + yaw_increment, -180.0f, 180.0f);
             drone->setDesiredYawAngle(new_desired_yaw_angle);
+
+            last_yaw_set_timestamp_millis = millis();
         }
 
         float desired_pitch_angle = map(getChannelValue(_pitch_receiver_channel_number), 1000, 2000, 60, -60);
