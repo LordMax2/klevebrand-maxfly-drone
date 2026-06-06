@@ -94,9 +94,9 @@ bool KlevebrandMaxFlyDrone::run() {
         (
             getControlModeType() != acro ||
             (
-                getDesiredYawAngle() < PID_ACRO_MAX_ANGLE_RATE_INTEGRAL_THRESHOLD &&
-                getDesiredPitchAngle() < PID_ACRO_MAX_ANGLE_RATE_INTEGRAL_THRESHOLD &&
-                getDesiredRollAngle() < PID_ACRO_MAX_ANGLE_RATE_INTEGRAL_THRESHOLD
+                fabs(getDesiredYawAngle()) < PID_ACRO_MAX_ANGLE_RATE_INTEGRAL_THRESHOLD &&
+                fabs(getDesiredPitchAngle()) < PID_ACRO_MAX_ANGLE_RATE_INTEGRAL_THRESHOLD &&
+                fabs(getDesiredRollAngle()) < PID_ACRO_MAX_ANGLE_RATE_INTEGRAL_THRESHOLD
             )
         ) {
             calculatePidIntegral(gyro_roll, gyro_pitch, gyro_yaw, delta_time_seconds);
