@@ -3,7 +3,10 @@
 #include <base_drone.h>
 #include "Arduino.h"
 
-static unsigned long _last_goto_timestamp = 0;
+namespace
+{
+    unsigned long _last_goto_timestamp = 0;
+}
 
 void AutopilotTilt::goTo(BaseDrone* drone, const float latitude, const float longitude, const float altitude)
 {
@@ -44,15 +47,6 @@ void AutopilotTilt::goTo(BaseDrone* drone, const float latitude, const float lon
 
     const float final_throttle = constrain(_hover_throttle + throttle_adjustment, 0.0f, 100.0f);
 
-    char buffer[150];
-    snprintf(buffer, sizeof(buffer),
-             "alt: %.2fm  target: %.2fm  err: %.2fm | target_vel: %.2fm/s  cur_vel: %.2fm/s  vel_err: %.2fm/s | hover: %.2f  throttle_adj: %.2f  final: %.2f",
-             current_altitude, altitude, (altitude - current_altitude),
-             target_velocity, current_vz, (target_velocity - current_vz),
-             _hover_throttle, throttle_adjustment, final_throttle);
-
-    Serial.println(buffer);
-
     drone->setThrottle(final_throttle);
 
     // Return early if we are not within 20 meters of the target altitude
@@ -79,7 +73,7 @@ void AutopilotTilt::goTo(BaseDrone* drone, const float latitude, const float lon
     const float current_east_velocity = drone->getVelocityY();
 
     const float pitch_adjustment = _latitude_velocity_pid.pid(current_north_velocity, target_north_velocity,
-                                                        delta_time_seconds);
+                                                              delta_time_seconds);
     const float roll_adjustment = _longitude_velocity_pid.
         pid(current_east_velocity, target_east_velocity, delta_time_seconds);
 

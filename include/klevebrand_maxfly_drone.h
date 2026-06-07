@@ -1,6 +1,7 @@
 #ifndef KLEVEBRAND_MAXFLY_DRONE_H
 #define KLEVEBRAND_MAXFLY_DRONE_H
 
+#include "base_autopilot.h"
 #include "template_drone.h"
 #include "drone_components/servo_drone_motor.h"
 #include "drone_components/quadcopter_pid.h"
@@ -11,21 +12,20 @@
 class KlevebrandMaxFlyDrone : public TemplateDrone<QuadcopterPid> {
     ServoDroneMotor *_motors;
     static constexpr int motor_pin_count = 4;
-
     int _motor_pins[motor_pin_count]{};
 
     ServoDroneMotor &motorLeftFront() const;
-
     ServoDroneMotor &motorRightFront() const;
-
     ServoDroneMotor &motorLeftBack() const;
-
     ServoDroneMotor &motorRightBack() const;
 
     Bno08xDroneGyro _gyro;
     BasePidRepository _pid_repository;
     QuadcopterPosition _position;
     HardwareProcessorArduino _processor;
+    BaseAutopilot *_autopilot;
+
+    bool _autopilot_enabled = false;
 
     void printThrottle(float delta_time_seconds);
 
@@ -35,6 +35,13 @@ class KlevebrandMaxFlyDrone : public TemplateDrone<QuadcopterPid> {
 
 public:
     KlevebrandMaxFlyDrone(ServoDroneMotor *motors, const int motor_pins[motor_pin_count]);
+    ~KlevebrandMaxFlyDrone();
+
+    void enableAutopilot();
+
+    void disableAutopilot();
+
+    bool isAutopilotEnabled() const;
 
     void setup() override;
 

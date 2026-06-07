@@ -1,11 +1,21 @@
 #include "klevebrand_maxfly_drone.h"
 
+#include "autopilot/autopilot_tilt.h"
+
 KlevebrandMaxFlyDrone::KlevebrandMaxFlyDrone(ServoDroneMotor *motors, const int motor_pins[motor_pin_count])
     : TemplateDrone(500, 200, 10000, &_processor, &_gyro, &_pid_repository, &_position), _motors(motors),
       _gyro(10), _position(&_gyro) {
     for (int i = 0; i < motor_pin_count; i++) {
         _motor_pins[i] = motor_pins[i];
     }
+
+    _autopilot = new AutopilotTilt();
+}
+
+KlevebrandMaxFlyDrone::~KlevebrandMaxFlyDrone()
+{
+    delete _autopilot;
+    delete[] _motors;
 }
 
 ServoDroneMotor &KlevebrandMaxFlyDrone::motorLeftFront() const {
@@ -22,6 +32,21 @@ ServoDroneMotor &KlevebrandMaxFlyDrone::motorLeftBack() const {
 
 ServoDroneMotor &KlevebrandMaxFlyDrone::motorRightBack() const {
     return _motors[3];
+}
+
+void KlevebrandMaxFlyDrone::disableAutopilot()
+{
+    _autopilot_enabled = false;
+}
+
+void KlevebrandMaxFlyDrone::enableAutopilot()
+{
+    _autopilot_enabled = true;
+}
+
+bool KlevebrandMaxFlyDrone::isAutopilotEnabled() const
+{
+    return _autopilot_enabled;
 }
 
 void KlevebrandMaxFlyDrone::setup() {
@@ -113,7 +138,10 @@ bool KlevebrandMaxFlyDrone::run() {
 
         savePidErrors(gyro_roll, gyro_pitch, gyro_yaw);
 
-        // persistPidConstants();
+        if (isAutopilotEnabled())
+        {
+            _autopilot->goTo(this, 0, 0, 50);
+        }
     }
 
     return true;
