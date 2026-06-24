@@ -27,9 +27,9 @@ public:
     };
 
     static void setup();
-    bool hasValidSignal();
-    bool wantsControl();
-    void apply(KlevebrandMaxFlyDrone *drone);
+    bool hasValidSignal() const;
+    bool wantsControl() const;
+    void apply(KlevebrandMaxFlyDrone *drone) const;
 
 private:
     int _throttle_receiver_channel_number;
@@ -38,10 +38,10 @@ private:
     int _roll_receiver_channel_number;
     int _flight_mode_receiver_channel_number;
 
-    void setThrottleYawPitchRoll(KlevebrandMaxFlyDrone *drone);
-    void setFlightMode(KlevebrandMaxFlyDrone *drone);
+    void setThrottleYawPitchRoll(KlevebrandMaxFlyDrone *drone) const;
+    void setFlightMode(KlevebrandMaxFlyDrone *drone) const;
 
-    int getChannelValue(int channel_number);
+    static int getChannelValue(int channel_number);
 
     static void recordPinChangePulseWidth(int channel_number);
     static void recordPinChangePulseWidthChannel1() { recordPinChangePulseWidth(1); };
@@ -57,8 +57,10 @@ private:
     static volatile unsigned long _pulse_start_micros[CHANNEL_COUNT];
     static volatile int _pulse_widths[CHANNEL_COUNT];
 
-    float normalizeChannel(int channel_number);
+    static float normalizeChannel(int channel_number);
+
     static float applyExpo(float input, float expo);
+    static float applySlew(float current, float target);
 };
 
 #endif // DRONE_PWM_RECEIVER_H

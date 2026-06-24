@@ -17,7 +17,7 @@ void ControlManager::run(KlevebrandMaxFlyDrone *drone)
 {
     if (_skywire_controller != nullptr)
     {
-        _skywire_controller->run(drone);
+        SkywireDroneController::run(drone);
     }
 
     if (_pwm_receiver != nullptr && _pwm_receiver->wantsControl())
