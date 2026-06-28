@@ -17,7 +17,7 @@ constexpr float MAX_ACRO_RATE_YAW = 300.0f;
 constexpr float YAW_STEP_EXPONENTIAL_INCREASE_RATE = 0.5f;
 constexpr float MAX_YAW_STEP_DEGREES = 5.0f;
 
-static constexpr float MAX_RATE_DEG_PER_SEC = 180.0f;
+static constexpr float MAX_RATE_DEG_PER_SEC = 135.0f;
 
 volatile int PwmReceiverController::_channel_number_to_gpio_map_array[CHANNEL_COUNT] = {
     A8, A9, A10, A11, A12, A13, A14, A15
@@ -46,6 +46,22 @@ void PwmReceiverController::apply(KlevebrandMaxFlyDrone* drone) const
 }
 
 static unsigned long last_yaw_set_timestamp_milliseconds = 0;
+
+static float getSlewTimeDelta()
+{
+    static unsigned long last_slew_timestamp_microseconds = 0;
+
+    const unsigned long timestamp_microseconds = micros();
+    if (last_slew_timestamp_microseconds == 0)
+        last_slew_timestamp_microseconds = timestamp_microseconds;
+
+    float dt = (timestamp_microseconds - last_slew_timestamp_microseconds) / 1000000.0f;
+    last_slew_timestamp_microseconds = timestamp_microseconds;
+    if (dt > 0.1f)
+        dt = 0.1f;
+
+    return dt;
+}
 
 void PwmReceiverController::setThrottleYawPitchRoll(KlevebrandMaxFlyDrone* drone) const
 {
@@ -81,14 +97,16 @@ void PwmReceiverController::setThrottleYawPitchRoll(KlevebrandMaxFlyDrone* drone
             last_yaw_set_timestamp_milliseconds = timestamp_milliseconds;
         }
 
+        const float dt = getSlewTimeDelta();
+
         const float desired_pitch_angle = map(getChannelValue(_pitch_receiver_channel_number), 1000, 2000, 60, -60);
         const float current_pitch_angle = drone->getDesiredPitchAngle();
-        const float slew_limited_desired_pitch = applySlew(current_pitch_angle, desired_pitch_angle);
+        const float slew_limited_desired_pitch = applySlew(current_pitch_angle, desired_pitch_angle, dt);
         drone->setDesiredPitchAngle(slew_limited_desired_pitch);
 
         const float desired_roll_angle = map(getChannelValue(_roll_receiver_channel_number), 1000, 2000, 60, -60);
         const float current_roll_angle = drone->getDesiredRollAngle();
-        const float slew_limited_desired_roll = applySlew(current_roll_angle, desired_roll_angle);
+        const float slew_limited_desired_roll = applySlew(current_roll_angle, desired_roll_angle, dt);
         drone->setDesiredRollAngle(slew_limited_desired_roll);
 
         return;
@@ -224,20 +242,8 @@ float PwmReceiverController::applyExpo(const float input, const float expo)
     return sign * (abs_input * abs_input * abs_input * expo + abs_input * (1.0f - expo));
 }
 
-static unsigned long last_slew_timestamp_microseconds = 0;
-
-float PwmReceiverController::applySlew(const float current, const float target)
+float PwmReceiverController::applySlew(const float current, const float target, const float dt)
 {
-    const unsigned long timestamp_microseconds = micros();
-
-    if (last_slew_timestamp_microseconds == 0) last_slew_timestamp_microseconds = timestamp_microseconds;
-
-    float dt = (timestamp_microseconds - last_slew_timestamp_microseconds) / 1000000.0f;
-
-    last_slew_timestamp_microseconds = timestamp_microseconds;
-
-    if (dt > 0.1f) dt = 0.1f;
-
     const float error = target - current;
 
     const auto max_step = MAX_RATE_DEG_PER_SEC * dt;

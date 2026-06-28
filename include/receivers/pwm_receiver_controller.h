@@ -60,7 +60,7 @@ private:
     static float normalizeChannel(int channel_number);
 
     static float applyExpo(float input, float expo);
-    static float applySlew(float current, float target);
+    static float applySlew(float current, float target, float dt);
 };
 
 #endif // DRONE_PWM_RECEIVER_H
