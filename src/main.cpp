@@ -11,17 +11,17 @@ static KlevebrandMaxFlyDrone drone(motors, motor_pins);
 
 static auto receiver = PwmReceiverController(1, 4, 3, 2, 7);
 static SkywireDroneController skywire_controller;
-static auto control_arbiter = ControlManager(&receiver, &skywire_controller);
+static auto control_manager = ControlManager(&receiver, &skywire_controller);
 
 void setup() {
     // Startup the gyroscope and motors
     drone.setup();
 
-    control_arbiter.setup();
+    control_manager.setup();
 }
 
 void loop() {
-    control_arbiter.run(&drone);
+    control_manager.run(&drone);
 
     // Run the drone feedback-loop
     drone.run();
