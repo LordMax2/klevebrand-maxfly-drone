@@ -87,11 +87,6 @@ void SkywireDroneController::releaseControl()
     _wants_control = false;
 }
 
-bool SkywireDroneController::hasPendingRequest() const
-{
-    return _has_pending_request;
-}
-
 bool SkywireDroneController::wantsControl() const
 {
     return _wants_control && _has_pending_request;

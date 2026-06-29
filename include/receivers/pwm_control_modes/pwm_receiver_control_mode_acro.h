@@ -8,13 +8,8 @@ class PwmReceiverControlModeAcro : public BasePwmReceiverControlMode
 public:
     ControlMode_t controlModeType() const override;
 
-    void applyThrottleYawPitchRoll(
-        KlevebrandMaxFlyDrone* drone,
-        int throttle_pwm,
-        int yaw_pwm,
-        int pitch_pwm,
-        int roll_pwm
-    ) const override;
+    void applyThrottleYawPitchRoll(KlevebrandMaxFlyDrone* drone, int throttle_pwm, int yaw_pwm, int pitch_pwm,
+                                   int roll_pwm) const override;
 
 private:
     static float normalizePwm(int pwm_microseconds);

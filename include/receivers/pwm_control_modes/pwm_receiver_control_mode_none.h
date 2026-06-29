@@ -11,13 +11,8 @@ public:
         return none;
     }
 
-    void applyThrottleYawPitchRoll(
-        KlevebrandMaxFlyDrone* drone,
-        int throttle_pwm,
-        int yaw_pwm,
-        int pitch_pwm,
-        int roll_pwm
-    ) const override
+    void applyThrottleYawPitchRoll(KlevebrandMaxFlyDrone* drone, int throttle_pwm, int yaw_pwm, int pitch_pwm,
+                                   int roll_pwm) const override
     {
         (void)drone;
         (void)throttle_pwm;

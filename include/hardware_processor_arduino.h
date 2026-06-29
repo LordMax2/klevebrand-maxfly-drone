@@ -32,7 +32,7 @@ public:
     return millis();
   }
 
-  void sleepMilliseconds(int milliseconds) override
+  void sleepMilliseconds(const int milliseconds) override
   {
     delay(milliseconds);
   }

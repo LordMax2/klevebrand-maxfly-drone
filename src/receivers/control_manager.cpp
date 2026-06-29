@@ -2,9 +2,9 @@
 
 void ControlManager::setup() const
 {
-    if (_pwm_receiver != nullptr)
+    if (_pwm_receiver_controller != nullptr)
     {
-        _pwm_receiver->setup();
+        _pwm_receiver_controller->setup();
     }
 
     if (_skywire_controller != nullptr)
@@ -20,24 +20,24 @@ void ControlManager::run(KlevebrandMaxFlyDrone *drone)
         SkywireDroneController::run(drone);
     }
 
-    if (_pwm_receiver != nullptr && _pwm_receiver->wantsControl())
+    if (_pwm_receiver_controller != nullptr && _pwm_receiver_controller->wantsControl())
     {
-        _active_control_source = ActiveControlSource_t::pwm;
-        _pwm_receiver->apply(drone);
+        _active_controller = ActiveController_t::pwm;
+        _pwm_receiver_controller->apply(drone);
         return;
     }
 
     if (_skywire_controller != nullptr && _skywire_controller->wantsControl())
     {
-        _active_control_source = ActiveControlSource_t::skywire;
+        _active_controller = ActiveController_t::skywire;
         _skywire_controller->apply(drone);
         return;
     }
 
-    _active_control_source = ActiveControlSource_t::none;
+    _active_controller = ActiveController_t::none;
 }
 
-ActiveControlSource_t ControlManager::activeControlSource() const
+ActiveController_t ControlManager::activeControlSource() const
 {
-    return _active_control_source;
+    return _active_controller;
 }

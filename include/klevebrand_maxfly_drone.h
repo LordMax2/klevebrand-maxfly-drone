@@ -1,5 +1,4 @@
-#ifndef KLEVEBRAND_MAXFLY_DRONE_H
-#define KLEVEBRAND_MAXFLY_DRONE_H
+#pragma once
 
 #include "base_autopilot.h"
 #include "template_drone.h"
@@ -35,7 +34,7 @@ class KlevebrandMaxFlyDrone : public TemplateDrone<QuadcopterPid> {
 
 public:
     KlevebrandMaxFlyDrone(ServoDroneMotor *motors, const int motor_pins[motor_pin_count]);
-    ~KlevebrandMaxFlyDrone();
+    ~KlevebrandMaxFlyDrone() override;
 
     void enableAutopilot();
 
@@ -57,5 +56,3 @@ public:
 
     void stopMotors() override;
 };
-
-#endif

@@ -8,13 +8,8 @@ class PwmReceiverControlModeAutoLevel : public BasePwmReceiverControlMode
 public:
     ControlMode_t controlModeType() const override;
 
-    void applyThrottleYawPitchRoll(
-        KlevebrandMaxFlyDrone* drone,
-        int throttle_pwm,
-        int yaw_pwm,
-        int pitch_pwm,
-        int roll_pwm
-    ) const override;
+    void applyThrottleYawPitchRoll(KlevebrandMaxFlyDrone* drone, int throttle_pwm, int yaw_pwm, int pitch_pwm,
+                                   int roll_pwm) const override;
 
 private:
     mutable unsigned long _last_yaw_set_timestamp_milliseconds = 0;

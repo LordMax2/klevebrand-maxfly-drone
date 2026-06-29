@@ -1,5 +1,4 @@
-#ifndef DRONE_PWM_RECEIVER_H
-#define DRONE_PWM_RECEIVER_H
+#pragma once
 
 #include "../klevebrand_maxfly_drone.h"
 #include "pwm_control_modes/pwm_receiver_control_mode_acro.h"
@@ -60,9 +59,7 @@ private:
     static void recordPinChangePulseWidthChannel7() { recordPinChangePulseWidth(7); };
     static void recordPinChangePulseWidthChannel8() { recordPinChangePulseWidth(8); };
 
-    static volatile int _channel_number_to_gpio_map_array[CHANNEL_COUNT];
-    static volatile unsigned long _pulse_start_micros[CHANNEL_COUNT];
-    static volatile int _pulse_widths[CHANNEL_COUNT];
+    static int _channel_number_to_gpio_map_array[CHANNEL_COUNT];
+    static unsigned long _pulse_start_micros[CHANNEL_COUNT];
+    static int _pulse_widths[CHANNEL_COUNT];
 };
-
-#endif // DRONE_PWM_RECEIVER_H

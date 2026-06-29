@@ -1,7 +1,4 @@
-#ifndef SKYWIRE_DRONE_CONTROLLER_H
-#define SKYWIRE_DRONE_CONTROLLER_H
-
-//#define SKYWIRE_EXPERIMENTAL
+#pragma once
 
 #include "../entities/drone_request.h"
 #include "../klevebrand_maxfly_drone.h"
@@ -15,7 +12,6 @@ public:
     void clearRequest();
     void requestControl();
     void releaseControl();
-    bool hasPendingRequest() const;
     bool wantsControl() const;
     void apply(KlevebrandMaxFlyDrone *drone) const;
 
@@ -28,5 +24,3 @@ private:
     class SkywireTcpGpsStepWorker *_worker = nullptr;
 #endif
 };
-
-#endif // SKYWIRE_DRONE_CONTROLLER_H

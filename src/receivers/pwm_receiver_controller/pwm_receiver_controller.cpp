@@ -8,11 +8,15 @@ constexpr int PWM_SIGNAL_MINIMUM = 1000;
 constexpr int PWM_SIGNAL_MID_LOW = 1250;
 constexpr int PWM_SIGNAL_MID_HIGH = 1750;
 
-volatile int PwmReceiverController::_channel_number_to_gpio_map_array[CHANNEL_COUNT] = {
+int PwmReceiverController::_channel_number_to_gpio_map_array[CHANNEL_COUNT] = {
     A8, A9, A10, A11, A12, A13, A14, A15
 };
-volatile unsigned long PwmReceiverController::_pulse_start_micros[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
-volatile int PwmReceiverController::_pulse_widths[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
+unsigned long PwmReceiverController::_pulse_start_micros[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
+int PwmReceiverController::_pulse_widths[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
+
+static auto none_flight_mode = BaseControlMode();
+static auto acro_local = FLightModeAcroLocal();
+static auto auto_level_local = FlightModeAutoLevelLocal();
 
 bool PwmReceiverController::wantsControl()
 {
@@ -45,20 +49,17 @@ void PwmReceiverController::setFlightMode(KlevebrandMaxFlyDrone* drone, const in
     {
         drone->disableMotors();
 
-        static auto none_flight_mode = BaseControlMode();
         drone->activateControlMode(&none_flight_mode);
     }
     else if (flight_mode_pwm >= PWM_SIGNAL_MID_LOW && flight_mode_pwm < PWM_SIGNAL_MID_HIGH && drone->
         getControlModeType() != acro)
     {
-        static auto acro_local = FLightModeAcroLocal();
         drone->activateControlMode(&acro_local);
 
         drone->enableMotors();
     }
     else if (flight_mode_pwm >= PWM_SIGNAL_MID_HIGH && drone->getControlModeType() != auto_level)
     {
-        static auto auto_level_local = FlightModeAutoLevelLocal();
         drone->activateControlMode(&auto_level_local);
 
         drone->enableMotors();
@@ -131,7 +132,8 @@ void PwmReceiverController::recordPinChangePulseWidth(const int channel_number)
 
     if (_pulse_start_micros[channelNumberIndex] != 0)
     {
-        _pulse_widths[channelNumberIndex] = static_cast<int>(timestamp_microseconds - _pulse_start_micros[channelNumberIndex]);
+        _pulse_widths[channelNumberIndex] = static_cast<int>(timestamp_microseconds - _pulse_start_micros[
+            channelNumberIndex]);
         _pulse_start_micros[channelNumberIndex] = 0;
 
         return;
