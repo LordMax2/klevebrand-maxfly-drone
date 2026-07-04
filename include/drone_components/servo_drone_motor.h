@@ -1,5 +1,4 @@
-#ifndef SERVO_DRONE_MOTOR_H
-#define SERVO_DRONE_MOTOR_H
+#pragma once
 
 #include "Arduino.h"
 #include "base_drone_motor.h"
@@ -64,5 +63,3 @@ private:
     bool _is_configured = false;
     bool _is_attached = false;
 };
-
-#endif // SERVO_DRONE_MOTOR_H

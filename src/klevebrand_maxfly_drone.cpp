@@ -3,8 +3,7 @@
 #include "autopilot/autopilot_tilt.h"
 
 KlevebrandMaxFlyDrone::KlevebrandMaxFlyDrone(ServoDroneMotor* motors, const int motor_pins[motor_pin_count])
-    : TemplateDrone(500, 200, 10000, &_processor, &_gyro, &_pid_repository, &_position), _motors(motors),
-      _gyro(10), _position(&_gyro)
+    : TemplateDrone(500, 200, &_processor, &_gyro, &_position), _motors(motors), _gyro(10), _position(&_gyro)
 {
     for (int i = 0; i < motor_pin_count; i++)
     {
@@ -64,8 +63,6 @@ void KlevebrandMaxFlyDrone::setup()
     _position.setup();
 
     _gyro.setup();
-
-    pid_repository->setup();
 
     setupMotors();
 

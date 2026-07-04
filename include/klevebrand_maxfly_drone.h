@@ -19,7 +19,6 @@ class KlevebrandMaxFlyDrone : public TemplateDrone<QuadcopterPid> {
     ServoDroneMotor &motorRightBack() const;
 
     Bno08xDroneGyro _gyro;
-    BasePidRepository _pid_repository;
     QuadcopterPosition _position;
     HardwareProcessorArduino _processor;
     BaseAutopilot *_autopilot;

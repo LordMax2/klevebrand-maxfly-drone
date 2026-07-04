@@ -1,5 +1,4 @@
-#ifndef DRONE_REQUEST_DTO_H
-#define DRONE_REQUEST_DTO_H
+#pragma once
 
 #include "Arduino.h"
 
@@ -91,5 +90,3 @@ struct DroneRequest_t
         return parseFromCsvString(value.c_str());
     }
 };
-
-#endif // DRONE_REQUEST_DTO_H
