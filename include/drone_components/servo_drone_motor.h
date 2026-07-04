@@ -1,13 +1,13 @@
 #pragma once
 
 #include "Arduino.h"
-#include "base_drone_motor.h"
 #include <Servo.h>
+#include "concept_drone_motor.h"
 
-class ServoDroneMotor : public BaseDroneMotor
+class ServoDroneMotor
 {
 public:
-    ServoDroneMotor() : BaseDroneMotor() {}
+    ServoDroneMotor() {}
 
     void setup(int pin)
     {
@@ -16,7 +16,7 @@ public:
         attach();
     }
 
-    void setSpeed(float percentage) override
+    void setSpeed(float percentage)
     {
         if (!_is_attached)
         {
@@ -56,6 +56,8 @@ public:
     {
         return _is_attached;
     }
+
+    static_assert(DroneMotorConcept<ServoDroneMotor>, "ServoDroneMotor does not implement DroneMotorConcept");
 
 private:
     Servo _motor;

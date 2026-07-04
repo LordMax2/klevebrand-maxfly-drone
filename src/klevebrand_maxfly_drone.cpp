@@ -3,19 +3,16 @@
 #include "autopilot/autopilot_tilt.h"
 
 KlevebrandMaxFlyDrone::KlevebrandMaxFlyDrone(ServoDroneMotor* motors, const int motor_pins[motor_pin_count])
-    : TemplateDrone(500, 200, &_processor, &_gyro, &_position), _motors(motors), _gyro(10), _position(&_gyro)
+    : TemplateDrone(500, 200), _motors(motors)
 {
     for (int i = 0; i < motor_pin_count; i++)
     {
         _motor_pins[i] = motor_pins[i];
     }
-
-    _autopilot = new AutopilotTilt();
 }
 
 KlevebrandMaxFlyDrone::~KlevebrandMaxFlyDrone()
 {
-    delete _autopilot;
     delete[] _motors;
 }
 
@@ -39,30 +36,15 @@ ServoDroneMotor& KlevebrandMaxFlyDrone::motorRightBack() const
     return _motors[3];
 }
 
-void KlevebrandMaxFlyDrone::disableAutopilot()
-{
-    _autopilot_enabled = false;
-}
-
-void KlevebrandMaxFlyDrone::enableAutopilot()
-{
-    _autopilot_enabled = true;
-}
-
-bool KlevebrandMaxFlyDrone::isAutopilotEnabled() const
-{
-    return _autopilot_enabled;
-}
-
 void KlevebrandMaxFlyDrone::setup()
 {
-    _processor.setup();
+    processor.setup();
 
-    _processor.print("STARTING DRONE...");
+    processor.print("STARTING DRONE...");
 
-    _position.setup();
+    position.setup();
 
-    _gyro.setup();
+    gyro.setup();
 
     setupMotors();
 
@@ -197,7 +179,7 @@ void KlevebrandMaxFlyDrone::detachMotors() const
 void KlevebrandMaxFlyDrone::enableMotors()
 {
     attachMotors();
-    BaseDrone::enableMotors();
+    TemplateDrone::enableMotors();
 }
 
 void KlevebrandMaxFlyDrone::disableMotors()
@@ -206,7 +188,7 @@ void KlevebrandMaxFlyDrone::disableMotors()
     setThrottle(0);
     stopMotors();
     resetPid();
-    BaseDrone::disableMotors();
+    TemplateDrone::disableMotors();
     detachMotors();
 }
 

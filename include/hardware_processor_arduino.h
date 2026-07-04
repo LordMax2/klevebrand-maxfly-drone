@@ -1,15 +1,12 @@
-#ifndef HARDWARE_PROCESSOR_ARDUINO_H
-#define HARDWARE_PROCESSOR_ARDUINO_H
+#pragma once
 
 #include "Arduino.h"
-#include "base_hardware_processor.h"
+#include "concept_hardware_processor.h"
 
-class HardwareProcessorArduino : public BaseHardwareProcessor
+class HardwareProcessorArduino
 {
 public:
-  HardwareProcessorArduino() : BaseHardwareProcessor() {};
-
-  void setup() override
+  static void setup()
   {
     Serial.begin(115200);
 
@@ -22,25 +19,26 @@ public:
     }
   }
 
-  unsigned long microsecondsTimestamp() override
+  static unsigned long microsecondsTimestamp()
   {
     return micros();
   }
 
-  unsigned long millisecondsTimestamp() override
+  static unsigned long millisecondsTimestamp()
   {
     return millis();
   }
 
-  void sleepMilliseconds(const int milliseconds) override
+  static void sleepMilliseconds(const int milliseconds)
   {
     delay(milliseconds);
   }
 
-  void print(const char *array) override
+  static void print(const char *array)
   {
     Serial.println(array);
   }
-};
 
-#endif // HARDWARE_PROCESSOR_ARDUINO_H
+  static_assert(HardwareProcessorConcept<HardwareProcessorArduino>, "HardwareProcessorArduino does not implement HardwareProcessorConcept");
+
+};

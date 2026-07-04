@@ -1,22 +1,16 @@
-#ifndef KLEVEBRAND_MAXFLY_DRONE_FLIGHT_MODE_AUTO_LEVEL_LOCAL_H
-#define KLEVEBRAND_MAXFLY_DRONE_FLIGHT_MODE_AUTO_LEVEL_LOCAL_H
+#pragma once
 
-#include "base_control_mode.h"
+#include "concept_control_mode.h"
 
-class FlightModeAutoLevelLocal : public BaseControlMode
+class FlightModeAutoLevelLocal
 {
 public:
-    int pidConstantsStorageKey() const override
-    {
-        return 1280;
-    }
-
-    ControlMode_t type() const override
+    ControlMode_t type() const
     {
         return auto_level;
     }
 
-    PidConstants_t pidConstants() const override
+    PidConstants_t pidConstants() const
     {
         return {
             0.3f, 0.001f, 0.015f,
@@ -25,25 +19,26 @@ public:
         };
     }
 
-    void activate(BaseDrone* drone, BaseDroneGyro* gyro, BaseHardwareProcessor* processor) const override
+    void activate(BaseDrone* drone) const
     {
-        gyro->reset();
-
-        processor->sleepMilliseconds(1000);
-
-        static_cast<Bno08xDroneGyro*>(gyro)->setModeEulerAndAcceleration();
-
-        processor->sleepMilliseconds(1000);
-
-        gyro->reload();
-
-        drone->setDesiredYawAngle(gyro->yaw());
+//        gyro->reset();
+//
+//        processor->sleepMilliseconds(1000);
+//
+//        static_cast<Bno08xDroneGyro*>(gyro)->setModeEulerAndAcceleration();
+//
+//        processor->sleepMilliseconds(1000);
+//
+//        gyro->reload();
+//
+//        drone->setDesiredYawAngle(gyro->yaw());
     }
 
-    bool yawCompassMode() const override
+    bool yawCompassMode() const
     {
         return true;
     }
-};
 
-#endif //KLEVEBRAND_MAXFLY_DRONE_FLIGHT_MODE_AUTO_LEVEL_LOCAL_H
+    static_assert(ControlModeConcept<FlightModeAutoLevelLocal>, "FlightModeAutoLevelLocal does not meet the ControlModeConcept");
+
+};

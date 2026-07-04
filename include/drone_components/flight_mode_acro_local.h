@@ -1,22 +1,16 @@
-#ifndef KLEVEBRAND_MAXFLY_DRONE_FLIGHT_MODE_ACRO_LOCAL_H
-#define KLEVEBRAND_MAXFLY_DRONE_FLIGHT_MODE_ACRO_LOCAL_H
+#pragma once
 
-#include "base_control_mode.h"
+#include "concept_control_mode.h"
 
-class FLightModeAcroLocal : public BaseControlMode
+class FLightModeAcroLocal
 {
 public:
-    int pidConstantsStorageKey() const override
-    {
-        return 1152;
-    }
-
-    ControlMode_t type() const override
+    ControlMode_t type() const
     {
         return acro;
     }
 
-    PidConstants_t pidConstants() const override
+    PidConstants_t pidConstants() const
     {
         return {
             0.04f, 0.25f, 0.004f,
@@ -25,20 +19,20 @@ public:
         };
     }
 
-    void activate(BaseDrone* drone, BaseDroneGyro* gyro, BaseHardwareProcessor* processor) const override
+    void activate(BaseDrone* drone) const
     {
-        gyro->reset();
-
-        processor->sleepMilliseconds(1000);
-
-        static_cast<Bno08xDroneGyro*>(gyro)->setModeAcro();
-
-        processor->sleepMilliseconds(1000);
-
-        gyro->reload();
-
-        drone->setDesiredYawAngle(gyro->yaw());
+//        gyro->reset();
+//
+//        processor->sleepMilliseconds(1000);
+//
+//        static_cast<Bno08xDroneGyro*>(gyro)->setModeAcro();
+//
+//        processor->sleepMilliseconds(1000);
+//
+//        gyro->reload();
+//
+//        drone->setDesiredYawAngle(gyro->yaw());
     }
-};
 
-#endif //KLEVEBRAND_MAXFLY_DRONE_FLIGHT_MODE_ACRO_LOCAL_H
+    static_assert(ControlModeConcept<FLightModeAcroLocal>, "FLightModeAcroLocal does not meet the ControlModeConcept");
+};
