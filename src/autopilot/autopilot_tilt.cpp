@@ -1,4 +1,5 @@
 #include "autopilot/autopilot_tilt.h"
+#include "klevebrand_maxfly_drone.h"
 #include <math.h>
 #include <template_drone.h>
 #include "Arduino.h"
@@ -113,3 +114,5 @@ float AutopilotTilt<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardwar
 
     return bearing_degrees;
 }
+
+template class AutopilotTilt<QuadcopterPid, MaxFlyPosition, MaxFlyGyro, MaxFlyProcessor>;

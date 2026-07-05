@@ -2,6 +2,7 @@
 
 #include "drone_components/flight_mode_acro_local.h"
 #include "drone_components/flight_mode_auto_level_local.h"
+#include "drone_components/flight_mode_none_local.h"
 #include <PinChangeInterrupt.h>
 
 constexpr int PWM_SIGNAL_MINIMUM = 1000;
@@ -14,7 +15,7 @@ int PwmReceiverController::_channel_number_to_gpio_map_array[CHANNEL_COUNT] = {
 unsigned long PwmReceiverController::_pulse_start_micros[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
 int PwmReceiverController::_pulse_widths[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
 
-static auto none_flight_mode = BaseControlMode();
+static auto none_flight_mode = FlightModeNoneLocal();
 static auto acro_local = FLightModeAcroLocal();
 static auto auto_level_local = FlightModeAutoLevelLocal();
 
@@ -35,7 +36,7 @@ void PwmReceiverController::apply(KlevebrandMaxFlyDrone* drone) const
 
     for (const auto* mode : _control_modes)
     {
-        if (drone->getControlModeType() == mode->controlModeType())
+        if (drone->getControlMode() == mode->controlModeType())
         {
             mode->applyThrottleYawPitchRoll(drone, throttle_pwm, yaw_pwm, pitch_pwm, roll_pwm);
             return;
@@ -52,13 +53,13 @@ void PwmReceiverController::setFlightMode(KlevebrandMaxFlyDrone* drone, const in
         drone->activateControlMode(&none_flight_mode);
     }
     else if (flight_mode_pwm >= PWM_SIGNAL_MID_LOW && flight_mode_pwm < PWM_SIGNAL_MID_HIGH && drone->
-        getControlModeType() != acro)
+        getControlMode() != acro)
     {
         drone->activateControlMode(&acro_local);
 
         drone->enableMotors();
     }
-    else if (flight_mode_pwm >= PWM_SIGNAL_MID_HIGH && drone->getControlModeType() != auto_level)
+    else if (flight_mode_pwm >= PWM_SIGNAL_MID_HIGH && drone->getControlMode() != auto_level)
     {
         drone->activateControlMode(&auto_level_local);
 

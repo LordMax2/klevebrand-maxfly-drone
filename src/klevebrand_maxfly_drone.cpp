@@ -1,9 +1,9 @@
 #include "klevebrand_maxfly_drone.h"
 
-#include "autopilot/autopilot_tilt.h"
+#include "drone_components/flight_mode_none_local.h"
 
 KlevebrandMaxFlyDrone::KlevebrandMaxFlyDrone(ServoDroneMotor* motors, const int motor_pins[motor_pin_count])
-    : TemplateDrone(500, 200), _motors(motors)
+    : MaxFlyDroneBase(500, 200, gyro_reset_pin), _motors(motors)
 {
     for (int i = 0; i < motor_pin_count; i++)
     {
@@ -48,10 +48,10 @@ void KlevebrandMaxFlyDrone::setup()
 
     setupMotors();
 
-    static auto none_flight_mode = BaseControlMode();
+    static auto none_flight_mode = FlightModeNoneLocal();
     activateControlMode(&none_flight_mode);
 
-    processor->print("DRONE STARTED!");
+    processor.print("DRONE STARTED!");
 }
 
 static unsigned long last_run_start_microseconds_timestamp = 0;
@@ -61,7 +61,7 @@ bool KlevebrandMaxFlyDrone::run()
 {
     if (delayToKeepFeedbackLoopHz(last_run_start_microseconds_timestamp - last_gyro_fetch_duration) > 0)
     {
-        _position.run(false);
+        position.run(false);
 
         return false;
     }
@@ -75,14 +75,14 @@ bool KlevebrandMaxFlyDrone::run()
 
     last_gyro_fetch_duration = timestampMicroseconds() - current_time;
 
-    _position.run(true);
+    position.run(true);
 
     const float gyro_roll = getRoll();
     const float gyro_pitch = getPitch();
     float gyro_yaw = getYaw();
 
     // The IMU on the drone seems to be oriented in the wrong direction, where backwards points to north, flip it 180 deg
-    if (getControlModeType() == auto_level)
+    if (getControlMode() == auto_level)
     {
         float gyro_yaw_rotated_180 = gyro_yaw + 180;
         if (gyro_yaw_rotated_180 >= 180) gyro_yaw_rotated_180 -= 360;
@@ -97,7 +97,7 @@ bool KlevebrandMaxFlyDrone::run()
     }
     else if
     (
-        getControlModeType() != acro ||
+        getControlMode() != acro ||
         (
             fabs(getDesiredYawAngle()) < PID_ACRO_MAX_ANGLE_RATE_INTEGRAL_THRESHOLD &&
             fabs(getDesiredPitchAngle()) < PID_ACRO_MAX_ANGLE_RATE_INTEGRAL_THRESHOLD &&
@@ -118,11 +118,6 @@ bool KlevebrandMaxFlyDrone::run()
     runMotors(gyro_roll, gyro_pitch, gyro_yaw, delta_time_seconds);
 
     savePidErrors(gyro_roll, gyro_pitch, gyro_yaw);
-
-    if (isAutopilotEnabled())
-    {
-        _autopilot->goTo(this, 0, 0, 50);
-    }
 
     return true;
 }
@@ -179,7 +174,7 @@ void KlevebrandMaxFlyDrone::detachMotors() const
 void KlevebrandMaxFlyDrone::enableMotors()
 {
     attachMotors();
-    TemplateDrone::enableMotors();
+    MaxFlyDroneBase::enableMotors();
 }
 
 void KlevebrandMaxFlyDrone::disableMotors()
@@ -188,7 +183,7 @@ void KlevebrandMaxFlyDrone::disableMotors()
     setThrottle(0);
     stopMotors();
     resetPid();
-    TemplateDrone::disableMotors();
+    MaxFlyDroneBase::disableMotors();
     detachMotors();
 }
 

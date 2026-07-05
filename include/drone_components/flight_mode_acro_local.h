@@ -1,16 +1,26 @@
 #pragma once
 
-#include "concept_control_mode.h"
+#include "klevebrand_maxfly_drone.h"
 
 class FLightModeAcroLocal
 {
 public:
-    ControlMode_t type() const
+    static ControlMode_t type()
     {
         return acro;
     }
 
-    PidConstants_t pidConstants() const
+    static const char* name()
+    {
+        return "acro";
+    }
+
+    static bool yawCompassMode()
+    {
+        return false;
+    }
+
+    static PidConstants_t pidConstants()
     {
         return {
             0.04f, 0.25f, 0.004f,
@@ -19,20 +29,18 @@ public:
         };
     }
 
-    void activate(BaseDrone* drone) const
+    static void activate(MaxFlyDroneBase* drone)
     {
-//        gyro->reset();
+//        gyro.reset();
 //
-//        processor->sleepMilliseconds(1000);
+//        MaxFlyProcessor::sleepMilliseconds(1000);
 //
-//        static_cast<Bno08xDroneGyro*>(gyro)->setModeAcro();
+//        gyro.setModeAcro();
 //
-//        processor->sleepMilliseconds(1000);
+//        MaxFlyProcessor::sleepMilliseconds(1000);
 //
-//        gyro->reload();
+//        gyro.reload();
 //
-//        drone->setDesiredYawAngle(gyro->yaw());
+//        drone->setDesiredYawAngle(gyro.yaw());
     }
-
-    static_assert(ControlModeConcept<FLightModeAcroLocal>, "FLightModeAcroLocal does not meet the ControlModeConcept");
 };

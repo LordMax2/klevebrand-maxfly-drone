@@ -7,7 +7,7 @@
 class ServoDroneMotor
 {
 public:
-    ServoDroneMotor() {}
+    ServoDroneMotor() = default;
 
     void setup(int pin)
     {
