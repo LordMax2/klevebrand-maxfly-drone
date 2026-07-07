@@ -71,7 +71,7 @@ bool KlevebrandMaxFlyDrone::run()
     const float delta_time_seconds = delta_time / 1000000.0f;
     last_run_start_microseconds_timestamp = current_time;
 
-    updateGyro();
+    (void)updateGyro();
 
     last_gyro_fetch_duration = timestampMicroseconds() - current_time;
 

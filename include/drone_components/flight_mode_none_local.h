@@ -5,30 +5,30 @@
 class FlightModeNoneLocal
 {
 public:
-    static ControlMode_t type()
+    ControlMode_t type()
     {
         return none;
     }
 
-    static const char* name()
+    const char* name()
     {
         return "none";
     }
 
-    static bool yawCompassMode()
+    bool yawCompassMode()
     {
         return false;
     }
 
-    static PidConstants_t pidConstants()
+    PidConstants_t pidConstants()
     {
         return PidConstants_t{};
     }
 
-    static void activate(MaxFlyDroneBase* drone)
+    void activate(MaxFlyDroneBase* drone)
     {
-//        (void)drone;
-//        (void)gyro;
-//        (void)processor;
+        (void)drone;
     }
 };
+
+static_assert(ControlModeConcept<FlightModeNoneLocal, MaxFlyPid, MaxFlyPosition, MaxFlyGyro, MaxFlyProcessor>);

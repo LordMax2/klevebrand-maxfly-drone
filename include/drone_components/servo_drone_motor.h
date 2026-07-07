@@ -2,7 +2,6 @@
 
 #include "Arduino.h"
 #include <Servo.h>
-#include "concept_drone_motor.h"
 
 class ServoDroneMotor
 {
@@ -56,8 +55,6 @@ public:
     {
         return _is_attached;
     }
-
-    static_assert(DroneMotorConcept<ServoDroneMotor>, "ServoDroneMotor does not implement DroneMotorConcept");
 
 private:
     Servo _motor;

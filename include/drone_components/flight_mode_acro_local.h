@@ -5,22 +5,22 @@
 class FLightModeAcroLocal
 {
 public:
-    static ControlMode_t type()
+    ControlMode_t type()
     {
         return acro;
     }
 
-    static const char* name()
+    const char* name()
     {
         return "acro";
     }
 
-    static bool yawCompassMode()
+    bool yawCompassMode()
     {
         return false;
     }
 
-    static PidConstants_t pidConstants()
+    PidConstants_t pidConstants()
     {
         return {
             0.04f, 0.25f, 0.004f,
@@ -29,18 +29,20 @@ public:
         };
     }
 
-    static void activate(MaxFlyDroneBase* drone)
+    void activate(MaxFlyDroneBase* drone)
     {
-//        gyro.reset();
-//
-//        MaxFlyProcessor::sleepMilliseconds(1000);
-//
-//        gyro.setModeAcro();
-//
-//        MaxFlyProcessor::sleepMilliseconds(1000);
-//
-//        gyro.reload();
-//
-//        drone->setDesiredYawAngle(gyro.yaw());
+        drone->gyro.reset();
+
+        drone->processor.sleepMilliseconds(1000);
+
+        drone->gyro.setModeAcro();
+
+        drone->processor.sleepMilliseconds(1000);
+
+        drone->gyro.reload();
+
+        drone->setDesiredYawAngle(drone->getYaw());
     }
 };
+
+static_assert(ControlModeConcept<FLightModeAcroLocal, MaxFlyPid, MaxFlyPosition, MaxFlyGyro, MaxFlyProcessor>);

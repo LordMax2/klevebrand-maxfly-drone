@@ -115,4 +115,4 @@ float AutopilotTilt<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardwar
     return bearing_degrees;
 }
 
-template class AutopilotTilt<QuadcopterPid, MaxFlyPosition, MaxFlyGyro, MaxFlyProcessor>;
+template class AutopilotTilt<QuadcopterPid, QuadcopterPosition<Bno08xDroneGyro>, Bno08xDroneGyro, HardwareProcessorArduino>;

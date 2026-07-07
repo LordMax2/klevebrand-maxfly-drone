@@ -6,13 +6,12 @@
 #include "bno08x_drone_gyro.h"
 #include "hardware_processor_arduino.h"
 #include "quadcopter_position.h"
-#include "autopilot/autopilot_tilt.h"
 
 using MaxFlyGyro = Bno08xDroneGyro;
-using MaxFlyPosition = QuadcopterPosition<Bno08xDroneGyro>;
 using MaxFlyProcessor = HardwareProcessorArduino;
-using MaxFlyDroneBase = TemplateDrone<QuadcopterPid, MaxFlyPosition, MaxFlyGyro, MaxFlyProcessor>;
-using MaxFlyAutopilot = AutopilotTilt<QuadcopterPid, MaxFlyPosition, MaxFlyGyro, MaxFlyProcessor>;
+using MaxFlyPosition = QuadcopterPosition<MaxFlyGyro>;
+using MaxFlyPid = QuadcopterPid;
+using MaxFlyDroneBase = TemplateDrone<MaxFlyPid, MaxFlyPosition, MaxFlyGyro, MaxFlyProcessor>;
 
 class KlevebrandMaxFlyDrone : public MaxFlyDroneBase {
     ServoDroneMotor *_motors;
@@ -34,7 +33,7 @@ public:
     static constexpr int gyro_reset_pin = 10;
 
     KlevebrandMaxFlyDrone(ServoDroneMotor *motors, const int motor_pins[motor_pin_count]);
-    ~KlevebrandMaxFlyDrone();
+    ~KlevebrandMaxFlyDrone() override;
 
     void setup();
 

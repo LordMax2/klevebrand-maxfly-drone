@@ -1,12 +1,11 @@
 #pragma once
 
 #include "Arduino.h"
-#include "concept_hardware_processor.h"
 
 class HardwareProcessorArduino
 {
 public:
-  static void setup()
+  void setup()
   {
     Serial.begin(115200);
 
@@ -19,26 +18,24 @@ public:
     }
   }
 
-  static unsigned long microsecondsTimestamp()
+  unsigned long microsecondsTimestamp()
   {
     return micros();
   }
 
-  static unsigned long millisecondsTimestamp()
+  unsigned long millisecondsTimestamp()
   {
     return millis();
   }
 
-  static void sleepMilliseconds(const int milliseconds)
+  void sleepMilliseconds(const int milliseconds)
   {
     delay(milliseconds);
   }
 
-  static void print(const char *array)
+  void print(const char *array)
   {
     Serial.println(array);
   }
-
-  static_assert(HardwareProcessorConcept<HardwareProcessorArduino>, "HardwareProcessorArduino does not implement HardwareProcessorConcept");
 
 };
