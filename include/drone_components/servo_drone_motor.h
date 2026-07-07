@@ -1,14 +1,12 @@
-#ifndef SERVO_DRONE_MOTOR_H
-#define SERVO_DRONE_MOTOR_H
+#pragma once
 
 #include "Arduino.h"
-#include "base_drone_motor.h"
 #include <Servo.h>
 
-class ServoDroneMotor : public BaseDroneMotor
+class ServoDroneMotor
 {
 public:
-    ServoDroneMotor() : BaseDroneMotor() {}
+    ServoDroneMotor() = default;
 
     void setup(int pin)
     {
@@ -17,7 +15,7 @@ public:
         attach();
     }
 
-    void setSpeed(float percentage) override
+    void setSpeed(float percentage)
     {
         if (!_is_attached)
         {
@@ -64,5 +62,3 @@ private:
     bool _is_configured = false;
     bool _is_attached = false;
 };
-
-#endif // SERVO_DRONE_MOTOR_H

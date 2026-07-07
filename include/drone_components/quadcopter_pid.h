@@ -1,14 +1,16 @@
 #ifndef QUADCOPTER_PID_H 
 #define QUADCOPTER_PID_H
 
+#include <stdint.h>
+
 #include "gyro_pid.h"
 
-#define PID_THROTTLE_THRESHOLD 10 
-#define PID_ACRO_MAX_ANGLE_RATE_INTEGRAL_THRESHOLD 30
-#define PID_MAX 15
+static constexpr uint8_t PID_THROTTLE_THRESHOLD = 10;
+static constexpr uint8_t PID_ACRO_MAX_ANGLE_RATE_INTEGRAL_THRESHOLD = 30;
+static constexpr uint8_t PID_MAX = 15;
 
-#define THROTTLE_MINIMUM 0 
-#define THROTTLE_MAXIMUM 100
+static constexpr uint8_t THROTTLE_MINIMUM = 0;
+static constexpr uint8_t THROTTLE_MAXIMUM = 100;
 
 struct QuadcopterPidMotorThrottle_t
 {

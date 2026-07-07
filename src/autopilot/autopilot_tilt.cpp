@@ -1,6 +1,7 @@
 #include "autopilot/autopilot_tilt.h"
+#include "klevebrand_maxfly_drone.h"
 #include <math.h>
-#include <base_drone.h>
+#include <template_drone.h>
 #include "Arduino.h"
 
 namespace
@@ -8,7 +9,8 @@ namespace
     unsigned long _last_goto_timestamp = 0;
 }
 
-void AutopilotTilt::goTo(BaseDrone* drone, const float latitude, const float longitude, const float altitude)
+template <class SomeGyroPidType, class SomePositionType, class SomeGyroType, class SomeHardwareProcessorType>
+void AutopilotTilt<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardwareProcessorType>::goTo(TemplateDrone<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardwareProcessorType> *drone, const float latitude, const float longitude, const float altitude)
 {
     // If the drone tilts morethan 40 degrees, dont run throttle PID controller
     if (abs(drone->getRoll()) > 40.0f || abs(drone->getPitch()) > 40.0f)
@@ -96,7 +98,8 @@ void AutopilotTilt::goTo(BaseDrone* drone, const float latitude, const float lon
     drone->setDesiredRollAngle(roll_adjustment * -1);
 }
 
-float AutopilotTilt::getDestinationYawCompassAngle(const float target_latitude, const float target_longitude,
+template <class SomeGyroPidType, class SomePositionType, class SomeGyroType, class SomeHardwareProcessorType>
+float AutopilotTilt<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardwareProcessorType>::getDestinationYawCompassAngle(const float target_latitude, const float target_longitude,
                                                    const float current_latitude, const float current_longitude)
 {
     const float delta_latitude = target_latitude - current_latitude;
@@ -111,3 +114,5 @@ float AutopilotTilt::getDestinationYawCompassAngle(const float target_latitude, 
 
     return bearing_degrees;
 }
+
+template class AutopilotTilt<QuadcopterPid, QuadcopterPosition<Bno08xDroneGyro>, Bno08xDroneGyro, HardwareProcessorArduino>;

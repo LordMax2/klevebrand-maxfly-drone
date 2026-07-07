@@ -1,5 +1,4 @@
-#ifndef GPS_LOCATION_INFO_H
-#define GPS_LOCATION_INFO_H
+#pragma once
 
 #include "Arduino.h"
 
@@ -176,7 +175,5 @@ struct GpsLocationInfo_t
         return parseFromGpsAcpString(value.c_str());
     }
 };
-
-#endif // GPS_LOCATION_INFO_H
 
 // $GPSACP: 161550.000,5950.9081N,01739.3691E,0.4,34.2,3,0.0,0.0,0.0,150126,10,06

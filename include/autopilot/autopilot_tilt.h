@@ -1,14 +1,14 @@
 #ifndef AUTOPILOT_TILT_H
 #define AUTOPILOT_TILT_H
 
-#include "base_autopilot.h"
 #include "pid.h"
-#include "base_drone.h"
+#include "template_drone.h"
 
-class AutopilotTilt : public BaseAutopilot
+template <class SomeGyroPidType, class SomePositionType, class SomeGyroType, class SomeHardwareProcessorType>
+class AutopilotTilt
 {
 public:
-    void goTo(BaseDrone* drone, float latitude, float longitude, float altitude) override;
+    void goTo(TemplateDrone<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardwareProcessorType> *drone, float latitude, float longitude, float altitude);
 
 private:
     Pid _altitude_pid = Pid(1.3f, 0.05f, 0.0f, 2.0f, 200);
