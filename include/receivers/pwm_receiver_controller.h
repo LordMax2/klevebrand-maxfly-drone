@@ -5,9 +5,10 @@
 #include "pwm_control_modes/pwm_receiver_control_mode_auto_level.h"
 #include "pwm_control_modes/pwm_receiver_control_mode_none.h"
 
-#define CHANNEL_COUNT 8
+static constexpr int CHANNEL_COUNT = 8;
 
-class PwmReceiverController
+template <ConceptPwmReceiverControlMode ...Modes>
+class PwmReceiverController : Modes...
 {
 public:
     PwmReceiverController(
@@ -23,15 +24,11 @@ public:
         this->_pitch_receiver_channel_number = pitch_receiver_channel_number;
         this->_roll_receiver_channel_number = roll_receiver_channel_number;
         this->_flight_mode_receiver_channel_number = flight_mode_receiver_channel_number;
-
-        _control_modes[0] = &_none_control_mode;
-        _control_modes[1] = &_acro_control_mode;
-        _control_modes[2] = &_auto_level_control_mode;
     };
 
     static void setup();
     static bool wantsControl();
-    void apply(KlevebrandMaxFlyDrone *drone) const;
+    void apply(KlevebrandMaxFlyDrone* drone);
 
 private:
     int _throttle_receiver_channel_number;
@@ -43,9 +40,11 @@ private:
     PwmReceiverControlModeNone _none_control_mode;
     PwmReceiverControlModeAcro _acro_control_mode;
     PwmReceiverControlModeAutoLevel _auto_level_control_mode;
-    const BasePwmReceiverControlMode* _control_modes[3]{};
 
-    static void setFlightMode(KlevebrandMaxFlyDrone *drone, int flight_mode_pwm);
+    template<ConceptPwmReceiverControlMode Mode>
+    bool tryApplyMode(KlevebrandMaxFlyDrone* drone, int throttle_pwm, int yaw_pwm, int pitch_pwm, int roll_pwm);
+
+    static void setFlightMode(KlevebrandMaxFlyDrone* drone, int flight_mode_pwm);
 
     static int getChannelValue(int channel_number);
 
@@ -60,6 +59,8 @@ private:
     static void recordPinChangePulseWidthChannel8() { recordPinChangePulseWidth(8); };
 
     static int _channel_number_to_gpio_map_array[CHANNEL_COUNT];
-    static unsigned long _pulse_start_micros[CHANNEL_COUNT];
-    static int _pulse_widths[CHANNEL_COUNT];
+    inline static unsigned long _pulse_start_micros[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
+    inline static int _pulse_widths[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
 };
+
+#include "pwm_receiver_controller.ipp"

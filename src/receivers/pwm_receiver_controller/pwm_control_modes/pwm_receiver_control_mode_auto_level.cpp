@@ -1,25 +1,29 @@
 #include "receivers/pwm_control_modes/pwm_receiver_control_mode_auto_level.h"
 
+#include <Arduino.h>
+
+#include "drone_components/quadcopter_pid.h"
+
 constexpr int PWM_DEADZONE = 20;
 
 constexpr float YAW_STEP_EXPONENTIAL_INCREASE_RATE = 0.5f;
 constexpr float MAX_YAW_STEP_DEGREES = 5.0f;
 constexpr float MAX_RATE_DEG_PER_SEC = 135.0f;
 
-ControlMode_t PwmReceiverControlModeAutoLevel::controlModeType() const
+ControlMode_t PwmReceiverControlModeAutoLevel::controlModeType()
 {
     return auto_level;
 }
 
 void PwmReceiverControlModeAutoLevel::applyThrottleYawPitchRoll(KlevebrandMaxFlyDrone* drone, const int throttle_pwm,
                                                                 const int yaw_pwm, const int pitch_pwm,
-                                                                const int roll_pwm) const
+                                                                const int roll_pwm)
 {
     const float throttle_value = map(throttle_pwm, 1000, 2000, THROTTLE_MINIMUM, THROTTLE_MAXIMUM);
     drone->setThrottle(throttle_value);
 
     const float yaw_stick = normalizePwm(yaw_pwm);
-    const float yaw_increment = -applyExpo(yaw_stick, YAW_STEP_EXPONENTIAL_INCREASE_RATE) * MAX_YAW_STEP_DEGREES;
+    const float yaw_increment = applyExpo(yaw_stick, YAW_STEP_EXPONENTIAL_INCREASE_RATE) * MAX_YAW_STEP_DEGREES;
 
     const unsigned long timestamp_milliseconds = millis();
 

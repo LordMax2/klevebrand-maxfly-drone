@@ -10,10 +10,11 @@ enum class ActiveController_t
     skywire
 };
 
+template <class PwmReceiverControllerType>
 class ControlManager
 {
 public:
-    ControlManager(PwmReceiverController *pwm_receiver, SkywireDroneController *skywire_controller)
+    ControlManager(PwmReceiverControllerType *pwm_receiver, SkywireDroneController *skywire_controller)
         : _pwm_receiver_controller(pwm_receiver), _skywire_controller(skywire_controller) {}
 
     void setup() const;
@@ -21,7 +22,9 @@ public:
     ActiveController_t activeControlSource() const;
 
 private:
-    PwmReceiverController *_pwm_receiver_controller;
+    PwmReceiverControllerType *_pwm_receiver_controller;
     SkywireDroneController *_skywire_controller;
     ActiveController_t _active_controller = ActiveController_t::none;
 };
+
+#include "control_manager.ipp"
