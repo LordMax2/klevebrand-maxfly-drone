@@ -41,9 +41,9 @@ public:
 
     void runMotors(float gyro_roll, float gyro_pitch, float gyro_yaw, float delta_time_seconds);
 
-    void enableMotors();
+    void enableMotors() override;
 
-    void disableMotors();
+    void disableMotors() override;
 
     void setupMotors();
 

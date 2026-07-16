@@ -115,7 +115,7 @@ void SkywireDroneController::apply(KlevebrandMaxFlyDrone *drone) const
     }
     else if (_request.flight_mode_id == acro)
     {
-        static auto acro_local = FLightModeAcroLocal();
+        static auto acro_local = FlightModeAcroLocal();
         drone->activateControlMode(&acro_local);
     }
 

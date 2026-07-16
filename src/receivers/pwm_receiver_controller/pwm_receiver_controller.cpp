@@ -16,7 +16,7 @@ unsigned long PwmReceiverController::_pulse_start_micros[CHANNEL_COUNT] = {0, 0,
 int PwmReceiverController::_pulse_widths[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 static auto none_flight_mode = FlightModeNoneLocal();
-static auto acro_local = FLightModeAcroLocal();
+static auto acro_local = FlightModeAcroLocal();
 static auto auto_level_local = FlightModeAutoLevelLocal();
 
 bool PwmReceiverController::wantsControl()

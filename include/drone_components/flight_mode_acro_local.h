@@ -2,7 +2,7 @@
 
 #include "klevebrand_maxfly_drone.h"
 
-class FLightModeAcroLocal
+class FlightModeAcroLocal
 {
 public:
     ControlMode_t type()
@@ -45,4 +45,4 @@ public:
     }
 };
 
-static_assert(ControlModeConcept<FLightModeAcroLocal, MaxFlyPid, MaxFlyPosition, MaxFlyGyro, MaxFlyProcessor>);
+static_assert(ControlModeConcept<FlightModeAcroLocal, MaxFlyPid, MaxFlyPosition, MaxFlyGyro, MaxFlyProcessor>);
