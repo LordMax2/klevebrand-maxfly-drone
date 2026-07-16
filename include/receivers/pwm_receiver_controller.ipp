@@ -1,5 +1,3 @@
-#include "receivers/pwm_receiver_controller.h"
-
 #include "drone_components/flight_mode_acro_local.h"
 #include "drone_components/flight_mode_auto_level_local.h"
 #include "drone_components/flight_mode_none_local.h"
@@ -9,22 +7,23 @@ constexpr int PWM_SIGNAL_MINIMUM = 1000;
 constexpr int PWM_SIGNAL_MID_LOW = 1250;
 constexpr int PWM_SIGNAL_MID_HIGH = 1750;
 
-int PwmReceiverController::_channel_number_to_gpio_map_array[CHANNEL_COUNT] = {
+template <ConceptPwmReceiverControlMode ...Modes>
+int PwmReceiverController<Modes...>::_channel_number_to_gpio_map_array[CHANNEL_COUNT] = {
     A8, A9, A10, A11, A12, A13, A14, A15
 };
-unsigned long PwmReceiverController::_pulse_start_micros[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
-int PwmReceiverController::_pulse_widths[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 static auto none_flight_mode = FlightModeNoneLocal();
 static auto acro_local = FlightModeAcroLocal();
 static auto auto_level_local = FlightModeAutoLevelLocal();
 
-bool PwmReceiverController::wantsControl()
+template <ConceptPwmReceiverControlMode ...Modes>
+bool PwmReceiverController<Modes...>::wantsControl()
 {
     return true;
 }
 
-void PwmReceiverController::apply(KlevebrandMaxFlyDrone* drone) const
+template <ConceptPwmReceiverControlMode ...Modes>
+void PwmReceiverController<Modes...>::apply(KlevebrandMaxFlyDrone* drone)
 {
     const int throttle_pwm = getChannelValue(_throttle_receiver_channel_number);
     const int yaw_pwm = getChannelValue(_yaw_receiver_channel_number);
@@ -34,17 +33,26 @@ void PwmReceiverController::apply(KlevebrandMaxFlyDrone* drone) const
 
     setFlightMode(drone, flight_mode_pwm);
 
-    for (const auto* mode : _control_modes)
-    {
-        if (drone->getControlMode() == mode->controlModeType())
-        {
-            mode->applyThrottleYawPitchRoll(drone, throttle_pwm, yaw_pwm, pitch_pwm, roll_pwm);
-            return;
-        }
-    }
+    (void)((tryApplyMode<Modes>(drone, throttle_pwm, yaw_pwm, pitch_pwm, roll_pwm) || ...));
 }
 
-void PwmReceiverController::setFlightMode(KlevebrandMaxFlyDrone* drone, const int flight_mode_pwm)
+template <ConceptPwmReceiverControlMode ... Modes>
+template <ConceptPwmReceiverControlMode Mode>
+bool PwmReceiverController<Modes...>::tryApplyMode(KlevebrandMaxFlyDrone* drone, int throttle_pwm, int yaw_pwm, int pitch_pwm, int roll_pwm)
+{
+    Mode& mode = static_cast<Mode&>(*this);
+
+    if (drone->getControlMode() == mode.controlModeType())
+    {
+        mode.applyThrottleYawPitchRoll(drone, throttle_pwm, yaw_pwm, pitch_pwm, roll_pwm);
+        return true;
+    }
+
+    return false;
+}
+
+template <ConceptPwmReceiverControlMode ...Modes>
+void PwmReceiverController<Modes...>::setFlightMode(KlevebrandMaxFlyDrone* drone, const int flight_mode_pwm)
 {
     if (flight_mode_pwm >= PWM_SIGNAL_MINIMUM && flight_mode_pwm < PWM_SIGNAL_MID_LOW)
     {
@@ -67,7 +75,8 @@ void PwmReceiverController::setFlightMode(KlevebrandMaxFlyDrone* drone, const in
     }
 }
 
-void PwmReceiverController::setup()
+template <ConceptPwmReceiverControlMode ...Modes>
+void PwmReceiverController<Modes...>::setup()
 {
     if (_channel_number_to_gpio_map_array[0] != -1)
     {
@@ -118,7 +127,8 @@ void PwmReceiverController::setup()
     }
 }
 
-void PwmReceiverController::recordPinChangePulseWidth(const int channel_number)
+template <ConceptPwmReceiverControlMode ...Modes>
+void PwmReceiverController<Modes...>::recordPinChangePulseWidth(const int channel_number)
 {
     const int channelNumberIndex = channel_number - 1;
     const int pinState = digitalRead(_channel_number_to_gpio_map_array[channelNumberIndex]);
@@ -141,7 +151,8 @@ void PwmReceiverController::recordPinChangePulseWidth(const int channel_number)
     }
 }
 
-int PwmReceiverController::getChannelValue(const int channel_number)
+template <ConceptPwmReceiverControlMode ...Modes>
+int PwmReceiverController<Modes...>::getChannelValue(const int channel_number)
 {
     if (channel_number < 1 || channel_number > CHANNEL_COUNT)
     {

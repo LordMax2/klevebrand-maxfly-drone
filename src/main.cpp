@@ -9,7 +9,9 @@ static constexpr int motor_pins[4] = {2, 3, 6, 7};
 
 static KlevebrandMaxFlyDrone drone(motors, motor_pins);
 
-static auto receiver = PwmReceiverController(1, 4, 3, 2, 7);
+using PwmReceiverControllerType = PwmReceiverController<PwmReceiverControlModeNone, PwmReceiverControlModeAcro, PwmReceiverControlModeAutoLevel>;
+
+static auto receiver = PwmReceiverControllerType(1, 4, 3, 2, 7);
 static SkywireDroneController skywire_controller;
 static auto control_manager = ControlManager(&receiver, &skywire_controller);
 

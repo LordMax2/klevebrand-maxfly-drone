@@ -1,18 +1,15 @@
-#ifndef KLEVEBRAND_MAXFLY_DRONE_PWM_RECEIVER_CONTROL_MODE_NONE_H
-#define KLEVEBRAND_MAXFLY_DRONE_PWM_RECEIVER_CONTROL_MODE_NONE_H
+#pragma once
 
-#include "receivers/pwm_control_modes/base_pwm_receiver_control_mode.h"
-
-class PwmReceiverControlModeNone : public BasePwmReceiverControlMode
+class PwmReceiverControlModeNone
 {
 public:
-    ControlMode_t controlModeType() const override
+    ControlMode_t controlModeType()
     {
         return none;
     }
 
     void applyThrottleYawPitchRoll(KlevebrandMaxFlyDrone* drone, int throttle_pwm, int yaw_pwm, int pitch_pwm,
-                                   int roll_pwm) const override
+                                   int roll_pwm)
     {
         (void)drone;
         (void)throttle_pwm;
@@ -22,4 +19,4 @@ public:
     }
 };
 
-#endif // KLEVEBRAND_MAXFLY_DRONE_PWM_RECEIVER_CONTROL_MODE_NONE_H
+static_assert(ConceptPwmReceiverControlMode<PwmReceiverControlModeNone>, "Control mode doesnt implement the concept");

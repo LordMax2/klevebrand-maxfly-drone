@@ -1,15 +1,13 @@
-#ifndef KLEVEBRAND_MAXFLY_DRONE_PWM_RECEIVER_CONTROL_MODE_ACRO_H
-#define KLEVEBRAND_MAXFLY_DRONE_PWM_RECEIVER_CONTROL_MODE_ACRO_H
+#pragma once
 
-#include "receivers/pwm_control_modes/base_pwm_receiver_control_mode.h"
+#include "concept_pwm_receiver_control_mode.h"
 
-class PwmReceiverControlModeAcro : public BasePwmReceiverControlMode
+class PwmReceiverControlModeAcro
 {
 public:
-    ControlMode_t controlModeType() const override;
+    ControlMode_t controlModeType();
 
-    void applyThrottleYawPitchRoll(KlevebrandMaxFlyDrone* drone, int throttle_pwm, int yaw_pwm, int pitch_pwm,
-                                   int roll_pwm) const override;
+    void applyThrottleYawPitchRoll(KlevebrandMaxFlyDrone* drone, int throttle_pwm, int yaw_pwm, int pitch_pwm, int roll_pwm);
 
 private:
     static float normalizePwm(int pwm_microseconds);
@@ -17,4 +15,4 @@ private:
     static float applyExpo(float input, float expo);
 };
 
-#endif // KLEVEBRAND_MAXFLY_DRONE_PWM_RECEIVER_CONTROL_MODE_ACRO_H
+static_assert(ConceptPwmReceiverControlMode<PwmReceiverControlModeAcro>, "Control mode doesnt implement the concept");

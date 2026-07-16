@@ -1,6 +1,5 @@
-#include "../../include/receivers/control_manager.h"
-
-void ControlManager::setup() const
+template <class PwmReceiverControllerType>
+void ControlManager<PwmReceiverControllerType>::setup() const
 {
     if (_pwm_receiver_controller != nullptr)
     {
@@ -13,7 +12,8 @@ void ControlManager::setup() const
     }
 }
 
-void ControlManager::run(KlevebrandMaxFlyDrone *drone)
+template <class PwmReceiverControllerType>
+void ControlManager<PwmReceiverControllerType>::run(KlevebrandMaxFlyDrone *drone)
 {
     if (_skywire_controller != nullptr)
     {
@@ -37,7 +37,8 @@ void ControlManager::run(KlevebrandMaxFlyDrone *drone)
     _active_controller = ActiveController_t::none;
 }
 
-ActiveController_t ControlManager::activeControlSource() const
+template <class PwmReceiverControllerType>
+ActiveController_t ControlManager<PwmReceiverControllerType>::activeControlSource() const
 {
     return _active_controller;
 }

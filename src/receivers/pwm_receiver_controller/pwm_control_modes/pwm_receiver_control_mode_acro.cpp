@@ -1,19 +1,23 @@
 #include "receivers/pwm_control_modes/pwm_receiver_control_mode_acro.h"
 
+#include <Arduino.h>
+
+#include "drone_components/quadcopter_pid.h"
+
 constexpr int PWM_DEADZONE = 20;
 
 constexpr float ACRO_EXPONENTIAL_INCREASE_RATE = 0.5f;
 constexpr float MAX_ACRO_RATE_PITCH_ROLL = 300.0f;
 constexpr float MAX_ACRO_RATE_YAW = 300.0f;
 
-ControlMode_t PwmReceiverControlModeAcro::controlModeType() const
+ControlMode_t PwmReceiverControlModeAcro::controlModeType()
 {
     return acro;
 }
 
 void PwmReceiverControlModeAcro::applyThrottleYawPitchRoll(KlevebrandMaxFlyDrone* drone, const int throttle_pwm,
                                                            const int yaw_pwm,
-                                                           const int pitch_pwm, const int roll_pwm) const
+                                                           const int pitch_pwm, const int roll_pwm)
 {
     const float throttle_value = map(throttle_pwm, 1000, 2000, THROTTLE_MINIMUM, THROTTLE_MAXIMUM);
     drone->setThrottle(throttle_value);
