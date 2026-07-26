@@ -4,7 +4,7 @@
 #include "pid.h"
 #include "template_drone.h"
 
-template <class SomeGyroPidType, class SomePositionType, class SomeGyroType, class SomeHardwareProcessorType>
+template <class SomeGyroPidType, DronePositionConcept SomePositionType, DroneGyroConcept SomeGyroType, HardwareProcessorConcept SomeHardwareProcessorType>
 class AutopilotTilt
 {
 public:

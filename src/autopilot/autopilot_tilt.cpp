@@ -9,7 +9,7 @@ namespace
     unsigned long _last_goto_timestamp = 0;
 }
 
-template <class SomeGyroPidType, class SomePositionType, class SomeGyroType, class SomeHardwareProcessorType>
+template <class SomeGyroPidType, DronePositionConcept SomePositionType, DroneGyroConcept SomeGyroType, HardwareProcessorConcept SomeHardwareProcessorType>
 void AutopilotTilt<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardwareProcessorType>::goTo(TemplateDrone<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardwareProcessorType> *drone, const float latitude, const float longitude, const float altitude)
 {
     // If the drone tilts morethan 40 degrees, dont run throttle PID controller
@@ -98,7 +98,7 @@ void AutopilotTilt<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardware
     drone->setDesiredRollAngle(roll_adjustment * -1);
 }
 
-template <class SomeGyroPidType, class SomePositionType, class SomeGyroType, class SomeHardwareProcessorType>
+template <class SomeGyroPidType, DronePositionConcept SomePositionType, DroneGyroConcept SomeGyroType, HardwareProcessorConcept SomeHardwareProcessorType>
 float AutopilotTilt<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardwareProcessorType>::getDestinationYawCompassAngle(const float target_latitude, const float target_longitude,
                                                    const float current_latitude, const float current_longitude)
 {
@@ -115,4 +115,4 @@ float AutopilotTilt<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardwar
     return bearing_degrees;
 }
 
-template class AutopilotTilt<QuadcopterPid, QuadcopterPosition<Bno08xDroneGyro>, Bno08xDroneGyro, HardwareProcessorArduino>;
+template class AutopilotTilt<MaxFlyPid, MaxFlyPosition, MaxFlyGyro, MaxFlyProcessor>;
