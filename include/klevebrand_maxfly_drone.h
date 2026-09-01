@@ -6,6 +6,7 @@
 #include "drone_components/maxfly_position.h"
 #include "bno08x_drone_gyro.h"
 #include "hardware_processor_arduino.h"
+#include "autopilot/autopilot_tilt.h"
 
 using MaxFlyGyro = Bno08xDroneGyro;
 using MaxFlyProcessor = HardwareProcessorArduino;
@@ -17,6 +18,13 @@ class KlevebrandMaxFlyDrone : public MaxFlyDroneBase {
     ServoDroneMotor *_motors;
     static constexpr int motor_pin_count = 4;
     int _motor_pins[motor_pin_count]{};
+
+    AutopilotTilt<MaxFlyPid, MaxFlyPosition, MaxFlyGyro, MaxFlyProcessor> _autopilot;
+    bool _is_autopilot_enabled = false;
+
+    static constexpr float AUTOPILOT_TEST_LATITUDE = 59.8586f;
+    static constexpr float AUTOPILOT_TEST_LONGITUDE = 17.6389f;
+    static constexpr float AUTOPILOT_TEST_ALTITUDE_METERS = 10.0f;
 
     ServoDroneMotor &motorLeftFront() const;
     ServoDroneMotor &motorRightFront() const;
@@ -48,4 +56,10 @@ public:
     void setupMotors();
 
     void stopMotors();
+
+    bool isAutopilotEnabled() const;
+
+    void enableAutopilot();
+
+    void disableAutopilot();
 };

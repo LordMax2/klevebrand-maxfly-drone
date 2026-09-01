@@ -11,12 +11,12 @@ public:
     void goTo(TemplateDrone<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardwareProcessorType> *drone, float latitude, float longitude, float altitude);
 
 private:
-    Pid _altitude_pid = Pid(1.3f, 0.05f, 0.0f, 2.0f, 200);
-    Pid _latitude_pid = Pid(0.5f, 0.05f, 0.0f, 5.0f, 200);
-    Pid _longitude_pid = Pid(0.5f, 0.05f, 0.0f, 5.0f, 200);
-    Pid _altitude_velocity_pid = Pid(3.0f, 0.0f, 0.0f, 20.0f, 200);
-    Pid _latitude_velocity_pid = Pid(3.0f, 0.0f, 0.0f, 15.0f, 200);
-    Pid _longitude_velocity_pid = Pid(3.0f, 0.0f, 0.0f, 15.0f, 200);
+    Pid _altitude_pid = Pid(1.5f, 0.08f, 0.0f, 2.5f, 200);
+    Pid _latitude_pid = Pid(0.8f, 0.05f, 0.0f, 5.0f, 200);
+    Pid _longitude_pid = Pid(0.8f, 0.05f, 0.0f, 5.0f, 200);
+    Pid _altitude_velocity_pid = Pid(10.0f, 0.15f, 0.0f, 25.0f, 200);
+    Pid _latitude_velocity_pid = Pid(8.0f, 0.0f, 0.0f, 15.0f, 200);
+    Pid _longitude_velocity_pid = Pid(8.0f, 0.0f, 0.0f, 15.0f, 200);
 
     float _hover_throttle = 60.0f;
 

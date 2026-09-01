@@ -119,6 +119,15 @@ bool KlevebrandMaxFlyDrone::run()
 
     savePidErrors(gyro_roll, gyro_pitch, gyro_yaw);
 
+    if (isAutopilotEnabled())
+    {
+        _autopilot.goTo(
+            this,
+            AUTOPILOT_TEST_LATITUDE,
+            AUTOPILOT_TEST_LONGITUDE,
+            AUTOPILOT_TEST_ALTITUDE_METERS);
+    }
+
     return true;
 }
 
@@ -200,4 +209,19 @@ void KlevebrandMaxFlyDrone::printThrottle(const float delta_time_seconds)
     Serial.print("    ");
     Serial.println(throttle.pid_throttle_rb);
     Serial.println("-----------------------------------------");
+}
+
+bool KlevebrandMaxFlyDrone::isAutopilotEnabled() const
+{
+    return _is_autopilot_enabled;
+}
+
+void KlevebrandMaxFlyDrone::enableAutopilot()
+{
+    _is_autopilot_enabled = true;
+}
+
+void KlevebrandMaxFlyDrone::disableAutopilot()
+{
+    _is_autopilot_enabled = false;
 }
