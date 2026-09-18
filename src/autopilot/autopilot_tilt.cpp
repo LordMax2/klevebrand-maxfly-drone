@@ -4,11 +4,6 @@
 #include <template_drone.h>
 #include "Arduino.h"
 
-namespace
-{
-    unsigned long _last_goto_timestamp = 0;
-}
-
 template <class SomeGyroPidType, DronePositionConcept SomePositionType, DroneGyroConcept SomeGyroType, HardwareProcessorConcept SomeHardwareProcessorType>
 void AutopilotTilt<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardwareProcessorType>::goTo(TemplateDrone<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardwareProcessorType> *drone, const float latitude, const float longitude, const float altitude)
 {
@@ -17,6 +12,7 @@ void AutopilotTilt<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardware
     {
         drone->setDesiredPitchAngle(0);
         drone->setDesiredRollAngle(0);
+        _last_goto_timestamp = drone->timestampMicroseconds();
 
         return;
     }
@@ -24,9 +20,18 @@ void AutopilotTilt<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardware
     const auto current_altitude = drone->getAltitude();
     const auto current_longitude = drone->getLongitude();
     const auto current_latitude = drone->getLatitude();
-
-    const long now = drone->timestampMicroseconds();
+    const unsigned long now = drone->timestampMicroseconds();
     const float delta_time_seconds = (now - _last_goto_timestamp) / 1000000.0f;
+
+    constexpr float max_delta_time_seconds = 0.1f;
+
+    if (_last_goto_timestamp == 0 || delta_time_seconds <= 0.0f || delta_time_seconds > max_delta_time_seconds)
+    {
+        _last_goto_timestamp = now;
+
+        return;
+    }
+
     _last_goto_timestamp = now;
 
     const float target_velocity = _altitude_pid.pid(current_altitude, altitude, delta_time_seconds);
@@ -39,9 +44,10 @@ void AutopilotTilt<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardware
         _altitude_pid.updateIntegral(current_altitude, altitude, delta_time_seconds);
     }
 
-    constexpr float hover_learn_altitude_gate = 5.0f;
+    constexpr float hover_learn_altitude_gate = 1.0f;
+    constexpr float hover_learn_velocity_gate = 0.25f;
 
-    if (abs(altitude - current_altitude) < hover_learn_altitude_gate)
+    if (abs(altitude - current_altitude) < hover_learn_altitude_gate && abs(target_velocity) < hover_learn_velocity_gate)
     {
         constexpr float hover_learn_rate = 0.5f;
         _hover_throttle = constrain(_hover_throttle - hover_learn_rate * current_vz * delta_time_seconds, 0.0f, 100.0f);
@@ -71,13 +77,22 @@ void AutopilotTilt<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardware
     const float target_north_velocity = _latitude_pid.pid(0.0f, north_error_meters, delta_time_seconds);
     const float target_east_velocity = _longitude_pid.pid(0.0f, east_error_meters, delta_time_seconds);
 
-    const float current_north_velocity = drone->getVelocityX();
-    const float current_east_velocity = drone->getVelocityY();
+    const float current_north_velocity = drone->getVelocityY();
+    const float current_east_velocity = drone->getVelocityX();
 
-    const float pitch_adjustment = _latitude_velocity_pid.pid(current_north_velocity, target_north_velocity,
+    const float yaw_radians = drone->getYaw() * (PI / 180.0f);
+    const float cos_yaw = cosf(yaw_radians);
+    const float sin_yaw = sinf(yaw_radians);
+
+    const float target_forward_velocity = target_north_velocity * cos_yaw + target_east_velocity * sin_yaw;
+    const float target_right_velocity = target_east_velocity * cos_yaw - target_north_velocity * sin_yaw;
+    const float current_forward_velocity = current_north_velocity * cos_yaw + current_east_velocity * sin_yaw;
+    const float current_right_velocity = current_east_velocity * cos_yaw - current_north_velocity * sin_yaw;
+
+    const float pitch_adjustment = _latitude_velocity_pid.pid(current_forward_velocity, target_forward_velocity,
                                                               delta_time_seconds);
     const float roll_adjustment = _longitude_velocity_pid.
-        pid(current_east_velocity, target_east_velocity, delta_time_seconds);
+        pid(current_right_velocity, target_right_velocity, delta_time_seconds);
 
     if (abs(pitch_adjustment) < 10.0f)
     {
@@ -90,8 +105,8 @@ void AutopilotTilt<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardware
 
     _latitude_pid.saveError(0.0f, north_error_meters);
     _longitude_pid.saveError(0.0f, east_error_meters);
-    _latitude_velocity_pid.saveError(current_north_velocity, target_north_velocity);
-    _longitude_velocity_pid.saveError(current_east_velocity, target_east_velocity);
+    _latitude_velocity_pid.saveError(current_forward_velocity, target_forward_velocity);
+    _longitude_velocity_pid.saveError(current_right_velocity, target_right_velocity);
 
     drone->setDesiredYawAngle(0.0f);
     drone->setDesiredPitchAngle(pitch_adjustment * -1);
