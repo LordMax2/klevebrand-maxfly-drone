@@ -58,6 +58,8 @@ public:
 
     bool isAutopilotEnabled() const;
 
+    bool isGpsReady() const;
+
     void enableAutopilot();
 
     void disableAutopilot();

@@ -41,7 +41,7 @@ void PwmReceiverController<Modes...>::applyAutopilot(KlevebrandMaxFlyDrone* dron
         return;
     }
 
-    if (!drone->isAutopilotEnabled())
+    if (drone->isGpsReady() && !drone->isAutopilotEnabled())
     {
         drone->enableAutopilot();
     }

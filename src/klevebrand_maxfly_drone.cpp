@@ -114,12 +114,7 @@ bool KlevebrandMaxFlyDrone::run()
     // printThrottle(delta_time_seconds);
     // printGyro();
 
-    // Run the motors with the calculated PID throttle
-    runMotors(gyro_roll, gyro_pitch, gyro_yaw, delta_time_seconds);
-
-    savePidErrors(gyro_roll, gyro_pitch, gyro_yaw);
-
-    if (isAutopilotEnabled())
+    if (isAutopilotEnabled() && isGpsReady())
     {
         _autopilot.goTo(
             this,
@@ -127,6 +122,10 @@ bool KlevebrandMaxFlyDrone::run()
             _autopilot_target_longitude,
             _autopilot_target_altitude);
     }
+
+    runMotors(gyro_roll, gyro_pitch, gyro_yaw, delta_time_seconds);
+
+    savePidErrors(gyro_roll, gyro_pitch, gyro_yaw);
 
     return true;
 }
@@ -214,6 +213,11 @@ void KlevebrandMaxFlyDrone::printThrottle(const float delta_time_seconds)
 bool KlevebrandMaxFlyDrone::isAutopilotEnabled() const
 {
     return _is_autopilot_enabled;
+}
+
+bool KlevebrandMaxFlyDrone::isGpsReady() const
+{
+    return position.isReady() && position.hasGpsFix();
 }
 
 void KlevebrandMaxFlyDrone::enableAutopilot()
