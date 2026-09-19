@@ -123,9 +123,9 @@ bool KlevebrandMaxFlyDrone::run()
     {
         _autopilot.goTo(
             this,
-            AUTOPILOT_TEST_LATITUDE,
-            AUTOPILOT_TEST_LONGITUDE,
-            AUTOPILOT_TEST_ALTITUDE_METERS);
+            _autopilot_target_latitude,
+            _autopilot_target_longitude,
+            _autopilot_target_altitude);
     }
 
     return true;
@@ -218,10 +218,29 @@ bool KlevebrandMaxFlyDrone::isAutopilotEnabled() const
 
 void KlevebrandMaxFlyDrone::enableAutopilot()
 {
+    if (isAutopilotEnabled())
+    {
+        return;
+    }
+
+    _autopilot_target_latitude = getLatitude();
+    _autopilot_target_longitude = getLongitude();
+    _autopilot_target_altitude = getAltitude() + AUTOPILOT_HOVER_ALTITUDE_OFFSET_METERS;
     _is_autopilot_enabled = true;
 }
 
 void KlevebrandMaxFlyDrone::disableAutopilot()
 {
+    if (!isAutopilotEnabled())
+    {
+        return;
+    }
+
     _is_autopilot_enabled = false;
+}
+
+void KlevebrandMaxFlyDrone::setAutopilotHorizontalTarget(const float latitude, const float longitude)
+{
+    _autopilot_target_latitude = latitude;
+    _autopilot_target_longitude = longitude;
 }

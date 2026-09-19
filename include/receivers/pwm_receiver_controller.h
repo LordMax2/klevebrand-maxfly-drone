@@ -16,7 +16,8 @@ public:
         int yaw_receiver_channel_number,
         int pitch_receiver_channel_number,
         int roll_receiver_channel_number,
-        int flight_mode_receiver_channel_number
+        int flight_mode_receiver_channel_number,
+        int autopilot_receiver_channel_number
     )
     {
         this->_throttle_receiver_channel_number = throttle_receiver_channel_number;
@@ -24,10 +25,12 @@ public:
         this->_pitch_receiver_channel_number = pitch_receiver_channel_number;
         this->_roll_receiver_channel_number = roll_receiver_channel_number;
         this->_flight_mode_receiver_channel_number = flight_mode_receiver_channel_number;
+        this->_autopilot_receiver_channel_number = autopilot_receiver_channel_number;
     };
 
     static void setup();
-    static bool wantsControl();
+    bool wantsControl() const;
+    void applyAutopilot(KlevebrandMaxFlyDrone* drone);
     void apply(KlevebrandMaxFlyDrone* drone);
 
 private:
@@ -36,6 +39,7 @@ private:
     int _pitch_receiver_channel_number;
     int _roll_receiver_channel_number;
     int _flight_mode_receiver_channel_number;
+    int _autopilot_receiver_channel_number;
 
     PwmReceiverControlModeNone _none_control_mode;
     PwmReceiverControlModeAcro _acro_control_mode;

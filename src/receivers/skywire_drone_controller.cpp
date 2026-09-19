@@ -1,5 +1,6 @@
 #include "receivers/skywire_drone_controller.h"
 
+#include "autopilot/autopilot_tilt.h"
 #include "drone_components/flight_mode_acro_local.h"
 #include "drone_components/flight_mode_auto_level_local.h"
 
@@ -23,7 +24,7 @@ void SkywireDroneController::setup()
 #endif
 }
 
-void SkywireDroneController::run(const KlevebrandMaxFlyDrone *drone)
+void SkywireDroneController::run(KlevebrandMaxFlyDrone *drone)
 {
 #ifdef SKYWIRE_EXPERIMENTAL
     if (drone == nullptr)
@@ -37,22 +38,34 @@ void SkywireDroneController::run(const KlevebrandMaxFlyDrone *drone)
     }
 
     char yawStr[8], pitchStr[8], rollStr[8], throttleStr[8];
+    char altitudeStr[12], latitudeStr[16], longitudeStr[16], temperatureStr[12], pressureStr[12];
 
     dtostrf(drone->getYaw(), 6, 1, yawStr);
     dtostrf(drone->getPitch(), 6, 1, pitchStr);
     dtostrf(drone->getRoll(), 6, 1, rollStr);
     dtostrf(drone->getThrottle(), 6, 1, throttleStr);
+    dtostrf(drone->getAltitude(), 6, 2, altitudeStr);
+    dtostrf(drone->getLatitude(), 10, 6, latitudeStr);
+    dtostrf(drone->getLongitude(), 10, 6, longitudeStr);
+    dtostrf(drone->position.getTemperature(), 6, 1, temperatureStr);
+    dtostrf(drone->position.getPressure(), 8, 1, pressureStr);
 
     char payload_to_send[128];
     snprintf_P(
         payload_to_send,
         sizeof(payload_to_send),
-        PSTR("1;1337;%s;%s;%s;%s;%s;120.5;59.8586;17.6389;42.5;1013.2;2;7"),
+        PSTR("1;1337;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%d;0"),
         drone->isMotorsEnabled() ? "true" : "false",
         yawStr,
         pitchStr,
         rollStr,
-        throttleStr
+        throttleStr,
+        altitudeStr,
+        latitudeStr,
+        longitudeStr,
+        temperatureStr,
+        pressureStr,
+        static_cast<int>(drone->getControlMode())
     );
 
     _worker->setPayloadToSend(payload_to_send);
@@ -103,10 +116,6 @@ void SkywireDroneController::apply(KlevebrandMaxFlyDrone *drone) const
     {
         drone->enableMotors();
     }
-    else
-    {
-        drone->disableMotors();
-    }
 
     if (_request.flight_mode_id == auto_level)
     {
@@ -119,5 +128,9 @@ void SkywireDroneController::apply(KlevebrandMaxFlyDrone *drone) const
         drone->activateControlMode(&acro_local);
     }
 
-    // Mission coordinates are intentionally not applied yet.
+    if (AUTOPILOT_HORIZONTAL_ENABLED && drone->isAutopilotEnabled() &&
+        (_request.latitude != 0.0f || _request.longitude != 0.0f))
+    {
+        drone->setAutopilotHorizontalTarget(_request.latitude, _request.longitude);
+    }
 }

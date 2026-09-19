@@ -7,7 +7,7 @@ class SkywireDroneController
 {
 public:
     static void setup();
-    static void run(const KlevebrandMaxFlyDrone *drone);
+    void run(KlevebrandMaxFlyDrone *drone);
     void setRequest(const DroneRequest_t &request);
     void clearRequest();
     void requestControl();

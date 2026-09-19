@@ -4,6 +4,9 @@
 #include "pid.h"
 #include "template_drone.h"
 
+inline constexpr bool AUTOPILOT_HORIZONTAL_ENABLED = false;
+inline constexpr float AUTOPILOT_HOVER_ALTITUDE_OFFSET_METERS = 2.0f;
+
 template <class SomeGyroPidType, DronePositionConcept SomePositionType, DroneGyroConcept SomeGyroType, HardwareProcessorConcept SomeHardwareProcessorType>
 class AutopilotTilt
 {

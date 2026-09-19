@@ -21,10 +21,9 @@ class KlevebrandMaxFlyDrone : public MaxFlyDroneBase {
 
     AutopilotTilt<MaxFlyPid, MaxFlyPosition, MaxFlyGyro, MaxFlyProcessor> _autopilot;
     bool _is_autopilot_enabled = false;
-
-    static constexpr float AUTOPILOT_TEST_LATITUDE = 59.8586f;
-    static constexpr float AUTOPILOT_TEST_LONGITUDE = 17.6389f;
-    static constexpr float AUTOPILOT_TEST_ALTITUDE_METERS = 10.0f;
+    float _autopilot_target_latitude = 0.0f;
+    float _autopilot_target_longitude = 0.0f;
+    float _autopilot_target_altitude = 0.0f;
 
     ServoDroneMotor &motorLeftFront() const;
     ServoDroneMotor &motorRightFront() const;
@@ -62,4 +61,6 @@ public:
     void enableAutopilot();
 
     void disableAutopilot();
+
+    void setAutopilotHorizontalTarget(float latitude, float longitude);
 };

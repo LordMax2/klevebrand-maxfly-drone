@@ -6,6 +6,7 @@
 constexpr int PWM_SIGNAL_MINIMUM = 1000;
 constexpr int PWM_SIGNAL_MID_LOW = 1250;
 constexpr int PWM_SIGNAL_MID_HIGH = 1750;
+constexpr int PWM_AUTOPILOT_ON_THRESHOLD = 1500;
 
 template <ConceptPwmReceiverControlMode ...Modes>
 int PwmReceiverController<Modes...>::_channel_number_to_gpio_map_array[CHANNEL_COUNT] = {
@@ -17,9 +18,33 @@ static auto acro_local = FlightModeAcroLocal();
 static auto auto_level_local = FlightModeAutoLevelLocal();
 
 template <ConceptPwmReceiverControlMode ...Modes>
-bool PwmReceiverController<Modes...>::wantsControl()
+bool PwmReceiverController<Modes...>::wantsControl() const
 {
-    return true;
+    return getChannelValue(_autopilot_receiver_channel_number) < PWM_AUTOPILOT_ON_THRESHOLD;
+}
+
+template <ConceptPwmReceiverControlMode ...Modes>
+void PwmReceiverController<Modes...>::applyAutopilot(KlevebrandMaxFlyDrone* drone)
+{
+    if (drone == nullptr)
+    {
+        return;
+    }
+
+    if (wantsControl())
+    {
+        if (drone->isAutopilotEnabled())
+        {
+            drone->disableAutopilot();
+        }
+
+        return;
+    }
+
+    if (!drone->isAutopilotEnabled())
+    {
+        drone->enableAutopilot();
+    }
 }
 
 template <ConceptPwmReceiverControlMode ...Modes>

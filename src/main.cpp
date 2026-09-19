@@ -11,7 +11,7 @@ static KlevebrandMaxFlyDrone drone(motors, motor_pins);
 
 using PwmReceiverControllerType = PwmReceiverController<PwmReceiverControlModeNone, PwmReceiverControlModeAcro, PwmReceiverControlModeAutoLevel>;
 
-static auto receiver = PwmReceiverControllerType(1, 4, 3, 2, 7);
+static auto receiver = PwmReceiverControllerType(1, 4, 3, 2, 7, 8);
 static SkywireDroneController skywire_controller;
 static auto control_manager = ControlManager(&receiver, &skywire_controller);
 

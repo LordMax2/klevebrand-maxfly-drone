@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef DRONE_REQUEST_DTO_H
+#define DRONE_REQUEST_DTO_H
+
 #include "Arduino.h"
 
 struct DroneRequest_t
@@ -70,10 +73,10 @@ struct DroneRequest_t
                 enable_motors = atoi(field_content) == 1;
                 break;
             case 3:
-                longitude = atof(field_content);
+                latitude = atof(field_content);
                 break;
             case 4:
-                latitude = atof(field_content);
+                longitude = atof(field_content);
                 break;
             }
 
@@ -90,3 +93,5 @@ struct DroneRequest_t
         return parseFromCsvString(value.c_str());
     }
 };
+
+#endif // DRONE_REQUEST_DTO_H

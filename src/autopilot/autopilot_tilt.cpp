@@ -57,8 +57,8 @@ void AutopilotTilt<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardware
 
     drone->setThrottle(final_throttle);
 
-    // Return early if we are not within 20 meters of the target altitude
-    if (abs(altitude - current_altitude) > 20.0f || true) // Return early for now to test altitude hover!
+    // Hold attitude level until within 20 m of target altitude, or while horizontal go-to is gated off
+    if (abs(altitude - current_altitude) > 20.0f || !AUTOPILOT_HORIZONTAL_ENABLED)
     {
         drone->setDesiredPitchAngle(0);
         drone->setDesiredRollAngle(0);
