@@ -6,7 +6,18 @@
 
 #ifdef SKYWIRE_EXPERIMENTAL
 #include "skywire-command-startup-worker.h"
-#include "skywire-command-tcp-gps-step-worker.h"
+
+/**
+ *
+ */
+SkywireDroneController::SkywireDroneController()
+    : _worker(&Serial3, "flightcontroltower.klevebrand.se", 13000, 20000, false)
+{
+}
+
+#else
+SkywireDroneController::SkywireDroneController() = default;
+
 #endif
 
 void SkywireDroneController::setup()
@@ -14,7 +25,7 @@ void SkywireDroneController::setup()
 #ifdef SKYWIRE_EXPERIMENTAL
     Serial3.begin(115200);
 
-    SkywireCommandStartupWorker startup_worker(&Serial3, false);
+    SkywireCommandStartupWorker<receive_buffer_size> startup_worker(&Serial3, false);
 
     while (!startup_worker.run())
     {
@@ -30,11 +41,6 @@ void SkywireDroneController::run(KlevebrandMaxFlyDrone *drone)
     if (drone == nullptr)
     {
         return;
-    }
-
-    if (_worker == nullptr)
-    {
-        _worker = new SkywireTcpGpsStepWorker(&Serial3, "flightcontroltower.klevebrand.se", 13000, 20000, false);
     }
 
     char yawStr[8], pitchStr[8], rollStr[8], throttleStr[8];
@@ -68,10 +74,10 @@ void SkywireDroneController::run(KlevebrandMaxFlyDrone *drone)
         static_cast<int>(drone->getControlMode())
     );
 
-    _worker->setPayloadToSend(payload_to_send);
-    _worker->run();
+    _worker.setPayloadToSend(payload_to_send);
+    _worker.run();
 
-    setRequest(_worker->getLatestDroneRequest());
+    setRequest(_worker.getLatestDroneRequest());
     requestControl();
 #else
     (void)drone;

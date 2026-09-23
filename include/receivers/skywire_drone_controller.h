@@ -1,11 +1,17 @@
 #pragma once
 
-#include "../entities/drone_request.h"
+#include "drone_request.h"
 #include "../klevebrand_maxfly_drone.h"
+
+#ifdef SKYWIRE_EXPERIMENTAL
+#define CONCEPTS_H
+#include "skywire-command-tcp-gps-step-worker.h"
+#endif
 
 class SkywireDroneController
 {
 public:
+    SkywireDroneController();
     static void setup();
     void run(KlevebrandMaxFlyDrone *drone);
     void setRequest(const DroneRequest_t &request);
@@ -21,6 +27,10 @@ private:
     bool _wants_control = false;
 
 #ifdef SKYWIRE_EXPERIMENTAL
-    class SkywireTcpGpsStepWorker *_worker = nullptr;
+    static constexpr size_t receive_buffer_size = 256;
+    static constexpr size_t socket_send_message_size = 160;
+    static constexpr size_t socket_receive_size = 128;
+
+    SkywireTcpGpsStepWorker<receive_buffer_size, socket_send_message_size, socket_receive_size> _worker;
 #endif
 };
