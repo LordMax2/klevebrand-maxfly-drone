@@ -248,3 +248,8 @@ void KlevebrandMaxFlyDrone::setAutopilotHorizontalTarget(const float latitude, c
     _autopilot_target_latitude = latitude;
     _autopilot_target_longitude = longitude;
 }
+
+void KlevebrandMaxFlyDrone::setAutopilotAltitudeTarget(const float altitude)
+{
+    _autopilot_target_altitude = altitude;
+}

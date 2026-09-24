@@ -139,4 +139,9 @@ void SkywireDroneController::apply(KlevebrandMaxFlyDrone *drone) const
     {
         drone->setAutopilotHorizontalTarget(_request.latitude, _request.longitude);
     }
+
+    if (drone->isAutopilotEnabled() && _request.hasCommandedAltitude())
+    {
+        drone->setAutopilotAltitudeTarget(_request.assignment_altitude);
+    }
 }
