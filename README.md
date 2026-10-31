@@ -4,12 +4,12 @@ Open-source C++ flight controller **specifically for quadcopters**, built around
 
 This project takes the core from [Klevebrand All-Drone Controller](https://github.com/LordMax2/klevebrand-all-drone-controller) and implements everything you need for a solid, flyable quadcopter.
 
-Optimized for AVR microcontrollers like the **ATmega2560**, but should work on any AVR with enough RAM.
+Runs on the **All Drone Controller** flight controller board: an NXP **i.MX RT1062** (600 MHz Cortex-M7) on the Teensy 4.1 core.
 
 ## Features
 
 - **High-performance C++ code** — clean, simple, easy to understand, modern C++
-- **Optimized for AVR microcontrollers** — tuned especially for ATmega2560, lightweight and efficient
+- **Fast hardware** — i.MX RT1062 at 600 MHz with 1 MB of on-chip RAM, on the Teensy 4.1 Arduino core
 - **Precise motion tracking** — uses the excellent **BNO085** 9-DOF IMU (gyro + accel + mag)
 - **Self-calibrating PID stabilization** — the killer feature from the core library:  
   **Black Box optimization** + **Simulated Annealing** automatically tunes PID values  
@@ -37,7 +37,26 @@ This is the **quadcopter-specific implementation** built on top of the general-p
 https://github.com/LordMax2/klevebrand-all-drone-controller
 
 - The core lib handles the universal PID logic, sensor abstraction, self-tuning magic, etc.
-- MaxFly Drone adds the quad-specific mixer, motor outputs, receiver parsing, and AVR optimizations so you can actually build and fly a quad right away.
+- MaxFly Drone adds the quad-specific mixer, motor outputs, receiver parsing, and the flight controller board support so you can actually build and fly a quad right away.
+
+## Hardware
+
+- **Sensors:** BNO085 on SPI1, BMP581 on SPI, NEO-M9N GPS on `Serial1`. The ICM-45686 is kept deselected; nothing reads it yet.
+- **Skywire modem:** on `Serial2`. The firmware switches on its supply, pulses ON_OFF and asserts RTS, then runs the startup commands.
+- **Motors:** OUT1-OUT4 are left front, right front, left back and right back, driven as 400 Hz PWM (1000-2000 µs). The output buffers stay disabled until every motor sends an idle pulse.
+- **Receiver:** RC IN channels 1-8.
+- **LEDs:** the error LED is lit while the drone starts up (sensors, GPS fix, modem). When setup finishes it goes off and the status LED comes on.
+
+### Flashing
+
+The board has no Teensy bootloader chip, so Teensy Loader can't program it. With a J-Link on the SWD header, run `pio run -t upload`. Without one, hold BOOT and press RESET to enter NXP's ROM serial downloader, then flash `.pio/build/MIMXRT1062/firmware.hex` with MCUXpresso Secure Provisioning or `blhost`.
+
+### Before the first flight
+
+With the props off, check:
+- the motor order and spin directions
+- that roll, pitch and yaw react in the right direction
+- that your ESCs accept 400 Hz PWM
 
 ## License
 

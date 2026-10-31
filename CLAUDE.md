@@ -1,6 +1,6 @@
 # Klevebrand MaxFly Drone
 
-C++ quadcopter flight controller built on top of the Klevebrand All-Drone Controller library. Targets AVR microcontrollers (primarily ATmega2560).
+C++ quadcopter flight controller built on top of the Klevebrand All-Drone Controller library. Targets the All Drone Controller flight controller board (NXP i.MX RT1062 on the Teensy 4.1 core).
 
 ## Coding Principles
 

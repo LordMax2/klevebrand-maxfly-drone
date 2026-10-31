@@ -6,12 +6,43 @@
 
 #ifdef SKYWIRE_EXPERIMENTAL
 #include "skywire-command-startup-worker.h"
+#include "imxrt_gpio_pad.h"
+
+static constexpr uint8_t MODEM_REQUEST_TO_SEND_PAD = 13;
+static constexpr uint8_t MODEM_ON_PAD = 16;
+static constexpr uint8_t MODEM_POWER_ENABLE_PAD = 30;
+static constexpr unsigned long MODEM_SUPPLY_SETTLE_MILLISECONDS = 100;
+
+// NL-SW-LTE-TC1WWG datasheet: hold ON_OFF low for 1 to 2 s to start the modem (2.5 s shuts it down).
+static constexpr unsigned long MODEM_ON_OFF_PULSE_MILLISECONDS = 1500;
+
+/*
+ * Switches on the modem supply (it is off at boot) and pulses ON_OFF, which Q2 pulls low while MODEM_ON is high.
+ * RTS is asserted first: the modem starts with hardware flow control on and only talks while RTS is low, until the
+ * startup worker turns flow control off with AT&K0. The modem needs about 20 s more before it answers AT.
+ */
+static void powerOnModem()
+{
+    const ImxrtGpioPad request_to_send_pad = ImxrtGpioPad::emc(MODEM_REQUEST_TO_SEND_PAD);
+    const ImxrtGpioPad on_pad = ImxrtGpioPad::emc(MODEM_ON_PAD);
+    const ImxrtGpioPad power_enable_pad = ImxrtGpioPad::emc(MODEM_POWER_ENABLE_PAD);
+
+    request_to_send_pad.setModeOutput(false);
+    on_pad.setModeOutput(false);
+    power_enable_pad.setModeOutput(true);
+
+    delay(MODEM_SUPPLY_SETTLE_MILLISECONDS);
+
+    on_pad.write(true);
+    delay(MODEM_ON_OFF_PULSE_MILLISECONDS);
+    on_pad.write(false);
+}
 
 /**
  *
  */
 SkywireDroneController::SkywireDroneController()
-    : _worker(&Serial3, "flightcontroltower.klevebrand.se", 13000, 20000, false)
+    : _worker(&Serial2, "flightcontroltower.klevebrand.se", 13000, 20000, false)
 {
 }
 
@@ -23,9 +54,11 @@ SkywireDroneController::SkywireDroneController() = default;
 void SkywireDroneController::setup()
 {
 #ifdef SKYWIRE_EXPERIMENTAL
-    Serial3.begin(115200);
+    powerOnModem();
 
-    SkywireCommandStartupWorker<receive_buffer_size> startup_worker(&Serial3, false);
+    Serial2.begin(115200);
+
+    SkywireCommandStartupWorker<receive_buffer_size> startup_worker(&Serial2, false);
 
     while (!startup_worker.run())
     {
@@ -56,11 +89,13 @@ void SkywireDroneController::run(KlevebrandMaxFlyDrone *drone)
     dtostrf(drone->position.getTemperature(), 6, 1, temperatureStr);
     dtostrf(drone->position.getPressure(), 8, 1, pressureStr);
 
+    // A plain literal: on the Teensy core PROGMEM is a named section, and a PSTR here would clash with the PSTRs
+    // inside the skywire templates ("section type conflict").
     char payload_to_send[128];
-    snprintf_P(
+    snprintf(
         payload_to_send,
         sizeof(payload_to_send),
-        PSTR("1;1337;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%d;0"),
+        "1;1337;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%d;0",
         drone->isMotorsEnabled() ? "true" : "false",
         yawStr,
         pitchStr,

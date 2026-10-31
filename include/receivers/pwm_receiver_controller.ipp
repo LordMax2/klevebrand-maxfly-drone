@@ -1,17 +1,12 @@
 #include "drone_components/flight_mode_acro_local.h"
 #include "drone_components/flight_mode_auto_level_local.h"
 #include "drone_components/flight_mode_none_local.h"
-#include <PinChangeInterrupt.h>
+#include "imxrt_gpio_pad.h"
 
 constexpr int PWM_SIGNAL_MINIMUM = 1000;
 constexpr int PWM_SIGNAL_MID_LOW = 1250;
 constexpr int PWM_SIGNAL_MID_HIGH = 1750;
 constexpr int PWM_AUTOPILOT_ON_THRESHOLD = 1500;
-
-template <ConceptPwmReceiverControlMode ...Modes>
-int PwmReceiverController<Modes...>::_channel_number_to_gpio_map_array[CHANNEL_COUNT] = {
-    A8, A9, A10, A11, A12, A13, A14, A15
-};
 
 static auto none_flight_mode = FlightModeNoneLocal();
 static auto acro_local = FlightModeAcroLocal();
@@ -103,77 +98,67 @@ void PwmReceiverController<Modes...>::setFlightMode(KlevebrandMaxFlyDrone* drone
 template <ConceptPwmReceiverControlMode ...Modes>
 void PwmReceiverController<Modes...>::setup()
 {
-    if (_channel_number_to_gpio_map_array[0] != -1)
+    // The Teensy core has no pin numbers for these pads. Their mux and pad registers are consecutive.
+    volatile uint32_t *const first_mux_register = &IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_04;
+    volatile uint32_t *const first_pad_register = &IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04;
+
+    CCM_CCGR0 = CCM_CCGR0 | CCM_CCGR0_GPIO2(CCM_CCGR_ON);
+
+    GPIO2_IMR = GPIO2_IMR & ~channel_gpio_mask;
+    GPIO2_GDIR = GPIO2_GDIR & ~channel_gpio_mask;
+
+    for (int channel_index = 0; channel_index < CHANNEL_COUNT; channel_index++)
     {
-        pinMode(_channel_number_to_gpio_map_array[0], INPUT);
-        attachPCINT(digitalPinToPCINT(_channel_number_to_gpio_map_array[0]), recordPinChangePulseWidthChannel1, CHANGE);
+        first_pad_register[channel_index] = IOMUXC_PAD_PKE | IOMUXC_PAD_PUE | IOMUXC_PAD_PUS(0) | IOMUXC_PAD_HYS;
+        first_mux_register[channel_index] = ImxrtGpioPad::gpio_mux_mode;
     }
 
-    if (_channel_number_to_gpio_map_array[1] != -1)
-    {
-        pinMode(_channel_number_to_gpio_map_array[1], INPUT);
-        attachPCINT(digitalPinToPCINT(_channel_number_to_gpio_map_array[1]), recordPinChangePulseWidthChannel2, CHANGE);
-    }
+    // The core routes every pad to the fast GPIO7 at startup. These eight go back to GPIO2, whose interrupt for
+    // bits 16-31 the core never uses.
+    IOMUXC_GPR_GPR27 = IOMUXC_GPR_GPR27 & ~channel_gpio_mask;
 
-    if (_channel_number_to_gpio_map_array[2] != -1)
-    {
-        pinMode(_channel_number_to_gpio_map_array[2], INPUT);
-        attachPCINT(digitalPinToPCINT(_channel_number_to_gpio_map_array[2]), recordPinChangePulseWidthChannel3, CHANGE);
-    }
+    GPIO2_EDGE_SEL = GPIO2_EDGE_SEL | channel_gpio_mask;
+    GPIO2_ISR = channel_gpio_mask;
+    GPIO2_IMR = GPIO2_IMR | channel_gpio_mask;
 
-    if (_channel_number_to_gpio_map_array[3] != -1)
-    {
-        pinMode(_channel_number_to_gpio_map_array[3], INPUT);
-        attachPCINT(digitalPinToPCINT(_channel_number_to_gpio_map_array[3]), recordPinChangePulseWidthChannel4, CHANGE);
-    }
-
-    if (_channel_number_to_gpio_map_array[4] != -1)
-    {
-        pinMode(_channel_number_to_gpio_map_array[4], INPUT);
-        attachPCINT(digitalPinToPCINT(_channel_number_to_gpio_map_array[4]), recordPinChangePulseWidthChannel5, CHANGE);
-    }
-
-    if (_channel_number_to_gpio_map_array[5] != -1)
-    {
-        pinMode(_channel_number_to_gpio_map_array[5], INPUT);
-        attachPCINT(digitalPinToPCINT(_channel_number_to_gpio_map_array[5]), recordPinChangePulseWidthChannel6, CHANGE);
-    }
-
-    if (_channel_number_to_gpio_map_array[6] != -1)
-    {
-        pinMode(_channel_number_to_gpio_map_array[6], INPUT);
-        attachPCINT(digitalPinToPCINT(_channel_number_to_gpio_map_array[6]), recordPinChangePulseWidthChannel7, CHANGE);
-    }
-
-    if (_channel_number_to_gpio_map_array[7] != -1)
-    {
-        pinMode(_channel_number_to_gpio_map_array[7], INPUT);
-        attachPCINT(digitalPinToPCINT(_channel_number_to_gpio_map_array[7]), recordPinChangePulseWidthChannel8, CHANGE);
-    }
+    attachInterruptVector(IRQ_GPIO2_16_31, recordPulseEdges);
+    NVIC_SET_PRIORITY(IRQ_GPIO2_16_31, pulse_interrupt_priority);
+    NVIC_ENABLE_IRQ(IRQ_GPIO2_16_31);
 }
 
 template <ConceptPwmReceiverControlMode ...Modes>
-void PwmReceiverController<Modes...>::recordPinChangePulseWidth(const int channel_number)
+void PwmReceiverController<Modes...>::recordPulseEdges()
 {
-    const int channelNumberIndex = channel_number - 1;
-    const int pinState = digitalRead(_channel_number_to_gpio_map_array[channelNumberIndex]);
+    const uint32_t edges = GPIO2_ISR & channel_gpio_mask;
+    const uint32_t levels = GPIO2_PSR;
     const unsigned long timestamp_microseconds = micros();
 
-    if (pinState == HIGH)
-    {
-        _pulse_start_micros[channelNumberIndex] = timestamp_microseconds;
+    GPIO2_ISR = edges;
 
-        return;
+    for (int channel_index = 0; channel_index < CHANNEL_COUNT; channel_index++)
+    {
+        const uint32_t channel_bit = 1UL << (first_channel_gpio_bit + channel_index);
+
+        if ((edges & channel_bit) == 0)
+        {
+            continue;
+        }
+
+        if ((levels & channel_bit) != 0)
+        {
+            _pulse_start_micros[channel_index] = timestamp_microseconds;
+        }
+        else if (_pulse_start_micros[channel_index] != 0)
+        {
+            const unsigned long pulse_start_microseconds = _pulse_start_micros[channel_index];
+
+            _pulse_widths[channel_index] = static_cast<int>(timestamp_microseconds - pulse_start_microseconds);
+            _pulse_start_micros[channel_index] = 0;
+        }
     }
 
-    if (_pulse_start_micros[channelNumberIndex] != 0)
-    {
-        _pulse_widths[channelNumberIndex] = static_cast<int>(timestamp_microseconds - _pulse_start_micros[
-            channelNumberIndex]);
-        _pulse_start_micros[channelNumberIndex] = 0;
-
-        return;
-    }
+    // Let the flag clear reach the GPIO block before returning, or the interrupt fires again straight away.
+    asm volatile("dsb");
 }
 
 template <ConceptPwmReceiverControlMode ...Modes>
@@ -184,5 +169,7 @@ int PwmReceiverController<Modes...>::getChannelValue(const int channel_number)
         return -1;
     }
 
-    return constrain(_pulse_widths[channel_number - 1], 1000, 2000);
+    const int pulse_width_microseconds = _pulse_widths[channel_number - 1];
+
+    return constrain(pulse_width_microseconds, 1000, 2000);
 }

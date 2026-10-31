@@ -1,9 +1,14 @@
 #include "klevebrand_maxfly_drone.h"
 
 #include "drone_components/flight_mode_none_local.h"
+#include "imxrt_gpio_pad.h"
 
-KlevebrandMaxFlyDrone::KlevebrandMaxFlyDrone(ServoDroneMotor* motors, const int motor_pins[motor_pin_count])
-    : MaxFlyDroneBase(500, 200, gyro_reset_pin), _motors(motors)
+// OUT_EN_N, pad GPIO_EMC_33: the output buffers (74LVC245) pass the motor signals only while it is low. A pull-up
+// keeps them off at boot.
+static constexpr uint8_t OUTPUT_ENABLE_PAD = 33;
+
+KlevebrandMaxFlyDrone::KlevebrandMaxFlyDrone(PwmDroneMotor* motors, const int motor_pins[motor_pin_count])
+    : MaxFlyDroneBase(500, 200, gyro_reset_pad), _motors(motors)
 {
     for (int i = 0; i < motor_pin_count; i++)
     {
@@ -16,22 +21,22 @@ KlevebrandMaxFlyDrone::~KlevebrandMaxFlyDrone()
     delete[] _motors;
 }
 
-ServoDroneMotor& KlevebrandMaxFlyDrone::motorLeftFront() const
+PwmDroneMotor& KlevebrandMaxFlyDrone::motorLeftFront() const
 {
     return _motors[0];
 }
 
-ServoDroneMotor& KlevebrandMaxFlyDrone::motorRightFront() const
+PwmDroneMotor& KlevebrandMaxFlyDrone::motorRightFront() const
 {
     return _motors[1];
 }
 
-ServoDroneMotor& KlevebrandMaxFlyDrone::motorLeftBack() const
+PwmDroneMotor& KlevebrandMaxFlyDrone::motorLeftBack() const
 {
     return _motors[2];
 }
 
-ServoDroneMotor& KlevebrandMaxFlyDrone::motorRightBack() const
+PwmDroneMotor& KlevebrandMaxFlyDrone::motorRightBack() const
 {
     return _motors[3];
 }
@@ -132,12 +137,19 @@ bool KlevebrandMaxFlyDrone::run()
 
 void KlevebrandMaxFlyDrone::setupMotors()
 {
+    const ImxrtGpioPad output_enable_pad = ImxrtGpioPad::emc(OUTPUT_ENABLE_PAD);
+
+    output_enable_pad.setModeOutput(true);
+
     for (int i = 0; i < motor_pin_count; i++)
     {
         _motors[i].setup(_motor_pins[i]);
     }
 
     stopMotors();
+
+    // Let the signals through only now that every motor sends an idle pulse.
+    output_enable_pad.write(false);
 
     delay(1000);
 }

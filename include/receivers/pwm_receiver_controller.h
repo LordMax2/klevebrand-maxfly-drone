@@ -52,19 +52,17 @@ private:
 
     static int getChannelValue(int channel_number);
 
-    static void recordPinChangePulseWidth(int channel_number);
-    static void recordPinChangePulseWidthChannel1() { recordPinChangePulseWidth(1); };
-    static void recordPinChangePulseWidthChannel2() { recordPinChangePulseWidth(2); };
-    static void recordPinChangePulseWidthChannel3() { recordPinChangePulseWidth(3); };
-    static void recordPinChangePulseWidthChannel4() { recordPinChangePulseWidth(4); };
-    static void recordPinChangePulseWidthChannel5() { recordPinChangePulseWidth(5); };
-    static void recordPinChangePulseWidthChannel6() { recordPinChangePulseWidth(6); };
-    static void recordPinChangePulseWidthChannel7() { recordPinChangePulseWidth(7); };
-    static void recordPinChangePulseWidthChannel8() { recordPinChangePulseWidth(8); };
+    static void recordPulseEdges();
 
-    static int _channel_number_to_gpio_map_array[CHANNEL_COUNT];
-    inline static unsigned long _pulse_start_micros[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
-    inline static int _pulse_widths[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
+    // Channels 1-8 come in on pads GPIO_B1_04 to GPIO_B1_11, which are GPIO2 bits 20-27.
+    static constexpr int first_channel_gpio_bit = 20;
+    static constexpr uint32_t channel_gpio_mask = 0xFFUL << first_channel_gpio_bit;
+
+    // Ahead of the serial ports (64) and everything else (128), behind systick (32), which micros() relies on.
+    static constexpr uint8_t pulse_interrupt_priority = 48;
+
+    inline static volatile unsigned long _pulse_start_micros[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
+    inline static volatile int _pulse_widths[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
 };
 
 #include "pwm_receiver_controller.ipp"
