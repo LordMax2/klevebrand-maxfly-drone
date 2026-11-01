@@ -50,10 +50,11 @@ void AutopilotTilt<SomeGyroPidType, SomePositionType, SomeGyroType, SomeHardware
     if (abs(altitude - current_altitude) < hover_learn_altitude_gate && abs(target_velocity) < hover_learn_velocity_gate)
     {
         constexpr float hover_learn_rate = 0.5f;
-        _hover_throttle = constrain(_hover_throttle - hover_learn_rate * current_vz * delta_time_seconds, 0.0f, 100.0f);
+        _hover_throttle = constrain(_hover_throttle - hover_learn_rate * current_vz * delta_time_seconds,
+                                    AUTOPILOT_HOVER_THROTTLE_MINIMUM, AUTOPILOT_HOVER_THROTTLE_MAXIMUM);
     }
 
-    const float final_throttle = constrain(_hover_throttle + throttle_adjustment, 0.0f, 100.0f);
+    const float final_throttle = constrain(_hover_throttle + throttle_adjustment, AUTOPILOT_THROTTLE_MINIMUM, 100.0f);
 
     drone->setThrottle(final_throttle);
 

@@ -65,4 +65,6 @@ public:
     void disableAutopilot();
 
     void setAutopilotHorizontalTarget(float latitude, float longitude);
+
+    void setAutopilotAltitudeTarget(float altitude);
 };
