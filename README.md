@@ -46,7 +46,7 @@ The sensor drivers are PlatformIO libraries of their own in `components/`, so ot
 - [`klevebrand-drone-gyro-bno085-spi`](components/klevebrand-drone-gyro-bno085-spi): the BNO085 on SPI, as a core library gyro.
 - [`klevebrand-drone-position-bmp581-neom9n`](components/klevebrand-drone-position-bmp581-neom9n): position and velocity from the NEO-M9N, fused with the gyro's acceleration, plus pressure and temperature from the BMP581.
 
-`platformio.ini` pulls them in through `symlink://`, and each `library.json` lists its own dependencies. A component never includes anything from `include/` or `src/`: the board's pins, buses and serial ports go in through `include/drone_components/maxfly_gyro.h` and `maxfly_position.h`.
+`platformio.ini` pulls them in through `symlink://`, and each `library.json` lists its own dependencies. A component never includes anything from `include/` or `src/`: the board's pins, buses and serial ports go in through its constructor, in `src/main.cpp`.
 
 To give a component a package of its own, move its folder into a repository, add the `repository` to its `library.json`, publish it, and replace its `symlink://` line in `lib_deps` with the package.
 

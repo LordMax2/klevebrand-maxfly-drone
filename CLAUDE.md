@@ -4,7 +4,11 @@ C++ quadcopter flight controller built on top of the Klevebrand All-Drone Contro
 
 ## Components
 
-`components/` holds PlatformIO libraries that will move to packages of their own, pulled in through `symlink://` in `platformio.ini`. Keep them detachable: a component only includes its own headers and the dependencies its `library.json` lists, never anything from `include/` or `src/`. Board wiring (pins, buses, serial ports) is passed in by the adapters in `include/drone_components/` (`maxfly_gyro.h`, `maxfly_position.h`). A new dependency of a component goes in its `library.json`, not in `platformio.ini`.
+`components/` holds PlatformIO libraries that will move to packages of their own, pulled in through `symlink://` in `platformio.ini`. Keep them detachable: a component only includes its own headers and the dependencies its `library.json` lists, never anything from `include/` or `src/`. Board wiring (pins, buses, serial ports) is passed in through their constructors from `src/main.cpp`. A new dependency of a component goes in its `library.json`, not in `platformio.ini`.
+
+## Board wiring
+
+Pin, pad and serial port numbers are required constructor parameters: never constants or defaults inside a class. They are all set in `src/main.cpp`, which constructs every device (gyro, position, motors, receiver, modem, LEDs) and hands the gyro and position to the drone (`TemplateDrone` takes them by reference).
 
 ## Coding Principles
 

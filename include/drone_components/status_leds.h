@@ -3,32 +3,30 @@
 #include "imxrt_gpio_pad.h"
 
 /*
- * The status LED (GPIO_EMC_20) and error LED (GPIO_EMC_21): the error LED is lit while the drone starts up
- * (sensors, GPS fix, modem), and the status LED takes over once it is ready.
+ * A status LED and an error LED: the error LED is lit while the drone starts up (sensors, GPS fix, modem), and the
+ * status LED takes over once it is ready.
  */
 class StatusLeds
 {
 public:
-    static void showStarting()
+    StatusLeds(const ImxrtGpioPad &status_led, const ImxrtGpioPad &error_led)
+        : _status_led(status_led), _error_led(error_led)
     {
-        statusLed().setModeOutput(false);
-        errorLed().setModeOutput(true);
     }
 
-    static void showReady()
+    void showStarting() const
     {
-        errorLed().write(false);
-        statusLed().write(true);
+        _status_led.setModeOutput(false);
+        _error_led.setModeOutput(true);
+    }
+
+    void showReady() const
+    {
+        _error_led.write(false);
+        _status_led.write(true);
     }
 
 private:
-    static ImxrtGpioPad statusLed()
-    {
-        return ImxrtGpioPad::emc(20);
-    }
-
-    static ImxrtGpioPad errorLed()
-    {
-        return ImxrtGpioPad::emc(21);
-    }
+    const ImxrtGpioPad _status_led;
+    const ImxrtGpioPad _error_led;
 };

@@ -8,7 +8,7 @@ void ControlManager<PwmReceiverControllerType>::setup() const
 
     if (_skywire_controller != nullptr)
     {
-        SkywireDroneController::setup();
+        _skywire_controller->setup();
     }
 }
 

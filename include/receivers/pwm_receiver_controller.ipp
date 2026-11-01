@@ -98,9 +98,17 @@ void PwmReceiverController<Modes...>::setFlightMode(KlevebrandMaxFlyDrone* drone
 template <ConceptPwmReceiverControlMode ...Modes>
 void PwmReceiverController<Modes...>::setup()
 {
+    if (_first_channel_pad > last_first_channel_pad)
+    {
+        Serial.println("RECEIVER CHANNELS MUST BE ON PADS GPIO_B1_00 TO GPIO_B1_15.");
+
+        return;
+    }
+
     // The Teensy core has no pin numbers for these pads. Their mux and pad registers are consecutive.
-    volatile uint32_t *const first_mux_register = &IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_04;
-    volatile uint32_t *const first_pad_register = &IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04;
+    volatile uint32_t *const first_mux_register = &IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_00 + _first_channel_pad;
+    volatile uint32_t *const first_pad_register = &IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_00 + _first_channel_pad;
+    const uint32_t channel_gpio_mask = channelGpioMask();
 
     CCM_CCGR0 = CCM_CCGR0 | CCM_CCGR0_GPIO2(CCM_CCGR_ON);
 
@@ -119,17 +127,39 @@ void PwmReceiverController<Modes...>::setup()
 
     GPIO2_EDGE_SEL = GPIO2_EDGE_SEL | channel_gpio_mask;
     GPIO2_ISR = channel_gpio_mask;
+
+    _interrupt_receiver = this;
+
     GPIO2_IMR = GPIO2_IMR | channel_gpio_mask;
 
-    attachInterruptVector(IRQ_GPIO2_16_31, recordPulseEdges);
+    attachInterruptVector(IRQ_GPIO2_16_31, onPulseEdgeInterrupt);
     NVIC_SET_PRIORITY(IRQ_GPIO2_16_31, pulse_interrupt_priority);
     NVIC_ENABLE_IRQ(IRQ_GPIO2_16_31);
 }
 
 template <ConceptPwmReceiverControlMode ...Modes>
+int PwmReceiverController<Modes...>::firstChannelGpioBit() const
+{
+    return first_b1_pad_gpio_bit + _first_channel_pad;
+}
+
+template <ConceptPwmReceiverControlMode ...Modes>
+uint32_t PwmReceiverController<Modes...>::channelGpioMask() const
+{
+    return ((1UL << CHANNEL_COUNT) - 1) << firstChannelGpioBit();
+}
+
+template <ConceptPwmReceiverControlMode ...Modes>
+void PwmReceiverController<Modes...>::onPulseEdgeInterrupt()
+{
+    _interrupt_receiver->recordPulseEdges();
+}
+
+template <ConceptPwmReceiverControlMode ...Modes>
 void PwmReceiverController<Modes...>::recordPulseEdges()
 {
-    const uint32_t edges = GPIO2_ISR & channel_gpio_mask;
+    const int first_channel_gpio_bit = firstChannelGpioBit();
+    const uint32_t edges = GPIO2_ISR & channelGpioMask();
     const uint32_t levels = GPIO2_PSR;
     const unsigned long timestamp_microseconds = micros();
 
@@ -162,7 +192,7 @@ void PwmReceiverController<Modes...>::recordPulseEdges()
 }
 
 template <ConceptPwmReceiverControlMode ...Modes>
-int PwmReceiverController<Modes...>::getChannelValue(const int channel_number)
+int PwmReceiverController<Modes...>::getChannelValue(const int channel_number) const
 {
     if (channel_number < 1 || channel_number > CHANNEL_COUNT)
     {

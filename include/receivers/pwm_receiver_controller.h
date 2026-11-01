@@ -11,14 +11,19 @@ template <ConceptPwmReceiverControlMode ...Modes>
 class PwmReceiverController : Modes...
 {
 public:
+    /*
+     * Channels 1-8 come in on eight consecutive pads from GPIO_B1_<first_channel_pad>. They must lie within
+     * GPIO_B1_00-15 (GPIO2 bits 16-31), whose interrupt the Teensy core never uses.
+     */
     PwmReceiverController(
+        uint8_t first_channel_pad,
         int throttle_receiver_channel_number,
         int yaw_receiver_channel_number,
         int pitch_receiver_channel_number,
         int roll_receiver_channel_number,
         int flight_mode_receiver_channel_number,
         int autopilot_receiver_channel_number
-    )
+    ) : _first_channel_pad(first_channel_pad)
     {
         this->_throttle_receiver_channel_number = throttle_receiver_channel_number;
         this->_yaw_receiver_channel_number = yaw_receiver_channel_number;
@@ -28,12 +33,13 @@ public:
         this->_autopilot_receiver_channel_number = autopilot_receiver_channel_number;
     };
 
-    static void setup();
+    void setup();
     bool wantsControl() const;
     void applyAutopilot(KlevebrandMaxFlyDrone* drone);
     void apply(KlevebrandMaxFlyDrone* drone);
 
 private:
+    const uint8_t _first_channel_pad;
     int _throttle_receiver_channel_number;
     int _yaw_receiver_channel_number;
     int _pitch_receiver_channel_number;
@@ -50,19 +56,28 @@ private:
 
     static void setFlightMode(KlevebrandMaxFlyDrone* drone, int flight_mode_pwm);
 
-    static int getChannelValue(int channel_number);
+    int getChannelValue(int channel_number) const;
 
-    static void recordPulseEdges();
+    int firstChannelGpioBit() const;
 
-    // Channels 1-8 come in on pads GPIO_B1_04 to GPIO_B1_11, which are GPIO2 bits 20-27.
-    static constexpr int first_channel_gpio_bit = 20;
-    static constexpr uint32_t channel_gpio_mask = 0xFFUL << first_channel_gpio_bit;
+    uint32_t channelGpioMask() const;
+
+    static void onPulseEdgeInterrupt();
+
+    void recordPulseEdges();
+
+    // GPIO_B1_00 is GPIO2 bit 16, so channel 1 can start at GPIO_B1_00 up to GPIO_B1_08.
+    static constexpr int first_b1_pad_gpio_bit = 16;
+    static constexpr uint8_t last_first_channel_pad = 16 - CHANNEL_COUNT;
 
     // Ahead of the serial ports (64) and everything else (128), behind systick (32), which micros() relies on.
     static constexpr uint8_t pulse_interrupt_priority = 48;
 
-    inline static volatile unsigned long _pulse_start_micros[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
-    inline static volatile int _pulse_widths[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
+    // The interrupt vector is a plain function, so it reaches the receiver through this. There is one receiver.
+    inline static PwmReceiverController *_interrupt_receiver = nullptr;
+
+    volatile unsigned long _pulse_start_micros[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
+    volatile int _pulse_widths[CHANNEL_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0};
 };
 
 #include "pwm_receiver_controller.ipp"

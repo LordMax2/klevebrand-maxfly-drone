@@ -3,13 +3,15 @@
 #include "drone_components/pwm_drone_motor.h"
 #include "template_drone.h"
 #include "drone_components/quadcopter_pid.h"
-#include "drone_components/maxfly_position.h"
-#include "drone_components/maxfly_gyro.h"
+#include "bno08x_spi_drone_gyro.h"
+#include "drone_bmp581_neom9n_position.h"
 #include "hardware_processor_arduino.h"
+#include "imxrt_gpio_pad.h"
 #include "autopilot/autopilot_tilt.h"
 
+using MaxFlyGyro = Bno08xSpiDroneGyro<ImxrtGpioPad>;
 using MaxFlyProcessor = HardwareProcessorArduino;
-using MaxFlyPosition = MaxFlyPositionType<MaxFlyGyro>;
+using MaxFlyPosition = DroneBmp581Neom9nPosition<MaxFlyGyro>;
 using MaxFlyPid = QuadcopterPid;
 using MaxFlyDroneBase = TemplateDrone<MaxFlyPid, MaxFlyPosition, MaxFlyGyro, MaxFlyProcessor>;
 
@@ -17,6 +19,7 @@ class KlevebrandMaxFlyDrone : public MaxFlyDroneBase {
     PwmDroneMotor *_motors;
     static constexpr int motor_pin_count = 4;
     int _motor_pins[motor_pin_count]{};
+    const ImxrtGpioPad _output_enable_line;
 
     AutopilotTilt<MaxFlyPid, MaxFlyPosition, MaxFlyGyro, MaxFlyProcessor> _autopilot;
     bool _is_autopilot_enabled = false;
@@ -36,10 +39,13 @@ class KlevebrandMaxFlyDrone : public MaxFlyDroneBase {
     void detachMotors() const;
 
 public:
-    // The BNO085 reset line: pad GPIO_EMC_10, which has no Teensy pin number.
-    static constexpr int gyro_reset_pad = 10;
-
-    KlevebrandMaxFlyDrone(PwmDroneMotor *motors, const int motor_pins[motor_pin_count]);
+    /*
+     * The gyro, the position and the motors are constructed by the application with the board's wiring.
+     * output_enable_line is OUT_EN_N of the output buffers, which pass the motor signals only while it is low (a
+     * pull-up keeps them off at boot).
+     */
+    KlevebrandMaxFlyDrone(MaxFlyGyro &drone_gyro, MaxFlyPosition &drone_position, PwmDroneMotor *motors,
+                          const int motor_pins[motor_pin_count], const ImxrtGpioPad &output_enable_line);
     ~KlevebrandMaxFlyDrone() override;
 
     void setup();

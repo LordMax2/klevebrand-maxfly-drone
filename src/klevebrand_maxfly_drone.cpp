@@ -1,14 +1,11 @@
 #include "klevebrand_maxfly_drone.h"
 
 #include "drone_components/flight_mode_none_local.h"
-#include "imxrt_gpio_pad.h"
 
-// OUT_EN_N, pad GPIO_EMC_33: the output buffers (74LVC245) pass the motor signals only while it is low. A pull-up
-// keeps them off at boot.
-static constexpr uint8_t OUTPUT_ENABLE_PAD = 33;
-
-KlevebrandMaxFlyDrone::KlevebrandMaxFlyDrone(PwmDroneMotor* motors, const int motor_pins[motor_pin_count])
-    : MaxFlyDroneBase(500, 200, gyro_reset_pad), _motors(motors)
+KlevebrandMaxFlyDrone::KlevebrandMaxFlyDrone(MaxFlyGyro& drone_gyro, MaxFlyPosition& drone_position,
+                                             PwmDroneMotor* motors, const int motor_pins[motor_pin_count],
+                                             const ImxrtGpioPad& output_enable_line)
+    : MaxFlyDroneBase(500, 200, drone_gyro, drone_position), _motors(motors), _output_enable_line(output_enable_line)
 {
     for (int i = 0; i < motor_pin_count; i++)
     {
@@ -137,9 +134,7 @@ bool KlevebrandMaxFlyDrone::run()
 
 void KlevebrandMaxFlyDrone::setupMotors()
 {
-    const ImxrtGpioPad output_enable_pad = ImxrtGpioPad::emc(OUTPUT_ENABLE_PAD);
-
-    output_enable_pad.setModeOutput(true);
+    _output_enable_line.setModeOutput(true);
 
     for (int i = 0; i < motor_pin_count; i++)
     {
@@ -149,7 +144,7 @@ void KlevebrandMaxFlyDrone::setupMotors()
     stopMotors();
 
     // Let the signals through only now that every motor sends an idle pulse.
-    output_enable_pad.write(false);
+    _output_enable_line.write(false);
 
     delay(1000);
 }
