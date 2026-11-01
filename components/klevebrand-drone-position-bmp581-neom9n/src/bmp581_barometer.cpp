@@ -1,4 +1,4 @@
-#include "drone_components/bmp581_barometer.h"
+#include "bmp581_barometer.h"
 
 #include <SPI.h>
 

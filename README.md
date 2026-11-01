@@ -39,6 +39,17 @@ https://github.com/LordMax2/klevebrand-all-drone-controller
 - The core lib handles the universal PID logic, sensor abstraction, self-tuning magic, etc.
 - MaxFly Drone adds the quad-specific mixer, motor outputs, receiver parsing, and the flight controller board support so you can actually build and fly a quad right away.
 
+## Components
+
+The sensor drivers are PlatformIO libraries of their own in `components/`, so other projects can reuse them:
+
+- [`klevebrand-drone-gyro-bno085-spi`](components/klevebrand-drone-gyro-bno085-spi): the BNO085 on SPI, as a core library gyro.
+- [`klevebrand-drone-position-bmp581-neom9n`](components/klevebrand-drone-position-bmp581-neom9n): position and velocity from the NEO-M9N, fused with the gyro's acceleration, plus pressure and temperature from the BMP581.
+
+`platformio.ini` pulls them in through `symlink://`, and each `library.json` lists its own dependencies. A component never includes anything from `include/` or `src/`: the board's pins, buses and serial ports go in through `include/drone_components/maxfly_gyro.h` and `maxfly_position.h`.
+
+To give a component a package of its own, move its folder into a repository, add the `repository` to its `library.json`, publish it, and replace its `symlink://` line in `lib_deps` with the package.
+
 ## Hardware
 
 - **Sensors:** BNO085 on SPI1, BMP581 on SPI, NEO-M9N GPS on `Serial1`. The ICM-45686 is kept deselected; nothing reads it yet.

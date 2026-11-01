@@ -4,11 +4,10 @@
 #include "template_drone.h"
 #include "drone_components/quadcopter_pid.h"
 #include "drone_components/maxfly_position.h"
-#include "drone_components/bno08x_spi_drone_gyro.h"
+#include "drone_components/maxfly_gyro.h"
 #include "hardware_processor_arduino.h"
 #include "autopilot/autopilot_tilt.h"
 
-using MaxFlyGyro = Bno08xSpiDroneGyro;
 using MaxFlyProcessor = HardwareProcessorArduino;
 using MaxFlyPosition = MaxFlyPositionType<MaxFlyGyro>;
 using MaxFlyPid = QuadcopterPid;

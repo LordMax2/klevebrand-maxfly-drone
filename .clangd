@@ -6,4 +6,5 @@ CompileFlags:
     - -Isrc
     - -I.pio/libdeps/MIMXRT1062/klevebrand-all-drone-controller-core/include
     - -I.pio/libdeps/MIMXRT1062/klevebrand-skywire-framework/include
-    - -I.pio/libdeps/MIMXRT1062/klevebrand-drone-position-bmp280-neom9n/include
+    - -Icomponents/klevebrand-drone-gyro-bno085-spi/include
+    - -Icomponents/klevebrand-drone-position-bmp581-neom9n/include

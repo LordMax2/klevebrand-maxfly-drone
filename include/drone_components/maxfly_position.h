@@ -1,27 +1,22 @@
 #pragma once
 
 #include <HardwareSerial.h>
-#include "drone_bmp280_neom9n_position.h"
-#include "drone_components/bmp581_barometer.h"
+#include "drone_bmp581_neom9n_position.h"
 
 /*
- * The library position (NEO-M9N on Serial1, altitude from the GPS) plus the BMP581 for pressure and temperature. The
- * library's own barometer is a BMP280 on I2C, which the board doesn't have: it reports that and carries on.
+ * The position as the board wires it: the NEO-M9N on Serial1 and the BMP581 on the default SPI bus, chip select 32.
  */
 template <DroneGyroConcept SomeDroneGyroType>
-class MaxFlyPositionType : public DroneBmp280Neom9nPosition<SomeDroneGyroType>
+class MaxFlyPositionType : public DroneBmp581Neom9nPosition<SomeDroneGyroType>
 {
-    using LibraryPosition = DroneBmp280Neom9nPosition<SomeDroneGyroType>;
+    using LibraryPosition = DroneBmp581Neom9nPosition<SomeDroneGyroType>;
 
     static constexpr uint8_t barometer_chip_select_pin = 32;
     static constexpr uint8_t imu_chip_select_pin = 10;
 
-    Bmp581Barometer _barometer;
-
 public:
-    explicit MaxFlyPositionType(SomeDroneGyroType *gyro, const int run_interval_hz = 25)
-        : LibraryPosition(gyro, Serial1, run_interval_hz),
-          _barometer(barometer_chip_select_pin, run_interval_hz)
+    explicit MaxFlyPositionType(SomeDroneGyroType *gyro)
+        : LibraryPosition(gyro, Serial1, barometer_chip_select_pin)
     {
     }
 
@@ -31,28 +26,6 @@ public:
         pinMode(imu_chip_select_pin, OUTPUT);
         digitalWrite(imu_chip_select_pin, HIGH);
 
-        if (!_barometer.setup())
-        {
-            Serial.println(F("BMP581 UNAVAILABLE. CONTINUING WITHOUT PRESSURE."));
-        }
-
         LibraryPosition::setup();
-    }
-
-    void run(const bool has_gyro_update)
-    {
-        LibraryPosition::run(has_gyro_update);
-
-        _barometer.run();
-    }
-
-    float getTemperature() const
-    {
-        return _barometer.temperature();
-    }
-
-    float getPressure() const
-    {
-        return _barometer.pressure();
     }
 };

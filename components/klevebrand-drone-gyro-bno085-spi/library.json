@@ -1,0 +1,23 @@
+{
+  "name": "klevebrand-drone-gyro-bno085-spi",
+  "version": "1.0.0",
+  "description": "An implementation for klevebrand-all-drone-core gyro for the BNO085 IMU on SPI.",
+  "keywords": "klevebrand,gyro,bno085,bno08x,imu,spi",
+  "authors":
+  [
+    {
+      "name": "Max Klevebrand",
+      "email": "max.klevebrand@gmail.com",
+      "url": "https://klevebrand.se"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://klevebrand.se",
+  "dependencies": {
+    "adafruit/Adafruit Unified Sensor": "^1.1.15",
+    "adafruit/Adafruit BNO08x": "^1.2.5",
+    "lordmax2/klevebrand-all-drone-controller-core": "^3.0.4"
+  },
+  "frameworks": "arduino",
+  "platforms": "*"
+}

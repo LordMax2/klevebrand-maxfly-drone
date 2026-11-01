@@ -2,6 +2,10 @@
 
 C++ quadcopter flight controller built on top of the Klevebrand All-Drone Controller library. Targets the All Drone Controller flight controller board (NXP i.MX RT1062 on the Teensy 4.1 core).
 
+## Components
+
+`components/` holds PlatformIO libraries that will move to packages of their own, pulled in through `symlink://` in `platformio.ini`. Keep them detachable: a component only includes its own headers and the dependencies its `library.json` lists, never anything from `include/` or `src/`. Board wiring (pins, buses, serial ports) is passed in by the adapters in `include/drone_components/` (`maxfly_gyro.h`, `maxfly_position.h`). A new dependency of a component goes in its `library.json`, not in `platformio.ini`.
+
 ## Coding Principles
 
 ### No duplicate state

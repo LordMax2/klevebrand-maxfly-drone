@@ -1,13 +1,11 @@
-#include "drone_components/bno08x_spi_drone_gyro.h"
-
-static constexpr unsigned long RESET_PULSE_MILLISECONDS = 10;
-
-unsigned long Bno08xSpiDroneGyro::timestampMilliseconds()
+template <DigitalOutputConcept SomeDigitalOutputType>
+unsigned long Bno08xSpiDroneGyro<SomeDigitalOutputType>::timestampMilliseconds()
 {
     return _yaw_pitch_roll.timestamp_milliseconds;
 }
 
-bool Bno08xSpiDroneGyro::setModeEuler()
+template <DigitalOutputConcept SomeDigitalOutputType>
+bool Bno08xSpiDroneGyro<SomeDigitalOutputType>::setModeEuler()
 {
     const bool result = _gyro.enableReport(SH2_ARVR_STABILIZED_RV, 4000);
 
@@ -22,7 +20,8 @@ bool Bno08xSpiDroneGyro::setModeEuler()
     return result;
 }
 
-bool Bno08xSpiDroneGyro::setModeAcro()
+template <DigitalOutputConcept SomeDigitalOutputType>
+bool Bno08xSpiDroneGyro<SomeDigitalOutputType>::setModeAcro()
 {
     const bool result = _gyro.enableReport(SH2_GYROSCOPE_CALIBRATED, 2000);
 
@@ -37,7 +36,8 @@ bool Bno08xSpiDroneGyro::setModeAcro()
     return result;
 }
 
-bool Bno08xSpiDroneGyro::setModeEulerAndAcceleration()
+template <DigitalOutputConcept SomeDigitalOutputType>
+bool Bno08xSpiDroneGyro<SomeDigitalOutputType>::setModeEulerAndAcceleration()
 {
     const bool euler_enabled = _gyro.enableReport(SH2_ARVR_STABILIZED_RV, 4000);
     const bool acceleration_enabled = _gyro.enableReport(SH2_ACCELEROMETER, 4000);
@@ -53,18 +53,17 @@ bool Bno08xSpiDroneGyro::setModeEulerAndAcceleration()
     return true;
 }
 
-void Bno08xSpiDroneGyro::setup()
+template <DigitalOutputConcept SomeDigitalOutputType>
+void Bno08xSpiDroneGyro<SomeDigitalOutputType>::setup()
 {
     Serial.println("SETTING UP GYROSCOPE.");
 
-    // PS0/WAKE high selects SPI as the BNO085 comes out of this reset (the board pulls it up as well).
-    ImxrtGpioPad::emc(wake_pad).setModeOutput(true);
-    _reset_pad.setModeOutput(true);
+    // PS0/WAKE high selects SPI as the BNO085 comes out of this reset.
+    _wake_line.setModeOutput(true);
+    _reset_line.setModeOutput(true);
     reset();
 
-    SPI1.setMISO(miso_pin);
-
-    if (!_gyro.begin_SPI(chip_select_pin, interrupt_pin, &SPI1))
+    if (!_gyro.begin_SPI(_chip_select_pin, _interrupt_pin, &_spi))
     {
         Serial.println("FAILED TO CONNECT TO BNO085...");
 
@@ -79,52 +78,60 @@ void Bno08xSpiDroneGyro::setup()
     delay(300);
 }
 
-void Bno08xSpiDroneGyro::reset()
+template <DigitalOutputConcept SomeDigitalOutputType>
+void Bno08xSpiDroneGyro<SomeDigitalOutputType>::reset()
 {
-    _reset_pad.write(false);
-    delay(RESET_PULSE_MILLISECONDS);
+    _reset_line.write(false);
+    delay(reset_pulse_milliseconds);
 
-    _reset_pad.write(true);
-    delay(RESET_PULSE_MILLISECONDS);
+    _reset_line.write(true);
+    delay(reset_pulse_milliseconds);
 }
 
-float Bno08xSpiDroneGyro::yaw()
+template <DigitalOutputConcept SomeDigitalOutputType>
+float Bno08xSpiDroneGyro<SomeDigitalOutputType>::yaw()
 {
     return _yaw_pitch_roll.yaw;
 }
 
-float Bno08xSpiDroneGyro::pitch()
+template <DigitalOutputConcept SomeDigitalOutputType>
+float Bno08xSpiDroneGyro<SomeDigitalOutputType>::pitch()
 {
     return _yaw_pitch_roll.pitch;
 }
 
-float Bno08xSpiDroneGyro::roll()
+template <DigitalOutputConcept SomeDigitalOutputType>
+float Bno08xSpiDroneGyro<SomeDigitalOutputType>::roll()
 {
     return _yaw_pitch_roll.roll;
 }
 
-float Bno08xSpiDroneGyro::accelerationX()
+template <DigitalOutputConcept SomeDigitalOutputType>
+float Bno08xSpiDroneGyro<SomeDigitalOutputType>::accelerationX()
 {
     if (_mode == MODE_EULER_AND_ACCELERATION) return _rotated_acceleration.x;
 
     return _acceleration.x;
 }
 
-float Bno08xSpiDroneGyro::accelerationY()
+template <DigitalOutputConcept SomeDigitalOutputType>
+float Bno08xSpiDroneGyro<SomeDigitalOutputType>::accelerationY()
 {
     if (_mode == MODE_EULER_AND_ACCELERATION) return _rotated_acceleration.y;
 
     return _acceleration.y;
 }
 
-float Bno08xSpiDroneGyro::accelerationZ()
+template <DigitalOutputConcept SomeDigitalOutputType>
+float Bno08xSpiDroneGyro<SomeDigitalOutputType>::accelerationZ()
 {
     if (_mode == MODE_EULER_AND_ACCELERATION) return _rotated_acceleration.z;
 
     return _acceleration.z;
 }
 
-void Bno08xSpiDroneGyro::printYawPitchRoll()
+template <DigitalOutputConcept SomeDigitalOutputType>
+void Bno08xSpiDroneGyro<SomeDigitalOutputType>::printYawPitchRoll()
 {
     Serial.print(_yaw_pitch_roll.yaw);
     Serial.print("\t");
@@ -133,7 +140,8 @@ void Bno08xSpiDroneGyro::printYawPitchRoll()
     Serial.println(_yaw_pitch_roll.roll);
 }
 
-bool Bno08xSpiDroneGyro::reload()
+template <DigitalOutputConcept SomeDigitalOutputType>
+bool Bno08xSpiDroneGyro<SomeDigitalOutputType>::reload()
 {
     bool updated = false;
     bool has_euler = false;
@@ -216,8 +224,10 @@ bool Bno08xSpiDroneGyro::reload()
     return updated;
 }
 
-void Bno08xSpiDroneGyro::rotateVectorByQuaternion(float &x, float &y, float &z,
-                                                  const float r, const float i, const float j, const float k)
+template <DigitalOutputConcept SomeDigitalOutputType>
+void Bno08xSpiDroneGyro<SomeDigitalOutputType>::rotateVectorByQuaternion(float &x, float &y, float &z,
+                                                                         const float r, const float i,
+                                                                         const float j, const float k)
 {
     const float tx = 2.0f * (j * z - k * y);
     const float ty = 2.0f * (k * x - i * z);
@@ -228,15 +238,17 @@ void Bno08xSpiDroneGyro::rotateVectorByQuaternion(float &x, float &y, float &z,
     z += r * tz + (i * ty - j * tx);
 }
 
-YawPitchRoll_t Bno08xSpiDroneGyro::quaternionsToYawPitchRoll(const sh2_RotationVectorWAcc_t *rotational_vector,
-                                                             const bool to_degrees)
+template <DigitalOutputConcept SomeDigitalOutputType>
+YawPitchRoll_t Bno08xSpiDroneGyro<SomeDigitalOutputType>::quaternionsToYawPitchRoll(
+    const sh2_RotationVectorWAcc_t *rotational_vector, const bool to_degrees)
 {
     return quaternionsToYawPitchRoll(rotational_vector->real, rotational_vector->i, rotational_vector->j,
                                      rotational_vector->k, to_degrees);
 }
 
-YawPitchRoll_t Bno08xSpiDroneGyro::quaternionsToYawPitchRoll(const float qr, const float qi, const float qj,
-                                                             const float qk, const bool to_degrees)
+template <DigitalOutputConcept SomeDigitalOutputType>
+YawPitchRoll_t Bno08xSpiDroneGyro<SomeDigitalOutputType>::quaternionsToYawPitchRoll(
+    const float qr, const float qi, const float qj, const float qk, const bool to_degrees)
 {
     YawPitchRoll_t yaw_pitch_roll;
 

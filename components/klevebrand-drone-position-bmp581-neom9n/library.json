@@ -1,0 +1,23 @@
+{
+  "name": "klevebrand-drone-position-bmp581-neom9n",
+  "version": "1.0.0",
+  "description": "An implementation for klevebrand-all-drone-core position with the BMP581 pressure sensor and u-blox neo m9n gnss sensor.",
+  "keywords": "klevebrand,position,gps,gnss,neom9n,bmp581,kalman",
+  "authors":
+  [
+    {
+      "name": "Max Klevebrand",
+      "email": "max.klevebrand@gmail.com",
+      "url": "https://klevebrand.se"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://klevebrand.se",
+  "dependencies": {
+    "sparkfun/SparkFun BMP581 Arduino Library": "^1.0.2",
+    "sparkfun/SparkFun u-blox GNSS v3": "^3.1.14",
+    "lordmax2/klevebrand-all-drone-controller-core": "^3.0.4"
+  },
+  "frameworks": "arduino",
+  "platforms": "*"
+}
